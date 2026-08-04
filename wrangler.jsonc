@@ -23,7 +23,8 @@
 		{
 			"binding": "DB",
 			"database_name": "morelord-gaming",
-			"database_id": "8d46052b-3c47-47bb-9324-307df5014376"
+			"database_id": "8d46052b-3c47-47bb-9324-307df5014376",
+			"migrations_dir": "migrations"
 		}
 	]
 	/**

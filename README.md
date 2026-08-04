@@ -1,42 +1,50 @@
-# sv
+# Morelord Gaming Website
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+SvelteKit website for Morelord Adventures and Morelord Tools, deployed to Cloudflare Workers with a Cloudflare D1 database.
 
-## Creating a project
+## Local development
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.16.6 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" drizzle="database:d1" better-auth="demo:github" playwright tailwindcss="plugins:typography" sveltekit-adapter="adapter:cloudflare+cfTarget:workers" mdsvex mcp="ide:vscode+setup:local" --install npm morelord-gaming-web
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+```powershell
+npm install
+npm run gen
+npx wrangler d1 migrations apply morelord-gaming --local
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Copy `.env.example` to `.env` and provide local OAuth/authentication settings before testing sign-in.
 
-To create a production version of your app:
+## Validation
 
-```sh
+```powershell
+npm run check
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## Production deployment
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+GitHub Actions deploys pushes to `main`. Add these repository environment secrets under the `production` environment:
+
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+The workflow validates the app, applies remote D1 migrations and deploys the Worker.
+
+## Database migrations
+
+```powershell
+# Local
+npx wrangler d1 migrations apply morelord-gaming --local
+
+# Production (normally handled by GitHub Actions)
+npx wrangler d1 migrations apply morelord-gaming --remote
+```
+
+## Initial routes
+
+- `/` — Morelord Gaming landing page
+- `/adventures` — professional game-master services
+- `/tools` — Foundry VTT product catalog
+- `/pricing` — membership structure
+- `/releases` — product update feed foundation
+- `/account` — future customer dashboard
+- `/api/health` — Worker and D1 health check

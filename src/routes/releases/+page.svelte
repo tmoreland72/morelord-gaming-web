@@ -1,0 +1,3 @@
+<svelte:head><title>Morelord Tools Releases</title></svelte:head>
+<section class="page-hero"><div class="shell"><div class="eyebrow">Product updates</div><h1>One place for every Morelord Tools release.</h1><p class="lead">This page is ready to be connected to D1 and updated automatically by each module's GitHub release workflow.</p></div></section>
+<section class="section section-muted"><div class="shell"><article class="card"><span class="tag">Foundation</span><h3>Website release feed initialized</h3><p>The release schema and publishing API foundation are part of this first website milestone. Product-specific releases will appear here after the deployment and authentication setup is complete.</p></article></div></section>

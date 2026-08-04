@@ -1,0 +1,2 @@
+<svelte:head><title>Morelord Account</title></svelte:head>
+<section class="page-hero"><div class="shell"><div class="eyebrow">Customer account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">Account login is being prepared with Google and GitHub OAuth. Billing, Discord linking and Foundry installation activation will follow.</p><div class="actions"><a class="button" href="/demo/better-auth/login">Developer login preview</a></div></div></section>
