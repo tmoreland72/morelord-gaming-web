@@ -1,4 +1,5 @@
 import { integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { user } from './auth.schema';
 
 const timestamps = {
 	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull().$defaultFn(() => new Date()),
@@ -75,3 +76,80 @@ export const webhookEvents = sqliteTable('webhook_events', {
 });
 
 export * from './auth.schema';
+
+
+export const stripeCustomers = sqliteTable('stripe_customers', {
+	userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
+	stripeCustomerId: text('stripe_customer_id').notNull().unique(),
+	...timestamps
+});
+
+export const subscriptions = sqliteTable('subscriptions', {
+	id: text('id').primaryKey(),
+	stripeSubscriptionId: text('stripe_subscription_id').notNull().unique(),
+	stripeCustomerId: text('stripe_customer_id').notNull(),
+	status: text('status').notNull(),
+	plan: text('plan'),
+	priceId: text('price_id'),
+	currentPeriodEnd: integer('current_period_end', { mode: 'timestamp_ms' }),
+	cancelAtPeriodEnd: integer('cancel_at_period_end', { mode: 'boolean' }).notNull().default(false),
+	isCurrent: integer('is_current', { mode: 'boolean' }).notNull().default(true),
+	...timestamps
+}, (table) => [uniqueIndex('subscriptions_customer_idx').on(table.stripeCustomerId, table.stripeSubscriptionId)]);
+
+export const activeEntitlements = sqliteTable('active_entitlements', {
+	id: text('id').primaryKey(),
+	stripeCustomerId: text('stripe_customer_id').notNull(),
+	lookupKey: text('lookup_key').notNull(),
+	stripeFeatureId: text('stripe_feature_id'),
+	updatedAt: timestamps.updatedAt
+}, (table) => [uniqueIndex('active_entitlements_customer_key_unique').on(table.stripeCustomerId, table.lookupKey)]);
+
+
+export const foundryInstallations = sqliteTable('foundry_installations', {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+	label: text('label').notNull(),
+	worldId: text('world_id'),
+	worldName: text('world_name'),
+	foundryVersion: text('foundry_version'),
+	moduleVersion: text('module_version'),
+	tokenHash: text('token_hash').notNull().unique(),
+	lastValidatedAt: integer('last_validated_at', { mode: 'timestamp_ms' }),
+	revokedAt: integer('revoked_at', { mode: 'timestamp_ms' }),
+	...timestamps
+});
+
+export const foundryActivationRequests = sqliteTable('foundry_activation_requests', {
+	id: text('id').primaryKey(),
+	productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+	userCode: text('user_code').notNull().unique(),
+	deviceSecretHash: text('device_secret_hash').notNull(),
+	installationLabel: text('installation_label').notNull(),
+	worldId: text('world_id'),
+	worldName: text('world_name'),
+	foundryVersion: text('foundry_version'),
+	moduleVersion: text('module_version'),
+	status: text('status', { enum: ['pending', 'approved', 'denied', 'expired', 'consumed'] }).notNull().default('pending'),
+	approvedByUserId: text('approved_by_user_id').references(() => user.id, { onDelete: 'set null' }),
+	installationId: text('installation_id').references(() => foundryInstallations.id, { onDelete: 'set null' }),
+	issuedToken: text('issued_token'),
+	expiresAt: integer('expires_at', { mode: 'timestamp_ms' }).notNull(),
+	approvedAt: integer('approved_at', { mode: 'timestamp_ms' }),
+	consumedAt: integer('consumed_at', { mode: 'timestamp_ms' }),
+	createdAt: timestamps.createdAt
+});
+
+
+export const discordConnections = sqliteTable('discord_connections', {
+	userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
+	discordUserId: text('discord_user_id').notNull().unique(),
+	username: text('username').notNull(),
+	globalName: text('global_name'),
+	avatar: text('avatar'),
+	roleSyncStatus: text('role_sync_status').notNull().default('pending'),
+	roleSyncMessage: text('role_sync_message'),
+	lastSyncedAt: integer('last_synced_at', { mode: 'timestamp_ms' }),
+	...timestamps
+});

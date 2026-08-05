@@ -1,0 +1,22 @@
+{
+  "productSlug": "morelord-marketplace",
+  "version": "0.3.0",
+  "title": "Advanced merchant controls",
+  "summary": "Adds premium automation and improves actor selection.",
+  "publishedAt": "2026-08-04T22:30:00-05:00",
+  "githubReleaseUrl": "https://github.com/YOUR-ACCOUNT/morelord-marketplace/releases/tag/v0.3.0",
+  "downloadUrl": "https://github.com/YOUR-ACCOUNT/morelord-marketplace/releases/download/v0.3.0/morelord-marketplace.zip",
+  "manifestUrl": "https://github.com/YOUR-ACCOUNT/morelord-marketplace/releases/latest/download/module.json",
+  "changes": [
+    {
+      "category": "improvement",
+      "tier": "standard",
+      "description": "Selected tokens now take priority for player transactions."
+    },
+    {
+      "category": "feature",
+      "tier": "premium",
+      "description": "Added configurable GM approval workflows."
+    }
+  ]
+}

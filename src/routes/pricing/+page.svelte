@@ -1,3 +1,55 @@
-<svelte:head><title>Morelord Tools Pricing</title></svelte:head>
-<section class="page-hero"><div class="shell"><div class="eyebrow">Tools memberships</div><h1>Start free. Upgrade the entire toolkit when it earns its place at your table.</h1><p class="lead">Pricing shown here is a launch framework. Stripe checkout will be connected after the account and entitlement foundation is complete.</p></div></section>
-<section class="section"><div class="shell grid-3"><article class="card"><span class="tag">Community</span><h3>Standard</h3><div class="price">Free</div><ul class="feature-list"><li>Standard features in supported modules</li><li>Public documentation</li><li>Community support channels</li><li>Stable public releases</li></ul></article><article class="card highlight"><span class="tag">Recommended</span><h3>Tools Premium</h3><div class="price">Coming soon <small>monthly or annual</small></div><ul class="feature-list"><li>Premium features across supported modules</li><li>Early-access releases</li><li>Premium Discord channels</li><li>Enhanced product support</li></ul></article><article class="card"><span class="tag">Supporter</span><h3>Tools Champion</h3><div class="price">Coming soon <small>monthly or annual</small></div><ul class="feature-list"><li>Everything in Tools Premium</li><li>Priority support</li><li>Development previews</li><li>Roadmap discussion and voting</li></ul></article></div></section>
+<script lang="ts">
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
+	let annual = $state(true);
+</script>
+
+<svelte:head><title>Morelord Tools Memberships</title></svelte:head>
+<section class="page-hero pricing-hero">
+	<div class="shell">
+		<div class="eyebrow">Tools memberships</div>
+		<h1>Start free. Upgrade the whole toolkit when it earns its place at your table.</h1>
+		<p class="lead">Every supported module has a useful free edition. Paid memberships unlock premium software features and enhanced community benefits.</p>
+		<div class="billing-toggle" aria-label="Billing frequency">
+			<button class:active={!annual} type="button" onclick={() => (annual = false)}>Monthly</button>
+			<button class:active={annual} type="button" onclick={() => (annual = true)}>Annual <span>Best value</span></button>
+		</div>
+	</div>
+</section>
+<section class="section pricing-section">
+	<div class="shell grid-3 pricing-grid">
+		<article class="card pricing-card">
+			<span class="tag">Community</span><h3>Standard</h3><div class="price">Free</div>
+			<p class="tier-summary">For every Foundry user.</p>
+			<ul class="feature-list"><li>Standard features in supported modules</li><li>Public documentation</li><li>Community support channels</li><li>Stable public releases</li></ul>
+			<a class="button secondary full-button" href="/tools">Browse free tools</a>
+		</article>
+		<article class="card pricing-card highlight">
+			<div class="recommended">Recommended</div><span class="tag">Premium</span><h3>Tools Premium</h3>
+			<div class="price">Price coming soon <small>{annual ? 'annual membership' : 'monthly membership'}</small></div>
+			<p class="tier-summary">For GMs who want the complete toolkit.</p>
+			<ul class="feature-list"><li>Premium features across supported modules</li><li>Early-access releases</li><li>Premium Discord channels</li><li>Enhanced product support</li></ul>
+			{#if data.user && ((annual && data.plans.premiumAnnual) || (!annual && data.plans.premiumMonthly))}
+				<form method="POST" action="/api/billing/checkout"><input type="hidden" name="plan" value={annual ? 'premium-annual' : 'premium-monthly'} /><button class="button full-button" type="submit">Choose Tools Premium</button></form>
+			{:else if data.user}
+				<button class="button full-button" type="button" disabled>Subscriptions opening soon</button>
+			{:else}
+				<a class="button full-button" href="/login?returnTo=/pricing">Sign in to subscribe</a>
+			{/if}
+		</article>
+		<article class="card pricing-card">
+			<span class="tag">Supporter</span><h3>Tools Champion</h3>
+			<div class="price">Price coming soon <small>{annual ? 'annual membership' : 'monthly membership'}</small></div>
+			<p class="tier-summary">For supporters who want a closer role.</p>
+			<ul class="feature-list"><li>Everything in Tools Premium</li><li>Priority support</li><li>Development previews</li><li>Roadmap discussion and voting</li></ul>
+			{#if data.user && ((annual && data.plans.championAnnual) || (!annual && data.plans.championMonthly))}
+				<form method="POST" action="/api/billing/checkout"><input type="hidden" name="plan" value={annual ? 'champion-annual' : 'champion-monthly'} /><button class="button secondary full-button" type="submit">Choose Tools Champion</button></form>
+			{:else if data.user}
+				<button class="button secondary full-button" type="button" disabled>Subscriptions opening soon</button>
+			{:else}
+				<a class="button secondary full-button" href="/login?returnTo=/pricing">Sign in to subscribe</a>
+			{/if}
+		</article>
+	</div>
+	{#if !data.billingReady}<div class="shell setup-note"><strong>Founding memberships are not open yet.</strong> The site is subscription-ready, but checkout remains disabled until the Stripe products and prices are connected.</div>{/if}
+</section>

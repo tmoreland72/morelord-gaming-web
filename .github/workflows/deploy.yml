@@ -1,21 +1,26 @@
-name: Validate and deploy website
+name: Deploy Morelord Gaming Website
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
+
+concurrency:
+  group: morelord-gaming-production
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
-concurrency:
-  group: production-deploy
-  cancel-in-progress: false
+env:
+  NODE_VERSION: '22'
 
 jobs:
-  validate-and-deploy:
+  validate:
+    name: Validate application
     runs-on: ubuntu-latest
-    environment: production
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -23,29 +28,90 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Cloudflare types
-        run: npm run gen
-
-      - name: Check formatting and source
+      - name: Check Svelte and TypeScript
         run: npm run check
 
-      - name: Build application
+      - name: Build production worker
         run: npm run build
 
-      - name: Apply D1 migrations
+  deploy:
+    name: Migrate and deploy
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply production D1 migrations
         run: npx wrangler d1 migrations apply morelord-gaming --remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy
+      - name: Build and deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+          secrets: |
+            BETTER_AUTH_SECRET
+            GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_SECRET
+            GITHUB_CLIENT_ID
+            GITHUB_CLIENT_SECRET
+            RELEASE_PUBLISH_TOKEN
+            STRIPE_SECRET_KEY
+            STRIPE_WEBHOOK_SECRET
+            STRIPE_PRICE_PREMIUM_MONTHLY
+            STRIPE_PRICE_PREMIUM_ANNUAL
+            STRIPE_PRICE_CHAMPION_MONTHLY
+            STRIPE_PRICE_CHAMPION_ANNUAL
+            DISCORD_CLIENT_ID
+            DISCORD_CLIENT_SECRET
+            DISCORD_BOT_TOKEN
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+          RELEASE_PUBLISH_TOKEN: ${{ secrets.RELEASE_PUBLISH_TOKEN }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          STRIPE_PRICE_PREMIUM_MONTHLY: ${{ secrets.STRIPE_PRICE_PREMIUM_MONTHLY }}
+          STRIPE_PRICE_PREMIUM_ANNUAL: ${{ secrets.STRIPE_PRICE_PREMIUM_ANNUAL }}
+          STRIPE_PRICE_CHAMPION_MONTHLY: ${{ secrets.STRIPE_PRICE_CHAMPION_MONTHLY }}
+          STRIPE_PRICE_CHAMPION_ANNUAL: ${{ secrets.STRIPE_PRICE_CHAMPION_ANNUAL }}
+          DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+
+      - name: Verify production health
+        if: ${{ vars.PRODUCTION_URL != '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_url="${{ vars.PRODUCTION_URL }}"
+          base_url="${base_url%/}"
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 \
+            "${base_url}/api/health"
+          curl --fail --silent --show-error --retry 5 --retry-delay 5 \
+            "${base_url}/api/system/auth-status"
