@@ -103,6 +103,16 @@ jobs:
             exit 1
           fi
 
+      - name: Build production worker
+        run: npm run build
+        env:
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          RELEASE_PUBLISH_TOKEN: ${{ secrets.RELEASE_PUBLISH_TOKEN }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          ORIGIN: ${{ vars.ORIGIN }}
+
       - name: Apply production D1 migrations
         run: npx wrangler d1 migrations apply morelord-gaming --remote
 
