@@ -37,7 +37,7 @@ jobs:
       - name: Check Svelte and TypeScript
         run: npm run check
 
-      - name: Build production worker
+      - name: Build validation worker
         run: npm run build
         env:
           BETTER_AUTH_SECRET: ci-validation-only-secret-more-than-32-characters
@@ -59,7 +59,7 @@ jobs:
       RELEASE_PUBLISH_TOKEN: ${{ secrets.RELEASE_PUBLISH_TOKEN }}
 
       ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
-      ORIGIN: ${{ vars.ORIGIN || 'http://localhost:5173' }}
+      ORIGIN: ${{ vars.ORIGIN }}
 
     steps:
       - name: Check out repository
@@ -87,12 +87,15 @@ jobs:
             GOOGLE_CLIENT_SECRET
             RELEASE_PUBLISH_TOKEN
             ADMIN_EMAILS
+            ORIGIN
           )
 
           missing=()
 
           for name in "${required[@]}"; do
-            if [ -z "${!name:-}" ]; then
+            value="${!name:-}"
+
+            if [ -z "${value//[[:space:]]/}" ]; then
               missing+=("$name")
             fi
           done
@@ -111,12 +114,12 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           RELEASE_PUBLISH_TOKEN: ${{ secrets.RELEASE_PUBLISH_TOKEN }}
           ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
-          ORIGIN: ${{ vars.ORIGIN || 'http://localhost:5173' }}
+          ORIGIN: ${{ vars.ORIGIN }}
 
       - name: Apply production D1 migrations
         run: npx wrangler d1 migrations apply morelord-gaming --remote
 
-      - name: Deploy Worker and required secrets
+      - name: Deploy Worker and runtime configuration
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -127,11 +130,15 @@ jobs:
             GOOGLE_CLIENT_ID
             GOOGLE_CLIENT_SECRET
             RELEASE_PUBLISH_TOKEN
+            ADMIN_EMAILS
+            ORIGIN
         env:
           BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           RELEASE_PUBLISH_TOKEN: ${{ secrets.RELEASE_PUBLISH_TOKEN }}
+          ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
+          ORIGIN: ${{ vars.ORIGIN }}
 
       - name: Verify production health
         if: ${{ vars.PRODUCTION_URL != '' }}
@@ -143,6 +150,7 @@ jobs:
           base_url="${base_url%/}"
 
           echo "Checking ${base_url}/api/health"
+
           curl \
             --fail \
             --silent \
@@ -153,6 +161,7 @@ jobs:
 
           echo
           echo "Checking ${base_url}/api/system/auth-status"
+
           curl \
             --fail \
             --silent \
