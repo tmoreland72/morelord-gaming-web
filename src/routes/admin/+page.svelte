@@ -35,6 +35,7 @@
 	<div class="shell admin-dashboard">
 		<div class="admin-toolbar">
 			<a class="button" href="/admin/products">Manage products</a>
+			<a class="button secondary" href="/admin/billing">Billing</a>
 		</div>
 
 		<div class="admin-summary card">

@@ -183,3 +183,16 @@ Full instructions are available at `/docs/authentication`.
 The repository includes `.github/workflows/deploy.yml`. Pushes to `main` validate the app, apply remote D1 migrations, deploy the Worker and optionally verify the production health endpoints.
 
 Create a GitHub environment named `production`, then follow `/docs/deployment` for the required Cloudflare credentials, Worker variables and OAuth callback configuration.
+
+
+## Stripe subscriptions
+
+The site supports Stripe-hosted Checkout, the Customer Portal, subscription webhooks, and Billing Entitlements. Configure the four recurring Price IDs and the webhook signing secret as GitHub production environment secrets. The deployment workflow uploads Stripe secrets only when `STRIPE_SECRET_KEY` is present, so an unconfigured Stripe integration does not block normal deployments.
+
+Production webhook endpoint:
+
+```text
+https://morelordgaming.com/api/stripe/webhook
+```
+
+Administrator diagnostics are available at `/admin/billing`, and the setup walkthrough is available at `/docs/stripe`.

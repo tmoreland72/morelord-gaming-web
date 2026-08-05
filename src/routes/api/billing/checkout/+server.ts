@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { getOrCreateStripeCustomer } from '$lib/server/billing';
+import { getBillingSummary, getOrCreateStripeCustomer } from '$lib/server/billing';
 import { createCheckoutSession, getPriceId, type StripePlan } from '$lib/server/stripe';
 
 const validPlans = new Set<StripePlan>([
@@ -9,10 +9,16 @@ const validPlans = new Set<StripePlan>([
 	'champion-monthly',
 	'champion-annual'
 ]);
+const managedStatuses = new Set(['active', 'trialing', 'past_due', 'unpaid', 'paused']);
 
 export const POST: RequestHandler = async ({ locals, platform, request, url }) => {
 	if (!locals.user) redirect(303, `/login?returnTo=${encodeURIComponent('/pricing')}`);
 	if (!platform?.env?.DB) error(500, 'D1 database binding is unavailable.');
+
+	const existing = await getBillingSummary(platform.env.DB, locals.user.id);
+	if (existing.subscription && managedStatuses.has(existing.subscription.status)) {
+		redirect(303, '/account?billing=manage');
+	}
 
 	const form = await request.formData();
 	const plan = String(form.get('plan') ?? '') as StripePlan;

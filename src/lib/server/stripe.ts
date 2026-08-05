@@ -4,6 +4,21 @@ const STRIPE_API = 'https://api.stripe.com/v1';
 
 export type StripePlan = 'premium-monthly' | 'premium-annual' | 'champion-monthly' | 'champion-annual';
 
+export type StripePrice = {
+	id: string;
+	active: boolean;
+	currency: string;
+	unit_amount: number | null;
+	recurring: { interval: 'day' | 'week' | 'month' | 'year'; interval_count: number } | null;
+	product: string | { id: string; name?: string };
+};
+
+export type StripeActiveEntitlement = {
+	id: string;
+	lookup_key: string;
+	feature: string | { id: string };
+};
+
 const priceEnvironmentKeys: Record<StripePlan, string> = {
 	'premium-monthly': 'STRIPE_PRICE_PREMIUM_MONTHLY',
 	'premium-annual': 'STRIPE_PRICE_PREMIUM_ANNUAL',
@@ -12,8 +27,9 @@ const priceEnvironmentKeys: Record<StripePlan, string> = {
 };
 
 function requireSecret(): string {
-	if (!env.STRIPE_SECRET_KEY) throw new Error('Stripe is not configured. Missing STRIPE_SECRET_KEY.');
-	return env.STRIPE_SECRET_KEY;
+	const secret = env.STRIPE_SECRET_KEY?.trim();
+	if (!secret) throw new Error('Stripe is not configured. Missing STRIPE_SECRET_KEY.');
+	return secret;
 }
 
 function formEncode(values: Record<string, string | undefined>): URLSearchParams {
@@ -24,9 +40,10 @@ function formEncode(values: Record<string, string | undefined>): URLSearchParams
 
 export async function stripeRequest<T>(
 	path: string,
-	options: { method?: 'GET' | 'POST'; body?: URLSearchParams } = {}
+	options: { method?: 'GET' | 'POST'; body?: URLSearchParams; query?: URLSearchParams } = {}
 ): Promise<T> {
-	const response = await fetch(`${STRIPE_API}${path}`, {
+	const query = options.query?.toString();
+	const response = await fetch(`${STRIPE_API}${path}${query ? `?${query}` : ''}`, {
 		method: options.method ?? 'GET',
 		headers: {
 			Authorization: `Bearer ${requireSecret()}`,
@@ -41,11 +58,32 @@ export async function stripeRequest<T>(
 }
 
 export function isStripeConfigured(): boolean {
-	return Boolean(env.STRIPE_SECRET_KEY && env.STRIPE_WEBHOOK_SECRET);
+	return Boolean(env.STRIPE_SECRET_KEY?.trim() && env.STRIPE_WEBHOOK_SECRET?.trim());
 }
 
 export function getPriceId(plan: StripePlan): string | null {
-	return env[priceEnvironmentKeys[plan]] || null;
+	return env[priceEnvironmentKeys[plan]]?.trim() || null;
+}
+
+export function allStripePricesConfigured(): boolean {
+	return (Object.keys(priceEnvironmentKeys) as StripePlan[]).every((plan) => Boolean(getPriceId(plan)));
+}
+
+export async function retrievePrice(priceId: string): Promise<StripePrice> {
+	return stripeRequest<StripePrice>(`/prices/${encodeURIComponent(priceId)}`, {
+		query: new URLSearchParams({ 'expand[]': 'product' })
+	});
+}
+
+export async function getConfiguredPrices(): Promise<Partial<Record<StripePlan, StripePrice>>> {
+	const result: Partial<Record<StripePlan, StripePrice>> = {};
+	await Promise.all(
+		(Object.keys(priceEnvironmentKeys) as StripePlan[]).map(async (plan) => {
+			const id = getPriceId(plan);
+			if (id) result[plan] = await retrievePrice(id);
+		})
+	);
+	return result;
 }
 
 export async function createStripeCustomer(input: {
@@ -82,7 +120,7 @@ export async function createCheckoutSession(input: {
 			cancel_url: input.cancelUrl,
 			client_reference_id: input.userId,
 			allow_promotion_codes: 'true',
-			'billing_address_collection': 'auto',
+			billing_address_collection: 'auto',
 			'metadata[morelord_user_id]': input.userId,
 			'metadata[morelord_plan]': input.plan,
 			'subscription_data[metadata][morelord_user_id]': input.userId,
@@ -101,6 +139,24 @@ export async function createPortalSession(input: {
 	});
 }
 
+export async function listActiveEntitlements(customerId: string): Promise<StripeActiveEntitlement[]> {
+	const collected: StripeActiveEntitlement[] = [];
+	let startingAfter: string | undefined;
+
+	do {
+		const query = new URLSearchParams({ customer: customerId, limit: '100' });
+		if (startingAfter) query.set('starting_after', startingAfter);
+		const page = await stripeRequest<{ data: StripeActiveEntitlement[]; has_more: boolean }>(
+			'/entitlements/active_entitlements',
+			{ query }
+		);
+		collected.push(...page.data);
+		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
+	} while (startingAfter);
+
+	return collected;
+}
+
 function parseStripeSignature(header: string): { timestamp: string; signatures: string[] } {
 	const values = header.split(',').map((part) => part.trim().split('='));
 	const timestamp = values.find(([key]) => key === 't')?.[1];
@@ -117,14 +173,15 @@ function timingSafeEqual(left: string, right: string): boolean {
 }
 
 export async function verifyStripeWebhook(rawBody: string, signatureHeader: string): Promise<void> {
-	if (!env.STRIPE_WEBHOOK_SECRET) throw new Error('Missing STRIPE_WEBHOOK_SECRET.');
+	const webhookSecret = env.STRIPE_WEBHOOK_SECRET?.trim();
+	if (!webhookSecret) throw new Error('Missing STRIPE_WEBHOOK_SECRET.');
 	const { timestamp, signatures } = parseStripeSignature(signatureHeader);
 	const age = Math.abs(Date.now() / 1000 - Number(timestamp));
 	if (!Number.isFinite(age) || age > 300) throw new Error('Stripe webhook timestamp is outside the allowed tolerance.');
 
 	const key = await crypto.subtle.importKey(
 		'raw',
-		new TextEncoder().encode(env.STRIPE_WEBHOOK_SECRET),
+		new TextEncoder().encode(webhookSecret),
 		{ name: 'HMAC', hash: 'SHA-256' },
 		false,
 		['sign']
