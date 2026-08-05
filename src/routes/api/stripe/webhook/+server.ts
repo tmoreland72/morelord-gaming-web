@@ -3,7 +3,13 @@ import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server/db';
 import { activeEntitlements, subscriptions, webhookEvents } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { listActiveEntitlements, verifyStripeWebhook, type StripeActiveEntitlement } from '$lib/server/stripe';
+import {
+	getPlanFromPriceId,
+	listActiveEntitlements,
+	retrieveEntitlementFeature,
+	verifyStripeWebhook,
+	type StripeActiveEntitlement
+} from '$lib/server/stripe';
 
 type StripeEvent = { id: string; type: string; data: { object: Record<string, unknown> } };
 
@@ -35,14 +41,37 @@ async function replaceEntitlements(
 	entitlements: StripeActiveEntitlement[]
 ): Promise<void> {
 	await db.delete(activeEntitlements).where(eq(activeEntitlements.stripeCustomerId, customerId));
+
+	const featureNames = new Map<string, string>();
 	for (const entitlement of entitlements) {
 		if (!entitlement.lookup_key) continue;
+
+		const featureId =
+			typeof entitlement.feature === 'string' ? entitlement.feature : entitlement.feature?.id ?? null;
+		let displayName =
+			typeof entitlement.feature === 'object' && entitlement.feature?.name
+				? entitlement.feature.name
+				: null;
+
+		if (!displayName && featureId) {
+			displayName = featureNames.get(featureId) ?? null;
+			if (!displayName) {
+				try {
+					const feature = await retrieveEntitlementFeature(featureId);
+					displayName = feature.name;
+					featureNames.set(featureId, feature.name);
+				} catch (cause) {
+					console.warn(`Could not retrieve Stripe feature ${featureId}.`, cause);
+				}
+			}
+		}
+
 		await db.insert(activeEntitlements).values({
 			id: entitlement.id || crypto.randomUUID(),
 			stripeCustomerId: customerId,
 			lookupKey: entitlement.lookup_key,
-			stripeFeatureId:
-				typeof entitlement.feature === 'string' ? entitlement.feature : entitlement.feature?.id ?? null
+			displayName,
+			stripeFeatureId: featureId
 		});
 	}
 }
@@ -77,7 +106,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			const customerId = stringValue(object.customer);
 			if (subscriptionId && customerId) {
 				const items = object.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
-				const metadata = (object.metadata ?? {}) as Record<string, string>;
+				const priceId = items?.data?.[0]?.price?.id ?? null;
+				const plan = getPlanFromPriceId(priceId);
 				await db
 					.insert(subscriptions)
 					.values({
@@ -85,8 +115,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 						stripeSubscriptionId: subscriptionId,
 						stripeCustomerId: customerId,
 						status: stringValue(object.status) ?? 'unknown',
-						plan: metadata.morelord_plan ?? null,
-						priceId: items?.data?.[0]?.price?.id ?? null,
+						plan,
+						priceId,
 						currentPeriodEnd: currentPeriodEnd(object),
 						cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
 						isCurrent: event.type !== 'customer.subscription.deleted'
@@ -95,8 +125,8 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 						target: subscriptions.stripeSubscriptionId,
 						set: {
 							status: stringValue(object.status) ?? 'unknown',
-							plan: metadata.morelord_plan ?? null,
-							priceId: items?.data?.[0]?.price?.id ?? null,
+							plan,
+							priceId,
 							currentPeriodEnd: currentPeriodEnd(object),
 							cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
 							isCurrent: event.type !== 'customer.subscription.deleted',

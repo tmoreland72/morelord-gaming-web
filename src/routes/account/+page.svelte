@@ -107,7 +107,7 @@
 
 				<article class="card">
 					<span class="tag">Premium access</span><h3>{data.billing?.entitlements.length ?? 0} entitlements</h3>
-					{#if data.billing?.entitlements.length}<ul class="feature-list">{#each data.billing.entitlements as entitlement}<li>{entitlement.lookupKey}</li>{/each}</ul>{:else}<p>Premium feature permissions will appear here after a paid membership is active.</p>{/if}
+					{#if data.billing?.entitlements.length}<ul class="feature-list">{#each data.billing.entitlements as entitlement}<li>{entitlement.displayName ?? entitlement.lookupKey}</li>{/each}</ul>{:else}<p>Premium feature permissions will appear here after a paid membership is active.</p>{/if}
 				</article>
 
 				<article class="card">

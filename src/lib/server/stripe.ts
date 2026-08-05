@@ -13,10 +13,16 @@ export type StripePrice = {
 	product: string | { id: string; name?: string };
 };
 
+export type StripeEntitlementFeature = {
+	id: string;
+	name: string;
+	lookup_key: string;
+};
+
 export type StripeActiveEntitlement = {
 	id: string;
 	lookup_key: string;
-	feature: string | { id: string };
+	feature: string | StripeEntitlementFeature;
 };
 
 const priceEnvironmentKeys: Record<StripePlan, string> = {
@@ -67,6 +73,20 @@ export function getPriceId(plan: StripePlan): string | null {
 
 export function allStripePricesConfigured(): boolean {
 	return (Object.keys(priceEnvironmentKeys) as StripePlan[]).every((plan) => Boolean(getPriceId(plan)));
+}
+
+export function getPlanFromPriceId(priceId: string | null | undefined): StripePlan | null {
+	if (!priceId) return null;
+	for (const plan of Object.keys(priceEnvironmentKeys) as StripePlan[]) {
+		if (getPriceId(plan) === priceId) return plan;
+	}
+	return null;
+}
+
+export async function retrieveEntitlementFeature(featureId: string): Promise<StripeEntitlementFeature> {
+	return stripeRequest<StripeEntitlementFeature>(
+		`/entitlements/features/${encodeURIComponent(featureId)}`
+	);
 }
 
 export async function retrievePrice(priceId: string): Promise<StripePrice> {

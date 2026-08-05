@@ -101,6 +101,7 @@ export const activeEntitlements = sqliteTable('active_entitlements', {
 	id: text('id').primaryKey(),
 	stripeCustomerId: text('stripe_customer_id').notNull(),
 	lookupKey: text('lookup_key').notNull(),
+	displayName: text('display_name'),
 	stripeFeatureId: text('stripe_feature_id'),
 	updatedAt: timestamps.updatedAt
 }, (table) => [uniqueIndex('active_entitlements_customer_key_unique').on(table.stripeCustomerId, table.lookupKey)]);
