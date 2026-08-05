@@ -39,6 +39,9 @@ jobs:
 
       - name: Build production worker
         run: npm run build
+        env:
+          BETTER_AUTH_SECRET: ci-validation-only-secret-more-than-32-characters
+          ORIGIN: http://localhost:5173
 
   deploy:
     name: Migrate and deploy
