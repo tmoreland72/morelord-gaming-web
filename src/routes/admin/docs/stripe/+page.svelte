@@ -12,5 +12,6 @@ STRIPE_PRICE_PREMIUM_MONTHLY
 STRIPE_PRICE_PREMIUM_ANNUAL
 STRIPE_PRICE_CHAMPION_MONTHLY
 STRIPE_PRICE_CHAMPION_ANNUAL</pre>
-	<h2>6. Deploy and test</h2><p>Use Stripe test mode first. Subscribe with a test card, confirm the account page updates after the webhook, open the billing portal, change plans, and cancel at period end.</p>
+	<h2>6. Friends & Family codes</h2><p>Use <a href="/admin/discount-codes">Admin → Friends & Family</a> to create a customer-facing promotion code. Each code creates a Stripe coupon for 100% off forever and can be restricted to Premium, Champion, or both. Keep maximum redemptions at one for personal codes. Deactivating an unused code prevents redemption; it does not remove a discount from an existing subscription.</p>
+	<h2>7. Deploy and test</h2><p>Use Stripe test mode first. Subscribe with a test card, confirm the account page updates after the webhook, test a Friends & Family code, open the billing portal, change plans, and cancel at period end.</p>
 </div></section>

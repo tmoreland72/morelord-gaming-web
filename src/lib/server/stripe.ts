@@ -210,3 +210,103 @@ export async function verifyStripeWebhook(rawBody: string, signatureHeader: stri
 	const expected = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
 	if (!signatures.some((signature) => timingSafeEqual(signature, expected))) throw new Error('Invalid Stripe webhook signature.');
 }
+
+export type StripeCoupon = {
+	id: string;
+	name: string | null;
+	percent_off: number | null;
+	duration: 'forever' | 'once' | 'repeating';
+	valid: boolean;
+	metadata?: Record<string, string>;
+};
+
+export type StripePromotionCode = {
+	id: string;
+	active: boolean;
+	code: string;
+	created: number;
+	expires_at: number | null;
+	max_redemptions: number | null;
+	times_redeemed: number;
+	metadata?: Record<string, string>;
+	promotion?: {
+		type: 'coupon';
+		coupon: string | StripeCoupon;
+	};
+};
+
+export async function createFriendsAndFamilyCode(input: {
+	code: string;
+	label: string;
+	productIds: string[];
+	tier: 'premium' | 'champion' | 'both';
+	maxRedemptions: number;
+	expiresAt?: number;
+}): Promise<StripePromotionCode> {
+	const couponValues: Record<string, string | undefined> = {
+		name: input.label,
+		percent_off: '100',
+		duration: 'forever',
+		'metadata[morelord_kind]': 'friends-family',
+		'metadata[morelord_tier]': input.tier
+	};
+	input.productIds.forEach((productId, index) => {
+		couponValues[`applies_to[products][${index}]`] = productId;
+	});
+
+	const coupon = await stripeRequest<StripeCoupon>('/coupons', {
+		method: 'POST',
+		body: formEncode(couponValues)
+	});
+
+	try {
+		return await stripeRequest<StripePromotionCode>('/promotion_codes', {
+			method: 'POST',
+			body: formEncode({
+				code: input.code,
+				'promotion[type]': 'coupon',
+				'promotion[coupon]': coupon.id,
+				max_redemptions: String(input.maxRedemptions),
+				expires_at: input.expiresAt ? String(input.expiresAt) : undefined,
+				'metadata[morelord_kind]': 'friends-family',
+				'metadata[morelord_tier]': input.tier,
+				'metadata[morelord_label]': input.label
+			})
+		});
+	} catch (cause) {
+		// Avoid leaving an unused coupon behind if promotion-code creation fails.
+		await stripeRequest(`/coupons/${encodeURIComponent(coupon.id)}`, {
+			method: 'POST',
+			body: formEncode({ name: `${input.label} (creation failed)` })
+		}).catch(() => undefined);
+		throw cause;
+	}
+}
+
+export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCode[]> {
+	const result: StripePromotionCode[] = [];
+	let startingAfter: string | undefined;
+
+	do {
+		const query = new URLSearchParams({ limit: '100' });
+		query.append('expand[]', 'data.promotion.coupon');
+		if (startingAfter) query.set('starting_after', startingAfter);
+		const page = await stripeRequest<{ data: StripePromotionCode[]; has_more: boolean }>(
+			'/promotion_codes',
+			{ query }
+		);
+		result.push(
+			...page.data.filter((code) => code.metadata?.morelord_kind === 'friends-family')
+		);
+		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
+	} while (startingAfter);
+
+	return result;
+}
+
+export async function setPromotionCodeActive(id: string, active: boolean): Promise<StripePromotionCode> {
+	return stripeRequest<StripePromotionCode>(`/promotion_codes/${encodeURIComponent(id)}`, {
+		method: 'POST',
+		body: formEncode({ active: active ? 'true' : 'false' })
+	});
+}
