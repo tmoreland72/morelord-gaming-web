@@ -1,0 +1,8 @@
+<svelte:head><title>Morelord Character Export Documentation | Morelord Gaming</title><meta name="description" content="Export Foundry VTT characters with Morelord Character Export." /></svelte:head>
+<section class="page-hero tools-hero compact-hero"><div class="shell"><div class="eyebrow">Product guide</div><h1>Morelord Character Export</h1><p class="lead">Create a portable character export that can be viewed outside Foundry in a polished character presentation.</p></div></section>
+<section class="section brand-panel-section"><div class="shell prose-content">
+	<article class="card docs-card"><h2>Export a character</h2><ol><li>Install and enable Morelord Character Export.</li><li>Open the character sheet you want to export.</li><li>Open the sheet title-bar menu.</li><li>Choose <strong>Morelord Export</strong>.</li><li>Save the generated <code>.morelord-character.json</code> file.</li></ol></article>
+	<article class="card docs-card"><h2>View the export</h2><p>Open the Morelord Character Manager and import the generated file. Review the Character, Features, Inventory, Spellbook and Biography tabs.</p></article>
+	<article class="card docs-card"><h2>Images</h2><p>Images that only exist inside the Foundry world may not be available outside Foundry. The export module packages supported image data where possible. Verify portraits, item images and spell images after import.</p></article>
+	<article class="card docs-card"><h2>Troubleshooting</h2><ul><li>Export again after changing the character.</li><li>Confirm the source actor is a supported D&amp;D 5e character.</li><li>Use the latest versions of both the export module and viewer.</li><li>Keep the original export file as a backup.</li></ul></article>
+</div></section>

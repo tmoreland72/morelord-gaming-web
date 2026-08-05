@@ -6,7 +6,7 @@
 		{ href: '/tools', label: 'Tools' },
 		{ href: '/pricing', label: 'Memberships' },
 		{ href: '/releases', label: 'Releases' },
-		{ href: '/docs/authentication', label: 'Docs' }
+		{ href: '/docs', label: 'Docs' }
 	];
 
 	let menuOpen = $state(false);
