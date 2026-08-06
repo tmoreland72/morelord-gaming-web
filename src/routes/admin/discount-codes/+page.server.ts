@@ -5,6 +5,8 @@ import {
 	createFriendsAndFamilyCode,
 	getConfiguredPrices,
 	listFriendsAndFamilyCodes,
+	promotionCodeCouponDeleted,
+	retrievePromotionCode,
 	setPromotionCodeActive,
 	type StripePlan,
 	type StripePrice
@@ -106,6 +108,14 @@ export const actions: Actions = {
 		const active = String(form.get('active') ?? '') === 'true';
 		if (!id.startsWith('promo_')) return fail(400, { message: 'Invalid Stripe promotion code.' });
 		try {
+			if (active) {
+				const promotionCode = await retrievePromotionCode(id);
+				if (promotionCodeCouponDeleted(promotionCode)) {
+					return fail(409, {
+						message: 'This promotion code cannot be reactivated because its Stripe coupon was deleted. Create a replacement code instead.'
+					});
+				}
+			}
 			await setPromotionCodeActive(id, active);
 		} catch (cause) {
 			return fail(502, { message: cause instanceof Error ? cause.message : 'Unable to update the code.' });

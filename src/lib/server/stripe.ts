@@ -213,11 +213,17 @@ export async function verifyStripeWebhook(rawBody: string, signatureHeader: stri
 
 export type StripeCoupon = {
 	id: string;
+	deleted?: false;
 	name: string | null;
 	percent_off: number | null;
 	duration: 'forever' | 'once' | 'repeating';
 	valid: boolean;
 	metadata?: Record<string, string>;
+};
+
+export type StripeDeletedCoupon = {
+	id: string;
+	deleted: true;
 };
 
 export type StripePromotionCode = {
@@ -231,7 +237,7 @@ export type StripePromotionCode = {
 	metadata?: Record<string, string>;
 	promotion?: {
 		type: 'coupon';
-		coupon: string | StripeCoupon;
+		coupon: string | StripeCoupon | StripeDeletedCoupon;
 	};
 };
 
@@ -419,9 +425,150 @@ export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCodeWi
 		.sort((left, right) => right.created - left.created);
 }
 
+
+export async function retrievePromotionCode(id: string): Promise<StripePromotionCode> {
+	return stripeRequest<StripePromotionCode>(`/promotion_codes/${encodeURIComponent(id)}`, {
+		query: new URLSearchParams({ 'expand[]': 'promotion.coupon' })
+	});
+}
+
+export function promotionCodeCouponDeleted(code: StripePromotionCode): boolean {
+	const coupon = code.promotion?.coupon;
+	return typeof coupon === 'object' && coupon.deleted === true;
+}
+
 export async function setPromotionCodeActive(id: string, active: boolean): Promise<StripePromotionCode> {
 	return stripeRequest<StripePromotionCode>(`/promotion_codes/${encodeURIComponent(id)}`, {
 		method: 'POST',
 		body: formEncode({ active: active ? 'true' : 'false' })
 	});
+}
+
+export type StripeAuditSubscription = {
+	id: string;
+	status: string;
+	customerId: string;
+	customerName: string | null;
+	customerEmail: string | null;
+	priceId: string | null;
+	productId: string | null;
+	productName: string | null;
+	currentPeriodEnd: number | null;
+	cancelAtPeriodEnd: boolean;
+	promotionCode: string | null;
+	promotionCodeId: string | null;
+	promotionCouponDeleted: boolean;
+};
+
+type StripeAuditDiscount = {
+	promotion_code?: string | {
+		id: string;
+		code?: string;
+		promotion?: { coupon?: string | StripeCoupon | StripeDeletedCoupon };
+	} | null;
+};
+
+type StripeAuditRawSubscription = {
+	id: string;
+	status: string;
+	customer: string | StripeCustomerSummary;
+	cancel_at_period_end?: boolean;
+	current_period_end?: number | null;
+	discounts?: Array<string | StripeAuditDiscount>;
+	items?: {
+		data?: Array<{
+			current_period_end?: number | null;
+			price?: {
+				id: string;
+				product?: string | { id: string; name?: string | null };
+			};
+			discounts?: Array<string | StripeAuditDiscount>;
+		}>;
+	};
+};
+
+function expandedPromotion(subscription: StripeAuditRawSubscription): {
+	code: string | null;
+	id: string | null;
+	couponDeleted: boolean;
+} {
+	const discounts = [
+		...(subscription.discounts ?? []),
+		...(subscription.items?.data?.flatMap((item) => item.discounts ?? []) ?? [])
+	];
+	for (const discount of discounts) {
+		if (typeof discount === 'string' || !discount.promotion_code) continue;
+		const promotionCode = discount.promotion_code;
+		if (typeof promotionCode === 'string') return { code: null, id: promotionCode, couponDeleted: false };
+		const coupon = promotionCode.promotion?.coupon;
+		return {
+			code: promotionCode.code ?? null,
+			id: promotionCode.id,
+			couponDeleted: typeof coupon === 'object' && 'deleted' in coupon && coupon.deleted === true
+		};
+	}
+	return { code: null, id: null, couponDeleted: false };
+}
+
+export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubscription[]> {
+	const result: StripeAuditSubscription[] = [];
+	let startingAfter: string | undefined;
+
+	do {
+		const query = new URLSearchParams({ limit: '100', status: 'all' });
+		query.append('expand[]', 'data.customer');
+		query.append('expand[]', 'data.items.data.price.product');
+		query.append('expand[]', 'data.discounts.promotion_code');
+		query.append('expand[]', 'data.items.data.discounts.promotion_code');
+		if (startingAfter) query.set('starting_after', startingAfter);
+
+		const page = await stripeRequest<{ data: StripeAuditRawSubscription[]; has_more: boolean }>(
+			'/subscriptions',
+			{ query }
+		);
+
+		for (const subscription of page.data) {
+			const customer = typeof subscription.customer === 'string' ? null : subscription.customer;
+			const item = subscription.items?.data?.[0];
+			const product = item?.price?.product;
+			const promotion = expandedPromotion(subscription);
+			result.push({
+				id: subscription.id,
+				status: subscription.status,
+				customerId: customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : ''),
+				customerName: customer && !customer.deleted ? customer.name ?? null : null,
+				customerEmail: customer && !customer.deleted ? customer.email ?? null : null,
+				priceId: item?.price?.id ?? null,
+				productId: typeof product === 'string' ? product : product?.id ?? null,
+				productName: typeof product === 'object' ? product.name ?? null : null,
+				currentPeriodEnd: item?.current_period_end ?? subscription.current_period_end ?? null,
+				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+				promotionCode: promotion.code,
+				promotionCodeId: promotion.id,
+				promotionCouponDeleted: promotion.couponDeleted
+			});
+		}
+
+		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
+	} while (startingAfter);
+
+	const promotionIds = [...new Set(result.map((subscription) => subscription.promotionCodeId).filter((id): id is string => Boolean(id)))];
+	if (promotionIds.length) {
+		const promotions = await Promise.all(
+			promotionIds.map(async (id) => {
+				try { return await retrievePromotionCode(id); }
+				catch { return null; }
+			})
+		);
+		const byId = new Map(promotions.filter((code): code is StripePromotionCode => Boolean(code)).map((code) => [code.id, code]));
+		for (const subscription of result) {
+			if (!subscription.promotionCodeId) continue;
+			const code = byId.get(subscription.promotionCodeId);
+			if (!code) continue;
+			subscription.promotionCode = code.code;
+			subscription.promotionCouponDeleted = promotionCodeCouponDeleted(code);
+		}
+	}
+
+	return result;
 }

@@ -13,7 +13,6 @@
 <svelte:head><title>Billing Administration | Morelord Gaming</title><meta name="robots" content="noindex,nofollow" /></svelte:head>
 <section class="page-hero compact-hero"><div class="shell"><div class="eyebrow">Morelord administration</div><h1>Stripe billing</h1><p class="lead">Subscription configuration, synchronized memberships and recent webhook activity.</p></div></section>
 <section class="section brand-panel-section"><div class="shell admin-dashboard">
-	<div class="admin-toolbar"><a class="button secondary" href="/admin">System readiness</a><a class="button secondary" href="/admin/discount-codes">Friends & Family codes</a><a class="button secondary" href="/admin/docs/stripe">Stripe setup guide</a></div>
 	<section class="account-section"><div class="section-heading"><div><div class="eyebrow">Configuration</div><h2>Production readiness</h2></div></div>
 		<div class="status-grid">{#each checks as check}<article class="card status-card" class:ready={check[1]}><div class="status-line"><span class="status-dot"></span><strong>{check[0]}</strong><span>{check[1] ? 'Ready' : 'Missing'}</span></div></article>{/each}</div>
 		{#if data.stripeError}<div class="error-banner">Stripe API: {data.stripeError}</div>{/if}

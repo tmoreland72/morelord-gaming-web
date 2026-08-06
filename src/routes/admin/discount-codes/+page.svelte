@@ -2,9 +2,15 @@
 	import type { ActionData, PageData } from './$types';
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	function couponDeleted(code: PageData['codes'][number]): boolean {
+		const coupon = code.promotion?.coupon;
+		return typeof coupon === 'object' && 'deleted' in coupon && coupon.deleted === true;
+	}
+
 	function couponName(code: PageData['codes'][number]): string {
 		const coupon = code.promotion?.coupon;
-		return typeof coupon === 'object' && coupon?.name ? coupon.name : 'Friends & Family — Free';
+		if (couponDeleted(code)) return code.metadata?.morelord_label || 'Friends & Family — Free';
+		return typeof coupon === 'object' && 'name' in coupon && coupon.name ? coupon.name : 'Friends & Family — Free';
 	}
 
 	function tierLabel(code: PageData['codes'][number]): string {
@@ -15,7 +21,8 @@
 	}
 
 	function statusLabel(code: PageData['codes'][number]): string {
-		if (!code.active) return 'Inactive';
+		if (couponDeleted(code)) return 'Coupon deleted';
+		if (!code.active) return 'Deactivated';
 		if (code.expires_at && code.expires_at * 1000 <= Date.now()) return 'Expired';
 		if (code.max_redemptions !== null && code.times_redeemed >= code.max_redemptions) return 'Fully redeemed';
 		return 'Available';
@@ -56,11 +63,6 @@
 
 <section class="section brand-panel-section">
 	<div class="shell admin-dashboard">
-		<div class="admin-toolbar">
-			<a class="button secondary" href="/admin">System readiness</a>
-			<a class="button secondary" href="/admin/billing">Billing</a>
-			<a class="button secondary" href="/admin/docs/stripe">Stripe guide</a>
-		</div>
 
 		{#if form?.message}<div class="error-banner">{form.message}</div>{/if}
 		{#if data.stripeError}<div class="error-banner">Stripe API: {data.stripeError}</div>{/if}
@@ -138,12 +140,23 @@
 									<h3>{code.code}</h3>
 									<p>{couponName(code)}</p>
 								</div>
-								<form method="POST" action="?/setActive">
-									<input type="hidden" name="id" value={code.id} />
-									<input type="hidden" name="active" value={code.active ? 'false' : 'true'} />
-									<button class="button secondary compact" type="submit">{code.active ? 'Deactivate' : 'Reactivate'}</button>
-								</form>
+								{#if !couponDeleted(code)}
+									<form method="POST" action="?/setActive">
+										<input type="hidden" name="id" value={code.id} />
+										<input type="hidden" name="active" value={code.active ? 'false' : 'true'} />
+										<button class="button secondary compact" type="submit">{code.active ? 'Deactivate' : 'Reactivate'}</button>
+									</form>
+								{:else}
+									<span class="deleted-action">Create a replacement code</span>
+								{/if}
 							</header>
+
+							{#if couponDeleted(code)}
+								<div class="deleted-notice">
+									<strong>Underlying Stripe coupon deleted</strong>
+									<span>This code can no longer be redeemed or reactivated. Existing subscriptions that already used it are unaffected.</span>
+								</div>
+							{/if}
 
 							<div class="code-facts">
 								<div><span>Created</span><strong>{new Date(code.created * 1000).toLocaleDateString()}</strong></div>
@@ -214,6 +227,10 @@
 	.tag.muted { border-color: #746a6088; color: #b9aea1; background: #29231f88; }
 	.tag.tier { border-color: #8f6dbe77; color: #d1b8f2; background: #33224366; }
 	.button.compact { min-height: 38px; padding: .55rem .85rem; white-space: nowrap; }
+	.deleted-action { color: #8f8373; font-size: .82rem; font-weight: 700; white-space: nowrap; }
+	.deleted-notice { display: grid; gap: .25rem; margin-top: 1rem; padding: .8rem .9rem; border: 1px solid #9d6e4c55; border-radius: 8px; background: #3a1f1770; }
+	.deleted-notice strong { color: #e4b99a; font-size: .82rem; }
+	.deleted-notice span { color: #b99f8e; font-size: .8rem; line-height: 1.45; }
 	.code-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid #d49b2c22; }
 	.code-facts div { display: grid; gap: .22rem; }
 	.code-facts span { color: #807568; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }

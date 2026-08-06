@@ -20,7 +20,6 @@
 <section class="section brand-panel-section">
 	<div class="shell admin-dashboard">
 		<div class="admin-toolbar">
-			<a class="button secondary" href="/admin">System readiness</a>
 			<a class="button" href="/admin/products/new">Add product</a>
 		</div>
 
