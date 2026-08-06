@@ -196,3 +196,8 @@ https://morelordgaming.com/api/stripe/webhook
 ```
 
 Administrator diagnostics are available at `/admin/billing`, and the setup walkthrough is available at `/docs/stripe`.
+
+
+## Drakkenheim Harvesting 0.2.0
+
+Migration `0009_harvesting_membership_workflows.sql` updates the product catalog, premium capability, manifest URL, and release history for the Standard GM-managed and Premium collaborative workflows.
