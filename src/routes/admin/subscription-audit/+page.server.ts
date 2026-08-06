@@ -110,6 +110,14 @@ export const load: PageServerLoad = async ({ platform }) => {
 		const customerId = stripe?.customerId || local?.stripeCustomerId || '';
 		const customerEntitlements = entitlements.filter((row) => row.stripeCustomerId === customerId);
 		const issues = compare(local, stripe, customerEntitlements.map((row) => row.lookupKey));
+		const severity: 'error' | 'warning' | 'healthy' = issues.some(
+			(issue) => issue.severity === 'error'
+		)
+			? 'error'
+			: issues.length
+				? 'warning'
+				: 'healthy';
+
 		return {
 			id,
 			customerId,
@@ -119,7 +127,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 			local,
 			entitlements: customerEntitlements,
 			issues,
-			severity: issues.some((issue) => issue.severity === 'error') ? 'error' : issues.length ? 'warning' : 'healthy'
+			severity
 		};
 	}).sort((a, b) => {
 		const rank = { error: 0, warning: 1, healthy: 2 } as const;
