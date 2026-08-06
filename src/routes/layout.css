@@ -581,3 +581,54 @@ button.button:disabled {
 	.admin-tabs { margin-inline: 0; padding-inline: .5rem; }
 	.admin-tabs a { padding-inline: .75rem; font-size: .77rem; }
 }
+
+/* Public product installation */
+.product-install-section {
+	padding-top: 2rem;
+	padding-bottom: 1rem;
+	background: linear-gradient(180deg, #090706, #120c08);
+}
+.product-install-grid {
+	display: grid;
+	grid-template-columns: minmax(0, 1.7fr) minmax(250px, .8fr);
+	gap: 1.25rem;
+	align-items: stretch;
+}
+.install-card, .dependency-card { height: 100%; }
+.install-card-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 1rem;
+}
+.install-card-heading h2, .dependency-card h2 { margin-top: .3rem; }
+.manifest-control {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: .7rem;
+	align-items: center;
+	margin: 1.2rem 0;
+}
+.manifest-control code {
+	display: block;
+	overflow-x: auto;
+	padding: .8rem .9rem;
+	border: 1px solid #d6a0394a;
+	border-radius: 8px;
+	background: #090705;
+	color: #ffe09a;
+	font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+	font-size: .82rem;
+	white-space: nowrap;
+}
+.compact-button { min-height: 0; padding: .68rem .95rem; }
+.install-links { display: flex; flex-wrap: wrap; gap: .75rem 1.35rem; }
+.dependency-card { display: flex; flex-direction: column; align-items: flex-start; }
+.dependency-card .text-link { margin-top: auto; padding-top: 1rem; }
+@media (max-width: 820px) {
+	.product-install-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+	.manifest-control { grid-template-columns: 1fr; }
+	.manifest-control .button { width: 100%; }
+}
