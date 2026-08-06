@@ -16,5 +16,5 @@ INSERT OR IGNORE INTO releases (
 
 INSERT OR IGNORE INTO release_changes (id, release_id, category, tier, description, sort_order) VALUES
 ('change-core-011-1', 'release-core-011', 'improvement', 'standard', 'Open the account page directly at the Foundry approval form with the temporary code prefilled.', 1),
-('change-core-011-2', 'release-core-011', 'improvement', 'Clarify the approval steps in Foundry and on the website.', 2),
-('change-core-011-3', 'release-core-011', 'improvement', 'Show a clear completion state directing the user back to Foundry.', 3);
+('change-core-011-2', 'release-core-011', 'improvement', 'standard', 'Clarify the approval steps in Foundry and on the website.', 2),
+('change-core-011-3', 'release-core-011', 'improvement', 'standard', 'Show a clear completion state directing the user back to Foundry.', 3);
