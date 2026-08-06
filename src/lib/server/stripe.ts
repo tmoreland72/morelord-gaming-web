@@ -516,10 +516,11 @@ export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubs
 
 	do {
 		const query = new URLSearchParams({ limit: '100', status: 'all' });
+		// Keep list expansions shallow. Stripe rejects deeply nested expansions on list
+		// endpoints, which previously caused the entire audit page to return HTTP 500.
+		// Subscription items already include the price ID and product ID needed for
+		// membership comparison. Customer is the only expansion required here.
 		query.append('expand[]', 'data.customer');
-		query.append('expand[]', 'data.items.data.price.product');
-		query.append('expand[]', 'data.discounts.promotion_code');
-		query.append('expand[]', 'data.items.data.discounts.promotion_code');
 		if (startingAfter) query.set('starting_after', startingAfter);
 
 		const page = await stripeRequest<{ data: StripeAuditRawSubscription[]; has_more: boolean }>(
