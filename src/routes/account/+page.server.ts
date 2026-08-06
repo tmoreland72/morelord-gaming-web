@@ -25,6 +25,8 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 		discordRoleSyncConfigured: discordRoleSyncConfigured(),
 		checkoutSuccess: url.searchParams.get('checkout') === 'success',
 		discordResult: url.searchParams.get('discord'),
+		activationCode: url.searchParams.get('activation')?.trim().toUpperCase() ?? '',
+		accountReturnTo: `${url.pathname}${url.search}${url.searchParams.get('activation') ? '#foundry-activation' : ''}`,
 		isAdmin: isAdminEmail(locals.user?.email)
 	};
 };
@@ -38,7 +40,7 @@ export const actions: Actions = {
 		if (!code) return fail(400, { activationError: 'Enter the activation code shown in Foundry.', activationCode: code });
 		try {
 			await approveActivation(platform.env.DB, locals.user.id, code);
-			return { activationSuccess: true };
+			return { activationSuccess: true, activationCode: code.toUpperCase() };
 		} catch (error) {
 			return fail(400, { activationError: error instanceof Error ? error.message : 'Activation failed.', activationCode: code });
 		}

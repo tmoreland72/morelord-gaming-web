@@ -23,7 +23,10 @@ export const POST: RequestHandler = async ({ request, platform, url }) => {
 			foundryVersion: typeof body.foundryVersion === 'string' ? body.foundryVersion : undefined,
 			moduleVersion: typeof body.moduleVersion === 'string' ? body.moduleVersion : undefined
 		});
-		return json({ ...activation, verificationUrl: `${url.origin}/account` }, { headers: corsHeaders });
+		const verificationUrl = new URL('/account', url.origin);
+		verificationUrl.searchParams.set('activation', activation.userCode);
+		verificationUrl.hash = 'foundry-activation';
+		return json({ ...activation, verificationUrl: verificationUrl.toString() }, { headers: corsHeaders });
 	} catch (error) {
 		return json({ error: error instanceof Error ? error.message : 'Activation could not be started.' }, { status: 400, headers: corsHeaders });
 	}

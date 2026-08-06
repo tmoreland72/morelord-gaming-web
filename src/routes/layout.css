@@ -409,6 +409,15 @@ button.button:disabled {
 .activation-card small, .installation-row small { color:#978a78; line-height:1.5; }
 .activation-help ol { margin:1rem 0 0; padding-left:1.35rem; color:#c6b9a5; line-height:1.8; }
 .activation-help strong { color:#f2d38a; }
+.activation-request-banner { display:flex; gap:.75rem; align-items:flex-start; padding:.85rem .95rem; border:1px solid #d7a53e88; border-radius:9px; background:#d7a53e12; color:#f3d58c; }
+.activation-request-banner i { margin-top:.2rem; }
+.activation-request-banner div { display:grid; gap:.2rem; }
+.activation-request-banner span { color:#c6b9a5; font-size:.92rem; line-height:1.45; }
+.activation-complete { text-align:center; justify-items:center; padding:1.5rem; border-color:#69ad72aa; background:#17351d4d; }
+.activation-complete h3 { margin:.1rem 0; color:#f4d98f; font-size:1.55rem; }
+.activation-complete p { max-width:34rem; margin:.15rem auto; }
+.activation-success-icon { color:#74c87c; font-size:2.5rem; line-height:1; }
+
 .installation-list { display:grid; gap:.85rem; }
 .installation-row { display:flex; align-items:center; justify-content:space-between; gap:1.5rem; }
 .installation-row h3 { margin:.15rem 0 .35rem; }

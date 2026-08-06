@@ -19,9 +19,13 @@
 	);
 
 	function getActivationCode(value: unknown): string {
-		if (typeof value !== 'object' || value === null || !('activationCode' in value)) return '';
+		if (typeof value !== 'object' || value === null || !('activationCode' in value)) return data.activationCode ?? '';
 		const activationCode = (value as { activationCode?: unknown }).activationCode;
-		return typeof activationCode === 'string' ? activationCode : '';
+		return typeof activationCode === 'string' ? activationCode : (data.activationCode ?? '');
+	}
+
+	function closeActivationTab() {
+		window.close();
 	}
 
 	function discordNotice(result: string | null): string | null {
@@ -64,9 +68,6 @@
 		<div class="shell account-dashboard">
 			{#if data.checkoutSuccess}
 				<div class="success-banner"><strong>Thank you!</strong> Stripe is confirming your membership. Your account will update when the subscription webhook arrives.</div>
-			{/if}
-			{#if form?.activationSuccess}
-				<div class="success-banner"><strong>Foundry connected.</strong> Return to Foundry; the module will finish activation automatically.</div>
 			{/if}
 			{#if form?.revokeSuccess}
 				<div class="success-banner"><strong>Installation revoked.</strong> Its saved access token can no longer retrieve premium entitlements.</div>
@@ -147,17 +148,32 @@
 				{/if}
 			</section>
 
-			<section class="account-section">
-				<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Start activation inside a supported Morelord module, then enter the temporary code here. You never enter your Morelord password inside Foundry.</p></div>
+			<section class="account-section" id="foundry-activation">
+				<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Foundry creates a temporary code, opens this page and waits for your approval. You never enter your Morelord password inside Foundry.</p></div>
 				<div class="activation-grid">
-					<form class="card activation-card" method="POST" action="?/approveActivation" use:enhance>
-						<label for="activation-code">Activation code</label>
-						<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="ABCD-2345" value={getActivationCode(form)} />
-						{#if form?.activationError}<p class="form-error">{form.activationError}</p>{/if}
-						<button class="button" type="submit">Connect Foundry</button>
-						<small>Codes expire after 15 minutes and can be used only once.</small>
-					</form>
-					<article class="card activation-help"><span class="tag">How it works</span><ol><li>Open a supported Morelord module in Foundry as a GM.</li><li>Select <strong>Connect Morelord Account</strong>.</li><li>Enter the displayed code here.</li><li>Return to Foundry; premium access refreshes automatically.</li></ol></article>
+					{#if form?.activationSuccess}
+						<article class="card activation-card activation-complete">
+							<div class="activation-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+							<span class="tag">Connection approved</span>
+							<h3>Return to Foundry</h3>
+							<p>Morelord Core is waiting for this approval and should finish connecting automatically within a few seconds.</p>
+							<p><strong>You may now close this browser tab and return to Foundry.</strong></p>
+							<button class="button" type="button" onclick={closeActivationTab}>Close this tab</button>
+							<small>Some browsers do not allow a website to close a tab. In that case, close it normally.</small>
+						</article>
+					{:else}
+						<form class="card activation-card" method="POST" action="?/approveActivation" use:enhance>
+							{#if data.activationCode}
+								<div class="activation-request-banner"><i class="fa-solid fa-link"></i><div><strong>Foundry is waiting for approval.</strong><span>Confirm that this code matches the code shown in Morelord Core.</span></div></div>
+							{/if}
+							<label for="activation-code">Activation code</label>
+							<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="ABCD-2345" value={getActivationCode(form)} autofocus={Boolean(data.activationCode)} />
+							{#if form?.activationError}<p class="form-error">{form.activationError}</p>{/if}
+							<button class="button" type="submit">Approve Foundry Connection</button>
+							<small>Codes expire after 15 minutes and can be used only once.</small>
+						</form>
+					{/if}
+					<article class="card activation-help"><span class="tag">What happens next</span><ol><li>Confirm the code matches the one displayed in Foundry.</li><li>Select <strong>Approve Foundry Connection</strong>.</li><li>Wait for the success message on this page.</li><li>Close this tab and return to Foundry. Core completes the connection automatically.</li></ol></article>
 				</div>
 			</section>
 
@@ -170,5 +186,5 @@
 		</div>
 	</section>
 {:else}
-	<section class="page-hero account-hero"><div class="shell account-layout"><div><div class="eyebrow">Morelord account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">One account connects your Tools membership, Foundry installations, Discord benefits and billing.</p><div class="actions"><a class="button" href="/login">Sign in or create an account</a></div></div><div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and GitHub sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div></div></section>
+	<section class="page-hero account-hero"><div class="shell account-layout"><div><div class="eyebrow">Morelord account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">One account connects your Tools membership, Foundry installations, Discord benefits and billing.</p><div class="actions"><a class="button" href={`/login?returnTo=${encodeURIComponent(data.accountReturnTo)}`}>Sign in or create an account</a></div></div><div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and GitHub sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div></div></section>
 {/if}
