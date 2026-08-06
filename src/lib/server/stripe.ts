@@ -235,6 +235,114 @@ export type StripePromotionCode = {
 	};
 };
 
+export type StripePromotionRedemption = {
+	subscriptionId: string;
+	status: string;
+	created: number;
+	currentPeriodEnd: number | null;
+	cancelAtPeriodEnd: boolean;
+	customerId: string | null;
+	customerName: string | null;
+	customerEmail: string | null;
+};
+
+export type StripePromotionCodeWithRedemptions = StripePromotionCode & {
+	redemptions: StripePromotionRedemption[];
+};
+
+type StripeDiscount = {
+	id: string;
+	promotion_code?: string | { id: string } | null;
+};
+
+type StripeCustomerSummary = {
+	id: string;
+	name?: string | null;
+	email?: string | null;
+	deleted?: boolean;
+};
+
+type StripeSubscriptionSummary = {
+	id: string;
+	status: string;
+	created: number;
+	customer: string | StripeCustomerSummary;
+	cancel_at_period_end?: boolean;
+	current_period_end?: number | null;
+	discounts?: Array<string | StripeDiscount>;
+	items?: {
+		data?: Array<{
+			current_period_end?: number | null;
+			discounts?: Array<string | StripeDiscount>;
+		}>;
+	};
+};
+
+function promotionCodeId(discount: string | StripeDiscount): string | null {
+	if (typeof discount === 'string') return null;
+	const promotionCode = discount.promotion_code;
+	if (!promotionCode) return null;
+	return typeof promotionCode === 'string' ? promotionCode : promotionCode.id;
+}
+
+function subscriptionPromotionCodeIds(subscription: StripeSubscriptionSummary): Set<string> {
+	const ids = new Set<string>();
+	for (const discount of subscription.discounts ?? []) {
+		const id = promotionCodeId(discount);
+		if (id) ids.add(id);
+	}
+	for (const item of subscription.items?.data ?? []) {
+		for (const discount of item.discounts ?? []) {
+			const id = promotionCodeId(discount);
+			if (id) ids.add(id);
+		}
+	}
+	return ids;
+}
+
+async function listSubscriptionPromotionRedemptions(): Promise<Map<string, StripePromotionRedemption[]>> {
+	const byPromotionCode = new Map<string, StripePromotionRedemption[]>();
+	let startingAfter: string | undefined;
+
+	do {
+		const query = new URLSearchParams({ limit: '100', status: 'all' });
+		query.append('expand[]', 'data.customer');
+		query.append('expand[]', 'data.discounts.promotion_code');
+		query.append('expand[]', 'data.items.data.discounts.promotion_code');
+		if (startingAfter) query.set('starting_after', startingAfter);
+		const page = await stripeRequest<{ data: StripeSubscriptionSummary[]; has_more: boolean }>(
+			'/subscriptions',
+			{ query }
+		);
+
+		for (const subscription of page.data) {
+			const customer = typeof subscription.customer === 'string' ? null : subscription.customer;
+			const currentPeriodEnd =
+				subscription.items?.data?.[0]?.current_period_end ?? subscription.current_period_end ?? null;
+			const redemption: StripePromotionRedemption = {
+				subscriptionId: subscription.id,
+				status: subscription.status,
+				created: subscription.created,
+				currentPeriodEnd,
+				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+				customerId: customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : null),
+				customerName: customer && !customer.deleted ? customer.name ?? null : null,
+				customerEmail: customer && !customer.deleted ? customer.email ?? null : null
+			};
+
+			for (const codeId of subscriptionPromotionCodeIds(subscription)) {
+				const current = byPromotionCode.get(codeId) ?? [];
+				current.push(redemption);
+				byPromotionCode.set(codeId, current);
+			}
+		}
+
+		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
+	} while (startingAfter);
+
+	return byPromotionCode;
+}
+
 export async function createFriendsAndFamilyCode(input: {
 	code: string;
 	label: string;
@@ -283,7 +391,7 @@ export async function createFriendsAndFamilyCode(input: {
 	}
 }
 
-export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCode[]> {
+export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCodeWithRedemptions[]> {
 	const result: StripePromotionCode[] = [];
 	let startingAfter: string | undefined;
 
@@ -295,13 +403,20 @@ export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCode[]
 			'/promotion_codes',
 			{ query }
 		);
-		result.push(
-			...page.data.filter((code) => code.metadata?.morelord_kind === 'friends-family')
-		);
+		result.push(...page.data.filter((code) => code.metadata?.morelord_kind === 'friends-family'));
 		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
 	} while (startingAfter);
 
-	return result;
+	const redemptions = result.some((code) => code.times_redeemed > 0)
+		? await listSubscriptionPromotionRedemptions()
+		: new Map<string, StripePromotionRedemption[]>();
+
+	return result
+		.map((code) => ({
+			...code,
+			redemptions: (redemptions.get(code.id) ?? []).sort((left, right) => right.created - left.created)
+		}))
+		.sort((left, right) => right.created - left.created);
 }
 
 export async function setPromotionCodeActive(id: string, active: boolean): Promise<StripePromotionCode> {
