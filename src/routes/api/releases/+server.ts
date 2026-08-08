@@ -77,7 +77,15 @@ function validate(input: unknown): input is ReleaseInput {
 }
 
 export const POST: RequestHandler = async ({ request, platform }) => {
-	const token = env.RELEASE_PUBLISH_TOKEN;
+	// On Cloudflare, RELEASE_PUBLISH_TOKEN is a runtime Worker secret binding.
+	// Prefer platform.env so authentication uses the secret actually deployed to the Worker.
+	// Keep $env/dynamic/private as a local-development fallback.
+	const runtimeEnv = platform?.env as (Record<string, unknown> & { DB?: D1Database }) | undefined;
+	const runtimeToken = runtimeEnv?.RELEASE_PUBLISH_TOKEN;
+	const token =
+		typeof runtimeToken === 'string' && runtimeToken.length > 0
+			? runtimeToken
+			: env.RELEASE_PUBLISH_TOKEN;
 	const authorization = request.headers.get('authorization');
 	if (!token || authorization !== `Bearer ${token}`) return unauthorized();
 	if (!platform?.env?.DB) {
