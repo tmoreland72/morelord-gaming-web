@@ -274,6 +274,8 @@ type StripeSubscriptionSummary = {
 	created: number;
 	customer: string | StripeCustomerSummary;
 	cancel_at_period_end?: boolean;
+	cancel_at?: number | null;
+	canceled_at?: number | null;
 	current_period_end?: number | null;
 	discounts?: Array<string | StripeDiscount>;
 	items?: {
@@ -330,7 +332,7 @@ async function listSubscriptionPromotionRedemptions(): Promise<Map<string, Strip
 				status: subscription.status,
 				created: subscription.created,
 				currentPeriodEnd,
-				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || subscription.cancel_at),
 				customerId: customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : null),
 				customerName: customer && !customer.deleted ? customer.name ?? null : null,
 				customerEmail: customer && !customer.deleted ? customer.email ?? null : null
@@ -473,6 +475,8 @@ type StripeAuditRawSubscription = {
 	status: string;
 	customer: string | StripeCustomerSummary;
 	cancel_at_period_end?: boolean;
+	cancel_at?: number | null;
+	canceled_at?: number | null;
 	current_period_end?: number | null;
 	discounts?: Array<string | StripeAuditDiscount>;
 	items?: {
@@ -520,22 +524,20 @@ export type StripeSubscriptionBillingDetails = {
 };
 
 export async function getStripeSubscriptionBillingDetails(subscriptionId: string): Promise<StripeSubscriptionBillingDetails> {
+	// Keep this retrieval deliberately shallow. Deep discount expansions can be
+	// rejected by Stripe and must never prevent the account page from seeing the
+	// subscription's cancellation state.
 	const subscription = await stripeRequest<StripeAuditRawSubscription>(
-		`/subscriptions/${encodeURIComponent(subscriptionId)}`,
-		{
-			query: new URLSearchParams([
-				['expand[]', 'discounts.promotion_code'],
-				['expand[]', 'items.data.discounts.promotion_code']
-			])
-		}
+		`/subscriptions/${encodeURIComponent(subscriptionId)}`
 	);
 
 	const promotion = expandedPromotion(subscription);
 	const item = subscription.items?.data?.[0];
+	const scheduledCancelAt = subscription.cancel_at ?? null;
 	const baseDetails = {
 		status: subscription.status,
-		cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
-		currentPeriodEnd: item?.current_period_end ?? subscription.current_period_end ?? null
+		cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
+		currentPeriodEnd: scheduledCancelAt ?? item?.current_period_end ?? subscription.current_period_end ?? null
 	};
 	if (!promotion.id) return { promotionCode: null, isFriendsAndFamily: false, ...baseDetails };
 
@@ -586,7 +588,7 @@ export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubs
 				productId: typeof product === 'string' ? product : product?.id ?? null,
 				productName: typeof product === 'object' ? product.name ?? null : null,
 				currentPeriodEnd: item?.current_period_end ?? subscription.current_period_end ?? null,
-				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || subscription.cancel_at),
 				promotionCode: promotion.code,
 				promotionCodeId: promotion.id,
 				promotionCouponDeleted: promotion.couponDeleted
