@@ -44,11 +44,11 @@
 					{#if form?.message}<p class="form-error form-span-2">{form.message}</p>{/if}
 					<label>
 						<span>Name *</span>
-						<input name="name" autocomplete="name" required maxlength="120" value={prior('name', data.user?.name ?? '')} />
+						<input name="name" autocomplete="name" required maxlength="120" placeholder="Your name" value={prior('name')} />
 					</label>
 					<label>
 						<span>Email *</span>
-						<input name="email" type="email" autocomplete="email" required maxlength="254" value={prior('email', data.user?.email ?? '')} />
+						<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com" value={prior('email')} />
 					</label>
 					<label>
 						<span>Category *</span>
@@ -65,11 +65,11 @@
 					</label>
 					<label class="form-span-2">
 						<span>Subject *</span>
-						<input name="subject" required maxlength="180" value={prior('subject')} />
+						<input name="subject" required maxlength="180" placeholder="Brief summary of your request" value={prior('subject')} />
 					</label>
 					<label class="form-span-2">
 						<span>Message *</span>
-						<textarea name="message" required rows="9" maxlength="5000">{prior('message')}</textarea>
+						<textarea name="message" required rows="9" maxlength="5000" placeholder="Tell us what happened, what you expected, and any details that may help us reproduce or resolve the issue.">{prior('message')}</textarea>
 					</label>
 					<label class="support-honeypot" aria-hidden="true">
 						<span>Website</span><input name="website" tabindex="-1" autocomplete="off" />
