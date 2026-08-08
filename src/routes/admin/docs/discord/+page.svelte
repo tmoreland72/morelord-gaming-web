@@ -1,6 +1,6 @@
 <svelte:head><title>Discord Integration | Morelord Gaming Admin Docs</title><meta name="robots" content="noindex,nofollow" /></svelte:head>
 <section class="page-hero compact-hero"><div class="shell"><div class="eyebrow">Admin docs</div><h1>Discord integration</h1><p class="lead">Configure account linking and automatic Morelord Tools membership roles.</p></div></section>
-<section class="section brand-panel-section"><div class="shell prose card docs-prose">
+<section class="section brand-panel-section"><div class="shell prose-card card">
 <h2>1. Create the Discord application</h2>
 <p>In the Discord Developer Portal, create or use the Morelord Gaming application. Record the Application ID and create a client secret. On the OAuth2 page add <code>https://morelordgaming.com/api/discord/callback</code> as an exact redirect URI.</p>
 <h2>2. Create the bot</h2>
