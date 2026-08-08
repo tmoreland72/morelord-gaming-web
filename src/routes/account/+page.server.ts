@@ -6,6 +6,7 @@ import {
 	discordOAuthConfigured,
 	discordRoleSyncConfigured,
 	getDiscordConnection,
+	getDiscordSettings,
 	syncDiscordRoles
 } from '$lib/server/discord';
 import { approveActivation, listUserInstallations, revokeInstallation } from '$lib/server/foundry';
@@ -16,13 +17,15 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 	const billing = locals.user && db ? await getBillingSummary(db, locals.user.id) : null;
 	const installations = locals.user && db ? await listUserInstallations(db, locals.user.id) : [];
 	const discord = locals.user && db ? await getDiscordConnection(db, locals.user.id) : null;
+	const discordSettings = db ? await getDiscordSettings(db) : null;
 	return {
 		user: locals.user ?? null,
 		billing,
 		installations,
 		discord,
+		discordInviteUrl: discordSettings?.inviteUrl ?? null,
 		discordOAuthConfigured: discordOAuthConfigured(),
-		discordRoleSyncConfigured: discordRoleSyncConfigured(),
+		discordRoleSyncConfigured: db ? await discordRoleSyncConfigured(db) : false,
 		checkoutSuccess: url.searchParams.get('checkout') === 'success',
 		discordResult: url.searchParams.get('discord'),
 		activationCode: url.searchParams.get('activation')?.trim().toUpperCase() ?? '',

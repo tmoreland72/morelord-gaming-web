@@ -113,14 +113,14 @@
 
 				<article class="card">
 					<span class="tag">Connected services</span><h3>Discord</h3>
-					{#if data.discord}<p>Connected as <strong>{data.discord.globalName ?? data.discord.username}</strong>.</p><p>{data.discord.roleSyncMessage}</p>{:else}<p>Connect Discord to receive community and subscriber roles automatically.</p>{/if}
+					{#if data.discord}<p>Connected as <strong>{data.discord.globalName ?? data.discord.username}</strong>.</p><p>{data.discord.roleSyncMessage}</p>{#if data.discord.roleSyncStatus === 'not_in_server' && data.discordInviteUrl}<a class="text-link" href={data.discordInviteUrl} target="_blank" rel="noreferrer">Join the Morelord Gaming Discord <span>→</span></a>{/if}{:else}<p>Connect Discord to receive Morelord Tools and subscriber roles automatically.</p>{/if}
 				</article>
 			</div>
 
 			<section class="account-section">
 				<div class="section-heading">
 					<div><div class="eyebrow">Community access</div><h2>Discord connection</h2></div>
-					<p>Linking Discord allows the website to synchronize Community, Tools Premium and Tools Champion roles without affecting your campaign-specific roles.</p>
+					<p>Linking Discord allows the website to synchronize Morelord Tools, Tools Premium and Tools Champion roles without affecting your campaign-specific roles.</p>
 				</div>
 
 				{#if data.discord}

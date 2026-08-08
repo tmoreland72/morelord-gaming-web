@@ -37,6 +37,13 @@
 		</article>
 
 		<article class="card docs-card">
+			<div class="eyebrow">Community</div>
+			<h2>Discord integration</h2>
+			<p>Maintain OAuth account linking, the Morelord bot, role hierarchy and membership synchronization.</p>
+			<a class="text-link" href="/admin/docs/discord">Open guide <span>→</span></a>
+		</article>
+
+		<article class="card docs-card">
 			<div class="eyebrow">Publishing</div>
 			<h2>Release automation</h2>
 			<p>Publish module releases and synchronize the public Morelord release feed.</p>

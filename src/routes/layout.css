@@ -641,3 +641,27 @@ button.button:disabled {
 	.manifest-control { grid-template-columns: 1fr; }
 	.manifest-control .button { width: 100%; }
 }
+
+/* Discord administration */
+.admin-page-stack { display: grid; gap: 1.25rem; }
+.admin-form-card { padding: 1.35rem; }
+.discord-config-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.2rem; }
+.discord-config-form label { display: grid; gap: .4rem; font-weight: 750; }
+.discord-config-form label span small { font-weight: 500; opacity: .72; }
+.discord-config-form input, .discord-config-form select { width: 100%; }
+.discord-config-form .actions { grid-column: 1 / -1; }
+.code-line { display: block; overflow-wrap: anywhere; padding: .7rem .8rem; border: 1px solid #d49b2c33; border-radius: .55rem; background: #09070566; }
+.discord-role-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; }
+.discord-role-status { display: grid; gap: .25rem; padding: .85rem; border: 1px solid #8f392b55; border-radius: .65rem; background: #38191422; }
+.discord-role-status.ready { border-color: #86a74466; background: #4d612422; }
+.discord-role-status span { color: #d9ccb7; }
+.discord-role-status em { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: #efa59d; font-style: normal; font-weight: 800; }
+.discord-role-status.ready em { color: #bdd88c; }
+.diagnostic-errors { margin: 1rem 0 0; color: #efaaa3; }
+.table-wrap { overflow-x: auto; }
+.table-wrap table { width: 100%; border-collapse: collapse; }
+.table-wrap th, .table-wrap td { text-align: left; padding: .75rem; border-bottom: 1px solid #d49b2c22; vertical-align: middle; }
+.table-wrap td small { display: block; opacity: .72; margin-top: .2rem; }
+.compact-button { padding: .5rem .75rem !important; min-height: auto !important; }
+.compact-heading { margin-bottom: 1rem; }
+@media (max-width: 800px) { .discord-config-form, .discord-role-grid { grid-template-columns: 1fr; } }

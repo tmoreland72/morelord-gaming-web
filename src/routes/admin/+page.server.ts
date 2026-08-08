@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { isAdminEmail } from '$lib/server/admin';
+import { getDiscordSettings } from '$lib/server/discord';
 
 function configured(value: string | undefined): boolean {
 	return Boolean(value?.trim());
@@ -29,6 +30,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 	if (!platform?.env?.DB) error(503, 'D1 database binding is unavailable.');
 
 	const db = platform.env.DB;
+	const discordSettings = await getDiscordSettings(db);
 	const [
 		products,
 		releases,
@@ -92,10 +94,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			discordOAuth: configured(env.DISCORD_CLIENT_ID) && configured(env.DISCORD_CLIENT_SECRET),
 			discordRoles:
 				configured(env.DISCORD_BOT_TOKEN) &&
-				configured(env.DISCORD_GUILD_ID) &&
-				configured(env.DISCORD_ROLE_COMMUNITY) &&
-				configured(env.DISCORD_ROLE_PREMIUM) &&
-				configured(env.DISCORD_ROLE_CHAMPION),
+				Boolean(discordSettings.guildId && discordSettings.roleToolsId && discordSettings.rolePremiumId && discordSettings.roleChampionId),
 			releasePublishing: configured(env.RELEASE_PUBLISH_TOKEN),
 			adminAccess: configured(env.ADMIN_EMAILS)
 		}

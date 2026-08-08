@@ -10,6 +10,7 @@
 		{ href: '/admin/billing', label: 'Billing' },
 		{ href: '/admin/subscription-audit', label: 'Subscription audit' },
 		{ href: '/admin/discount-codes', label: 'Friends & Family' },
+		{ href: '/admin/discord', label: 'Discord' },
 		{ href: '/admin/docs', label: 'Admin docs' }
 	];
 

@@ -10,6 +10,7 @@ import {
 	verifyStripeWebhook,
 	type StripeActiveEntitlement
 } from '$lib/server/stripe';
+import { syncDiscordRolesForStripeCustomer } from '$lib/server/discord';
 
 type StripeEvent = { id: string; type: string; data: { object: Record<string, unknown> } };
 
@@ -100,11 +101,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	if (seen) return json({ received: true, duplicate: true });
 
 	const object = event.data.object;
+	let discordSyncCustomerId: string | null = null;
 	try {
 		if (event.type.startsWith('customer.subscription.')) {
 			const subscriptionId = stringValue(object.id);
 			const customerId = stringValue(object.customer);
 			if (subscriptionId && customerId) {
+				discordSyncCustomerId = customerId;
 				const items = object.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
 				const priceId = items?.data?.[0]?.price?.id ?? null;
 				const plan = getPlanFromPriceId(priceId);
@@ -139,6 +142,7 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 		if (event.type === 'entitlements.active_entitlement_summary.updated') {
 			const customerId = stringValue(object.customer);
 			if (customerId) {
+				discordSyncCustomerId = customerId;
 				let entitlements = summaryEntitlements(object);
 				try {
 					entitlements = await listActiveEntitlements(customerId);
@@ -146,6 +150,15 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 					console.warn('Could not retrieve the full Stripe entitlement list; using webhook summary.', cause);
 				}
 				await replaceEntitlements(db, customerId, entitlements);
+			}
+		}
+
+
+		if (discordSyncCustomerId) {
+			try {
+				await syncDiscordRolesForStripeCustomer(platform.env.DB, discordSyncCustomerId);
+			} catch (cause) {
+				console.error('Automatic Discord role synchronization failed after Stripe update.', cause);
 			}
 		}
 

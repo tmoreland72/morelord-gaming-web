@@ -143,6 +143,18 @@ export const foundryActivationRequests = sqliteTable('foundry_activation_request
 });
 
 
+
+
+export const discordSettings = sqliteTable('discord_settings', {
+	id: text('id').primaryKey(),
+	guildId: text('guild_id'),
+	roleToolsId: text('role_tools_id'),
+	rolePremiumId: text('role_premium_id'),
+	roleChampionId: text('role_champion_id'),
+	inviteUrl: text('invite_url'),
+	announcementsChannelId: text('announcements_channel_id'),
+	...timestamps
+});
 export const discordConnections = sqliteTable('discord_connections', {
 	userId: text('user_id').primaryKey().references(() => user.id, { onDelete: 'cascade' }),
 	discordUserId: text('discord_user_id').notNull().unique(),
