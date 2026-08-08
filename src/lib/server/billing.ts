@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { activeEntitlements, stripeCustomers, subscriptions } from '$lib/server/db/schema';
-import { createStripeCustomer } from '$lib/server/stripe';
+import { createStripeCustomer, getStripeSubscriptionBillingDetails } from '$lib/server/stripe';
 
 export async function getOrCreateStripeCustomer(
 	d1: D1Database,
@@ -28,5 +28,14 @@ export async function getBillingSummary(d1: D1Database, userId: string) {
 		? await db.select().from(activeEntitlements).where(eq(activeEntitlements.stripeCustomerId, customer.stripeCustomerId))
 		: [];
 
-	return { customer, subscription, entitlements };
+	let stripeDetails: { promotionCode: string | null; isFriendsAndFamily: boolean } | null = null;
+	if (subscription?.stripeSubscriptionId) {
+		try {
+			stripeDetails = await getStripeSubscriptionBillingDetails(subscription.stripeSubscriptionId);
+		} catch {
+			// Billing status from D1 remains usable even if Stripe is temporarily unavailable.
+		}
+	}
+
+	return { customer, subscription, entitlements, stripeDetails };
 }

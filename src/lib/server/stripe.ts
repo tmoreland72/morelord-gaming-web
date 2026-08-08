@@ -510,6 +510,40 @@ function expandedPromotion(subscription: StripeAuditRawSubscription): {
 	return { code: null, id: null, couponDeleted: false };
 }
 
+
+export type StripeSubscriptionBillingDetails = {
+	promotionCode: string | null;
+	isFriendsAndFamily: boolean;
+};
+
+export async function getStripeSubscriptionBillingDetails(subscriptionId: string): Promise<StripeSubscriptionBillingDetails> {
+	const subscription = await stripeRequest<StripeAuditRawSubscription>(
+		`/subscriptions/${encodeURIComponent(subscriptionId)}`,
+		{
+			query: new URLSearchParams([
+				['expand[]', 'discounts.promotion_code'],
+				['expand[]', 'items.data.discounts.promotion_code']
+			])
+		}
+	);
+
+	const promotion = expandedPromotion(subscription);
+	if (!promotion.id) return { promotionCode: null, isFriendsAndFamily: false };
+
+	try {
+		const code = await retrievePromotionCode(promotion.id);
+		const coupon = code.promotion?.coupon;
+		let isFriendsAndFamily = false;
+		if (coupon && typeof coupon !== 'string' && !('deleted' in coupon && coupon.deleted === true)) {
+			isFriendsAndFamily = coupon.percent_off === 100 && coupon.duration === 'forever';
+		}
+
+		return { promotionCode: code.code ?? promotion.code, isFriendsAndFamily };
+	} catch {
+		return { promotionCode: promotion.code, isFriendsAndFamily: false };
+	}
+}
+
 export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubscription[]> {
 	const result: StripeAuditSubscription[] = [];
 	let startingAfter: string | undefined;
