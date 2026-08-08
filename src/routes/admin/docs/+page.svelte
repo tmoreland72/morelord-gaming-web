@@ -44,6 +44,13 @@
 		</article>
 
 		<article class="card docs-card">
+			<div class="eyebrow">Analytics</div>
+			<h2>Foundry installations</h2>
+			<p>Understand active worlds, unique accounts, membership conversion, product adoption and version statistics.</p>
+			<a class="text-link" href="/admin/docs/installations">Open guide <span>→</span></a>
+		</article>
+
+		<article class="card docs-card">
 			<div class="eyebrow">Publishing</div>
 			<h2>Release automation</h2>
 			<p>Publish module releases and synchronize the public Morelord release feed.</p>

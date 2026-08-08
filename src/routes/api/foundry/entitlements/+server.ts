@@ -4,7 +4,7 @@ import { validateInstallationToken } from '$lib/server/foundry';
 
 const corsHeaders = {
 	'access-control-allow-origin': '*',
-	'access-control-allow-headers': 'authorization, content-type',
+	'access-control-allow-headers': 'authorization, content-type, x-morelord-core-version, x-foundry-version',
 	'access-control-allow-methods': 'GET, POST, OPTIONS'
 };
 
@@ -15,7 +15,15 @@ export const GET: RequestHandler = async ({ request, platform, url }) => {
 	const token = authorization?.startsWith('Bearer ') ? authorization.slice(7).trim() : '';
 	if (!token) return json({ error: 'Bearer token required.' }, { status: 401, headers: corsHeaders });
 	try {
-		const entitlement = await validateInstallationToken(platform.env.DB, token, url.searchParams.get('product') ?? undefined);
+		const entitlement = await validateInstallationToken(
+			platform.env.DB,
+			token,
+			url.searchParams.get('product') ?? undefined,
+			{
+				coreVersion: request.headers.get('x-morelord-core-version')?.trim() || undefined,
+				foundryVersion: request.headers.get('x-foundry-version')?.trim() || undefined
+			}
+		);
 		if (!entitlement) return json({ error: 'Installation token is invalid or revoked.' }, { status: 401, headers: corsHeaders });
 		return json(entitlement, { headers: { ...corsHeaders, 'cache-control': 'no-store' } });
 	} catch (error) {

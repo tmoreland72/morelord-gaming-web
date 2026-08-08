@@ -122,6 +122,14 @@ export const foundryInstallations = sqliteTable('foundry_installations', {
 	...timestamps
 });
 
+
+export const foundryProductActivity = sqliteTable('foundry_product_activity', {
+	installationId: text('installation_id').notNull().references(() => foundryInstallations.id, { onDelete: 'cascade' }),
+	productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+	firstSeenAt: integer('first_seen_at', { mode: 'timestamp_ms' }).notNull(),
+	lastSeenAt: integer('last_seen_at', { mode: 'timestamp_ms' }).notNull()
+}, (table) => [primaryKey({ columns: [table.installationId, table.productId] })]);
+
 export const foundryActivationRequests = sqliteTable('foundry_activation_requests', {
 	id: text('id').primaryKey(),
 	productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),

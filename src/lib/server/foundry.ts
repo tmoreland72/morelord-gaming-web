@@ -5,6 +5,7 @@ import {
 	features,
 	foundryActivationRequests,
 	foundryInstallations,
+	foundryProductActivity,
 	productFeatures,
 	products,
 	stripeCustomers,
@@ -147,7 +148,8 @@ export async function revokeInstallation(d1: D1Database, userId: string, install
 export async function validateInstallationToken(
 	d1: D1Database,
 	token: string,
-	requestedProductSlug?: string
+	requestedProductSlug?: string,
+	client?: { foundryVersion?: string; coreVersion?: string }
 ) {
 	const db = getDb(d1);
 	const tokenHash = await sha256(token);
@@ -194,7 +196,23 @@ export async function validateInstallationToken(
 
 	const validatedAt = new Date();
 	const expiresAt = new Date(validatedAt.getTime() + 7 * 24 * 60 * 60 * 1000);
-	await db.update(foundryInstallations).set({ lastValidatedAt: validatedAt, updatedAt: validatedAt }).where(eq(foundryInstallations.id, installation.id));
+	await db.batch([
+		db.update(foundryInstallations).set({
+			lastValidatedAt: validatedAt,
+			updatedAt: validatedAt,
+			...(client?.foundryVersion ? { foundryVersion: client.foundryVersion.slice(0, 40) } : {}),
+			...(client?.coreVersion ? { moduleVersion: client.coreVersion.slice(0, 40) } : {})
+		}).where(eq(foundryInstallations.id, installation.id)),
+		db.insert(foundryProductActivity).values({
+			installationId: installation.id,
+			productId: targetProduct.id,
+			firstSeenAt: validatedAt,
+			lastSeenAt: validatedAt
+		}).onConflictDoUpdate({
+			target: [foundryProductActivity.installationId, foundryProductActivity.productId],
+			set: { lastSeenAt: validatedAt }
+		})
+	]);
 	return {
 		installationId: installation.id,
 		productSlug: targetProduct.slug,
