@@ -28,7 +28,13 @@ export async function getBillingSummary(d1: D1Database, userId: string) {
 		? await db.select().from(activeEntitlements).where(eq(activeEntitlements.stripeCustomerId, customer.stripeCustomerId))
 		: [];
 
-	let stripeDetails: { promotionCode: string | null; isFriendsAndFamily: boolean } | null = null;
+	let stripeDetails: {
+		promotionCode: string | null;
+		isFriendsAndFamily: boolean;
+		status: string;
+		cancelAtPeriodEnd: boolean;
+		currentPeriodEnd: number | null;
+	} | null = null;
 	if (subscription?.stripeSubscriptionId) {
 		try {
 			stripeDetails = await getStripeSubscriptionBillingDetails(subscription.stripeSubscriptionId);

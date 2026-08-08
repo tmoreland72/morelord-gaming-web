@@ -97,17 +97,24 @@
 				<article class="card">
 					<span class="tag">Membership</span><h3>{membership}</h3>
 					{#if data.billing?.subscription}
-						<p>Status: <strong>{data.billing.subscription.status}</strong></p>
+						{@const liveStatus = data.billing.stripeDetails?.status ?? data.billing.subscription.status}
+						{@const liveCancelAtPeriodEnd = data.billing.stripeDetails?.cancelAtPeriodEnd ?? data.billing.subscription.cancelAtPeriodEnd}
+						{@const livePeriodEnd = data.billing.stripeDetails?.currentPeriodEnd
+							? new Date(data.billing.stripeDetails.currentPeriodEnd * 1000)
+							: data.billing.subscription.currentPeriodEnd
+								? new Date(data.billing.subscription.currentPeriodEnd)
+								: null}
+						<p>Status: <strong>{liveStatus}</strong></p>
 						{#if data.billing.stripeDetails?.isFriendsAndFamily}
 							<p><strong>Friends &amp; Family — $0 subscription</strong>{data.billing.stripeDetails.promotionCode ? ` · ${data.billing.stripeDetails.promotionCode}` : ''}</p>
 						{/if}
-						{#if data.billing.subscription.currentPeriodEnd}
-							{#if data.billing.subscription.cancelAtPeriodEnd}
-								<p><strong>Cancels on {new Date(data.billing.subscription.currentPeriodEnd).toLocaleDateString()}.</strong> Premium access remains active until then.</p>
-							{:else if ['active', 'trialing'].includes(data.billing.subscription.status)}
-								<p>Renews on {new Date(data.billing.subscription.currentPeriodEnd).toLocaleDateString()}.</p>
+						{#if livePeriodEnd}
+							{#if liveCancelAtPeriodEnd}
+								<p><strong>Cancels on {livePeriodEnd.toLocaleDateString()}.</strong> Premium access remains active until then.</p>
+							{:else if ['active', 'trialing'].includes(liveStatus)}
+								<p>Renews on {livePeriodEnd.toLocaleDateString()}.</p>
 							{:else}
-								<p>Current period ends {new Date(data.billing.subscription.currentPeriodEnd).toLocaleDateString()}.</p>
+								<p>Current period ends {livePeriodEnd.toLocaleDateString()}.</p>
 							{/if}
 						{/if}
 						<form method="POST" action="/api/billing/portal"><button class="button secondary" type="submit">Manage billing</button></form>

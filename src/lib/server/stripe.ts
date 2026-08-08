@@ -514,6 +514,9 @@ function expandedPromotion(subscription: StripeAuditRawSubscription): {
 export type StripeSubscriptionBillingDetails = {
 	promotionCode: string | null;
 	isFriendsAndFamily: boolean;
+	status: string;
+	cancelAtPeriodEnd: boolean;
+	currentPeriodEnd: number | null;
 };
 
 export async function getStripeSubscriptionBillingDetails(subscriptionId: string): Promise<StripeSubscriptionBillingDetails> {
@@ -528,7 +531,13 @@ export async function getStripeSubscriptionBillingDetails(subscriptionId: string
 	);
 
 	const promotion = expandedPromotion(subscription);
-	if (!promotion.id) return { promotionCode: null, isFriendsAndFamily: false };
+	const item = subscription.items?.data?.[0];
+	const baseDetails = {
+		status: subscription.status,
+		cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end),
+		currentPeriodEnd: item?.current_period_end ?? subscription.current_period_end ?? null
+	};
+	if (!promotion.id) return { promotionCode: null, isFriendsAndFamily: false, ...baseDetails };
 
 	try {
 		const code = await retrievePromotionCode(promotion.id);
@@ -538,9 +547,9 @@ export async function getStripeSubscriptionBillingDetails(subscriptionId: string
 			isFriendsAndFamily = coupon.percent_off === 100 && coupon.duration === 'forever';
 		}
 
-		return { promotionCode: code.code ?? promotion.code, isFriendsAndFamily };
+		return { promotionCode: code.code ?? promotion.code, isFriendsAndFamily, ...baseDetails };
 	} catch {
-		return { promotionCode: promotion.code, isFriendsAndFamily: false };
+		return { promotionCode: promotion.code, isFriendsAndFamily: false, ...baseDetails };
 	}
 }
 
