@@ -60,7 +60,7 @@
 		<p>These terms are governed by the laws applicable in the jurisdiction in which Morelord Gaming operates, without regard to conflict-of-law principles, except where consumer-protection law requires otherwise.</p>
 
 		<h2>15. Contact</h2>
-		<p>Questions about these terms may be submitted through the <a href="/support">Morelord Gaming Support form</a>.</p>
+		<p>Questions about these terms may be submitted through the <a href="/support">Morelord Gaming contact form</a>.</p>
 
 		<p class="legal-note">These Terms & Conditions are intended as a practical operating policy and are not a substitute for legal advice. Commercial terms should be reviewed by qualified counsel for your specific business and jurisdiction.</p>
 	</div>

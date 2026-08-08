@@ -19,7 +19,7 @@
 		</div>
 		<div>
 			<h3>Support & Legal</h3>
-			<a href="/support">Contact support</a>
+			<a href="/support">Contact us</a>
 			<a href="/privacy">Privacy Policy</a>
 			<a href="/terms">Terms & Conditions</a>
 		</div>

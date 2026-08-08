@@ -20,15 +20,15 @@
 </script>
 
 <svelte:head>
-	<title>Support Requests | Morelord Administration</title>
+	<title>Contact Messages | Morelord Administration</title>
 	<meta name="robots" content="noindex,nofollow" />
 </svelte:head>
 
 <section class="page-hero compact-hero">
 	<div class="shell">
 		<div class="eyebrow">Morelord administration</div>
-		<h1>Support requests</h1>
-		<p class="lead">Review and track requests submitted through the public support form.</p>
+		<h1>Contact messages</h1>
+		<p class="lead">Review and track messages submitted through the public contact form.</p>
 	</div>
 </section>
 
@@ -41,8 +41,8 @@
 		</div>
 
 		<div class="card support-toolbar">
-			<input aria-label="Search support requests" placeholder="Search requests…" bind:value={search} />
-			<div class="support-filter" role="group" aria-label="Support status filter">
+			<input aria-label="Search contact messages" placeholder="Search requests…" bind:value={search} />
+			<div class="support-filter" role="group" aria-label="Contact message status filter">
 				<button class:active={filter === 'active'} type="button" onclick={() => filter = 'active'}>Active</button>
 				<button class:active={filter === 'all'} type="button" onclick={() => filter = 'all'}>All</button>
 				<button class:active={filter === 'resolved'} type="button" onclick={() => filter = 'resolved'}>Resolved</button>

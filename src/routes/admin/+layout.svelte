@@ -12,7 +12,7 @@
 		{ href: '/admin/discount-codes', label: 'Friends & Family' },
 		{ href: '/admin/discord', label: 'Discord' },
 		{ href: '/admin/installations', label: 'Installations' },
-		{ href: '/admin/support', label: 'Support' },
+		{ href: '/admin/support', label: 'Contact' },
 		{ href: '/admin/docs', label: 'Admin docs' }
 	];
 

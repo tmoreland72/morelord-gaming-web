@@ -87,7 +87,7 @@
 				<div class="metric-card"><strong>{data.counts.installations}</strong><span>Foundry installs</span></div>
 				<div class="metric-card"><strong>{data.counts.discordConnections}</strong><span>Discord links</span></div>
 				<div class="metric-card"><strong>{data.counts.webhookEvents}</strong><span>Webhook events</span></div>
-				<div class="metric-card"><strong>{data.counts.supportRequests}</strong><span>Support requests</span></div>
+				<div class="metric-card"><strong>{data.counts.supportRequests}</strong><span>Contact messages</span></div>
 			</div>
 		</section>
 

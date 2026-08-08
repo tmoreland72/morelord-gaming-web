@@ -16,13 +16,13 @@
 		<p class="legal-updated"><strong>Effective:</strong> August 8, 2026</p>
 
 		<h2>Information collected</h2>
-		<p>Morelord Gaming may collect account information such as your name, email address, authentication-provider identifiers, subscription and entitlement status, Discord connection information you choose to link, Foundry installation and product-usage information needed to operate licensed tools, and information you submit through support forms.</p>
+		<p>Morelord Gaming may collect account information such as your name, email address, authentication-provider identifiers, subscription and entitlement status, Discord connection information you choose to link, Foundry installation and product-usage information needed to operate licensed tools, and information you submit through contact forms.</p>
 
 		<h2>Payments</h2>
 		<p>Payment details are processed by the applicable payment provider, such as Stripe. Morelord Gaming may receive transaction, customer, subscription, and billing-status information needed to manage your membership, but does not need to store full payment-card numbers on this website.</p>
 
 		<h2>How information is used</h2>
-		<p>Information is used to authenticate accounts, provide purchased or entitled features, operate Foundry integrations, synchronize membership benefits, process and troubleshoot billing, respond to support requests, maintain security, understand product adoption, and improve Morelord Gaming products and services.</p>
+		<p>Information is used to authenticate accounts, provide purchased or entitled features, operate Foundry integrations, synchronize membership benefits, process and troubleshoot billing, respond to inquiries, maintain security, understand product adoption, and improve Morelord Gaming products and services.</p>
 
 		<h2>Service providers</h2>
 		<p>Morelord Gaming may rely on service providers for hosting, authentication, payment processing, community integrations, software distribution, and related infrastructure. Information is shared with those providers only as needed to provide the relevant service or meet legal and security obligations.</p>
@@ -43,7 +43,7 @@
 		<p>This policy may be updated as Morelord Gaming products, integrations, or legal requirements change. The effective date above will reflect the current published version.</p>
 
 		<h2>Contact</h2>
-		<p>Privacy questions or requests may be submitted through the <a href="/support">Morelord Gaming Support form</a>.</p>
+		<p>Privacy questions or requests may be submitted through the <a href="/support">Morelord Gaming contact form</a>.</p>
 
 		<p class="legal-note">This policy is a practical first version for the current service architecture and should be reviewed by qualified counsel as the business, data practices, and jurisdictions served expand.</p>
 	</div>

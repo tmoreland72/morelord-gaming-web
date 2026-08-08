@@ -41,7 +41,7 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const id = formData.get('id')?.toString() ?? '';
 		const status = formData.get('status')?.toString() ?? '';
-		if (!id || !statuses.includes(status as (typeof statuses)[number])) return fail(400, { message: 'Invalid support request update.' });
+		if (!id || !statuses.includes(status as (typeof statuses)[number])) return fail(400, { message: 'Invalid contact message update.' });
 
 		await platform.env.DB.prepare('UPDATE support_requests SET status = ?, updated_at = ? WHERE id = ?')
 			.bind(status, Date.now(), id)
