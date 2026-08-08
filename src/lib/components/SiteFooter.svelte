@@ -13,11 +13,15 @@
 		</div>
 		<div>
 			<h3>Resources</h3>
+			<a href="/docs">Documentation</a>
 			<a href="/releases">Product updates</a>
-			<a href="/docs/authentication">Authentication setup</a>
-			<a href="/docs/release-automation">Release automation</a>
 			<a href="/account">Customer account</a>
-			<a href="mailto:support@morelordgaming.com">Support</a>
+		</div>
+		<div>
+			<h3>Support & Legal</h3>
+			<a href="/support">Contact support</a>
+			<a href="/privacy">Privacy Policy</a>
+			<a href="/terms">Terms & Conditions</a>
 		</div>
 	</div>
 	<div class="shell copyright">© {new Date().getFullYear()} Morelord Gaming. All rights reserved.</div>

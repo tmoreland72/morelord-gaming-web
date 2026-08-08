@@ -665,3 +665,61 @@ button.button:disabled {
 .compact-button { padding: .5rem .75rem !important; min-height: auto !important; }
 .compact-heading { margin-bottom: 1rem; }
 @media (max-width: 800px) { .discord-config-form, .discord-role-grid { grid-template-columns: 1fr; } }
+
+/* Public support and legal pages */
+.footer-grid { grid-template-columns: 2fr repeat(3, minmax(0, 1fr)); }
+.support-layout { display:grid; grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr); gap:2rem; align-items:start; }
+.support-heading { margin-bottom:1.25rem; }
+.support-form { padding:1.6rem; }
+.support-submit { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+.support-submit small { color:#9f927f; max-width:520px; line-height:1.5; }
+.support-honeypot { position:absolute !important; left:-10000px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
+.support-aside { position:sticky; top:6.5rem; }
+.support-aside p { color:#b7a996; line-height:1.7; }
+.support-success { padding:2rem; border-color:#5d9b6a77; background:linear-gradient(145deg,#173120,#12100d); }
+.support-success h3 { color:#bce3b7; }
+.legal-shell { max-width:900px; padding:clamp(1.5rem,4vw,3rem); }
+.legal-shell h2 { margin:2rem 0 .7rem; color:#f0c96c; font-size:1.35rem; }
+.legal-shell p { color:#c6b8a4; line-height:1.78; }
+.legal-shell a { color:var(--gold-light); text-decoration:underline; text-underline-offset:3px; }
+.legal-updated { margin-top:0; color:#948674 !important; }
+.legal-note { margin-top:2.5rem; padding:1rem 1.2rem; border-left:3px solid #d49b2c88; background:#100c09aa; font-size:.9rem; }
+
+/* Administration: support requests */
+.support-admin { display:grid; gap:1.25rem; }
+.support-metrics { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.support-toolbar { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem; }
+.support-toolbar > input { flex:1; min-width:180px; padding:.72rem .85rem; border:1px solid #d49b2c55; border-radius:9px; background:#100c09; color:#fff3d6; font:inherit; }
+.support-filter { display:flex; gap:.35rem; }
+.support-filter button { padding:.55rem .8rem; border:1px solid #d49b2c44; border-radius:8px; background:#17110d; color:#bcae99; cursor:pointer; }
+.support-filter button.active { border-color:#e5a51299; background:#3a2511; color:#ffd85c; }
+.support-request-list { display:grid; gap:1rem; }
+.support-request-card { padding:1.4rem; }
+.support-request-head { display:flex; justify-content:space-between; gap:1rem; align-items:flex-start; }
+.support-request-head h2 { margin:.65rem 0 .3rem; font-size:1.35rem; }
+.support-request-meta { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; color:#958775; font-size:.8rem; }
+.support-from { margin:0; color:#aa9d89; }
+.support-from a { color:#e8c76e; }
+.support-message { white-space:pre-wrap; color:#d6c9b5; line-height:1.7; }
+.support-status { display:inline-flex; padding:.3rem .55rem; border-radius:999px; font-size:.7rem; font-weight:900; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+.support-status.open { background:#4b1d18; color:#ffb5a8; }
+.support-status.in_progress { background:#493510; color:#ffd979; }
+.support-status.resolved { background:#18351f; color:#aee2b8; }
+.support-status-form { display:flex; align-items:end; gap:.7rem; margin-top:1rem; padding-top:1rem; border-top:1px solid #d49b2c22; }
+.support-status-form label { display:grid; gap:.35rem; color:#f3d58c; font-size:.8rem; font-weight:800; }
+.support-status-form select { min-width:150px; padding:.62rem .75rem; border:1px solid #d7a53e55; border-radius:8px; background:#100c09; color:#fff0ca; font:inherit; }
+
+@media (max-width: 900px) {
+	.footer-grid, .support-layout { grid-template-columns:1fr 1fr; }
+	.footer-brand { grid-column:1 / -1; }
+	.support-aside { position:static; }
+}
+
+@media (max-width: 620px) {
+	.footer-grid, .support-layout, .support-metrics { grid-template-columns:1fr; }
+	.footer-brand { grid-column:auto; }
+	.support-toolbar, .support-request-head { align-items:stretch; flex-direction:column; }
+	.support-filter { width:100%; }
+	.support-filter button { flex:1; }
+	.support-status { align-self:flex-start; }
+}

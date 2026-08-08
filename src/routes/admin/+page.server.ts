@@ -17,7 +17,8 @@ async function count(db: D1Database, table: string): Promise<number> {
 		'active_entitlements',
 		'foundry_installations',
 		'discord_connections',
-		'webhook_events'
+		'webhook_events',
+		'support_requests'
 	]);
 	if (!allowed.has(table)) throw new Error('Unsupported diagnostics table.');
 	const row = await db.prepare(`SELECT COUNT(*) AS total FROM ${table}`).first<{ total: number }>();
@@ -40,6 +41,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		installations,
 		discordConnections,
 		webhookEvents,
+		supportRequests,
 		latestRelease,
 		latestWebhook
 	] = await Promise.all([
@@ -51,6 +53,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		count(db, 'foundry_installations'),
 		count(db, 'discord_connections'),
 		count(db, 'webhook_events'),
+		count(db, 'support_requests'),
 		db.prepare(`SELECT r.version, r.title, r.published_at AS publishedAt, p.name AS productName
 			FROM releases r INNER JOIN products p ON p.id = r.product_id
 			ORDER BY r.published_at DESC LIMIT 1`).first<{
@@ -77,7 +80,8 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			entitlements,
 			installations,
 			discordConnections,
-			webhookEvents
+			webhookEvents,
+			supportRequests
 		},
 		latestRelease: latestRelease ?? null,
 		latestWebhook: latestWebhook ?? null,
