@@ -28,7 +28,7 @@ async function requireAdmin(locals: App.Locals, returnTo: string) {
 	if (!isAdminEmail(locals.user.email)) error(403, 'Administrator access required.');
 }
 
-export const load: PageServerLoad = async ({ locals, platform }) => {
+export const load: PageServerLoad = async ({ locals, platform, url }) => {
 	await requireAdmin(locals, '/admin/discord');
 	if (!platform?.env?.DB) error(503, 'D1 database binding is unavailable.');
 
@@ -60,7 +60,8 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			botToken: Boolean(env.DISCORD_BOT_TOKEN?.trim()),
 			redirectUri: env.DISCORD_REDIRECT_URI || (env.ORIGIN ? `${env.ORIGIN.replace(/\/$/, '')}/api/discord/callback` : null)
 		},
-		botInstallUrl: getDiscordBotInstallUrl()
+		botInstallUrl: getDiscordBotInstallUrl(),
+		saveSuccess: url.searchParams.get('saved') === '1'
 	};
 };
 
@@ -82,7 +83,7 @@ export const actions: Actions = {
 			inviteUrl: optional(form, 'inviteUrl'),
 			announcementsChannelId: optional(form, 'announcementsChannelId')
 		});
-		return { discordAdminSuccess: 'Discord server settings saved.' };
+		redirect(303, '/admin/discord?saved=1');
 	},
 	test: async ({ locals, platform }) => {
 		await requireAdmin(locals, '/admin/discord');

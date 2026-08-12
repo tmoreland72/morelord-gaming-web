@@ -3,6 +3,32 @@ import { getDb } from '$lib/server/db';
 import { activeEntitlements, stripeCustomers, subscriptions } from '$lib/server/db/schema';
 import { createStripeCustomer, getStripeSubscriptionBillingDetails } from '$lib/server/stripe';
 
+
+export type MembershipTier = 'standard' | 'premium' | 'champion';
+
+const paidSubscriptionStatuses = new Set(['active', 'trialing', 'past_due']);
+
+export function membershipTierFromSubscription(subscription: { plan?: string | null; status?: string | null } | null | undefined): MembershipTier {
+	if (!subscription || !paidSubscriptionStatuses.has(subscription.status ?? '')) return 'standard';
+	if (subscription.plan?.startsWith('champion')) return 'champion';
+	if (subscription.plan?.startsWith('premium')) return 'premium';
+	return 'standard';
+}
+
+export function membershipLabel(tier: MembershipTier): string {
+	if (tier === 'champion') return 'Tools Champion';
+	if (tier === 'premium') return 'Tools Premium';
+	return 'Standard';
+}
+
+export function hasPremiumAccess(summary: { subscription?: { plan?: string | null; status?: string | null } | null; entitlements?: Array<{ lookupKey: string }> } | null | undefined): boolean {
+	if (!summary) return false;
+	if (membershipTierFromSubscription(summary.subscription) !== 'standard') return true;
+	return (summary.entitlements ?? []).some((entitlement) =>
+		['premium-modules', 'champion-access'].includes(entitlement.lookupKey)
+	);
+}
+
 export async function getOrCreateStripeCustomer(
 	d1: D1Database,
 	user: { id: string; email: string; name?: string | null }

@@ -315,8 +315,10 @@ async function listSubscriptionPromotionRedemptions(): Promise<Map<string, Strip
 	do {
 		const query = new URLSearchParams({ limit: '100', status: 'all' });
 		query.append('expand[]', 'data.customer');
+		// Stripe rejects the former item-level promotion-code expansion as too deep on
+		// subscription list requests. Subscription-level discounts are sufficient for
+		// Friends & Family subscriptions created by this site.
 		query.append('expand[]', 'data.discounts.promotion_code');
-		query.append('expand[]', 'data.items.data.discounts.promotion_code');
 		if (startingAfter) query.set('starting_after', startingAfter);
 		const page = await stripeRequest<{ data: StripeSubscriptionSummary[]; has_more: boolean }>(
 			'/subscriptions',

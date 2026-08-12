@@ -1,20 +1,54 @@
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
     [ValidateNotNullOrEmpty()]
-    [string]$WebsiteUrl,
+    [string]$WebsiteUrl = 'https://morelordgaming.com',
 
-    [Parameter(Mandatory = $true)]
-    [ValidateNotNullOrEmpty()]
     [string]$Token,
 
-    [Parameter(Mandatory = $true)]
-    [ValidateScript({ Test-Path $_ -PathType Leaf })]
     [string]$PayloadPath
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+
+$projectRoot = Split-Path -Parent $PSScriptRoot
+
+function Import-DotEnv {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    if (-not (Test-Path $Path -PathType Leaf)) {
+        return
+    }
+
+    foreach ($line in Get-Content -Path $Path -Encoding UTF8) {
+        $trimmed = $line.Trim()
+        if ([string]::IsNullOrWhiteSpace($trimmed) -or $trimmed.StartsWith('#')) {
+            continue
+        }
+
+        $separator = $trimmed.IndexOf('=')
+        if ($separator -lt 1) {
+            continue
+        }
+
+        $name = $trimmed.Substring(0, $separator).Trim()
+        $value = $trimmed.Substring($separator + 1).Trim()
+
+        if (
+            ($value.StartsWith('"') -and $value.EndsWith('"')) -or
+            ($value.StartsWith("'") -and $value.EndsWith("'"))
+        ) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($name)) {
+            [Environment]::SetEnvironmentVariable($name, $value, 'Process')
+        }
+    }
+}
 
 function Assert-Property {
     param(
@@ -30,7 +64,54 @@ function Assert-Property {
     }
 }
 
-$resolvedPayloadPath = (Resolve-Path $PayloadPath).Path
+# This script publishes product/module release metadata to the website. It is
+# intentionally not part of the website deployment workflow.
+if ([string]::IsNullOrWhiteSpace($PayloadPath)) {
+    throw @"
+No product release payload was supplied.
+
+scripts/publish-release.ps1 publishes product/module release metadata to /api/releases; it does not deploy the Morelord Gaming website.
+
+For normal website changes, run:
+  npm run check
+  npm run build
+  git add .
+  git commit -m "Your message"
+  git push
+
+If you intentionally need to publish product release metadata, run:
+  ./scripts/publish-release.ps1 -PayloadPath ./release-payload.json
+
+The script will automatically read RELEASE_PUBLISH_TOKEN from the project .env file when available.
+"@
+}
+
+Import-DotEnv -Path (Join-Path $projectRoot '.env')
+
+if ([string]::IsNullOrWhiteSpace($Token)) {
+    $Token = $env:RELEASE_PUBLISH_TOKEN
+}
+
+# Backward compatibility with the older Windows user-variable name used by
+# some Morelord repositories.
+if ([string]::IsNullOrWhiteSpace($Token)) {
+    $Token = $env:MORELORD_RELEASE_TOKEN
+}
+
+if ([string]::IsNullOrWhiteSpace($Token)) {
+    throw "RELEASE_PUBLISH_TOKEN was not found. Put it in the project's .env file or pass -Token explicitly."
+}
+
+$candidatePayloadPath = $PayloadPath
+if (-not [System.IO.Path]::IsPathRooted($candidatePayloadPath)) {
+    $candidatePayloadPath = Join-Path $projectRoot $candidatePayloadPath
+}
+
+if (-not (Test-Path $candidatePayloadPath -PathType Leaf)) {
+    throw "Release payload was not found: $candidatePayloadPath"
+}
+
+$resolvedPayloadPath = (Resolve-Path $candidatePayloadPath).Path
 $rawPayload = Get-Content -Path $resolvedPayloadPath -Raw -Encoding UTF8
 
 try {

@@ -29,7 +29,9 @@
 			<h1>{data.product.name}</h1>
 			<p class="lead">{data.product.summary}</p>
 			<div class="actions">
-				<a class="button" href="/pricing">Unlock premium features</a>
+				{#if !data.hasPremiumEntitlement}
+					<a class="button" href="/pricing">Unlock premium features</a>
+				{/if}
 				<a class="button secondary" href={documentationUrl}>Read the guide</a>
 			</div>
 		</div>

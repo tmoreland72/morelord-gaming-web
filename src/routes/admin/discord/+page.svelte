@@ -26,6 +26,7 @@
 
 <section class="section brand-panel-section">
 	<div class="shell admin-page-stack">
+		{#if data.saveSuccess}<div class="success-banner">Discord server settings saved.</div>{/if}
 		{#if form?.discordAdminSuccess}<div class="success-banner">{form.discordAdminSuccess}</div>{/if}
 		{#if form?.discordAdminError}<div class="error-banner">{form.discordAdminError}</div>{/if}
 

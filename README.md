@@ -152,14 +152,67 @@ The website accepts structured module release metadata at:
 
 `POST /api/releases`
 
-Requests require `Authorization: Bearer <RELEASE_PUBLISH_TOKEN>`. A reusable PowerShell client and example payload are included:
+Requests require:
+
+```text
+Authorization: Bearer <RELEASE_PUBLISH_TOKEN>
+```
+
+The release publishing token is a shared secret between the Morelord Gaming website and every Morelord product repository that publishes release metadata.
+
+### Release publishing authentication
+
+The production Morelord Gaming Cloudflare Worker must have `RELEASE_PUBLISH_TOKEN` stored as a Cloudflare secret. This is the value the `/api/releases` endpoint validates against.
+
+From the **Morelord Gaming website project**, configure or replace the production secret with:
 
 ```powershell
-./scripts/publish-release.ps1 `
-  -WebsiteUrl "https://morelordgaming.com" `
-  -Token $env:MORELORD_RELEASE_TOKEN `
-  -PayloadPath "./release-payload.json"
+npx wrangler secret put RELEASE_PUBLISH_TOKEN
 ```
+
+Wrangler will prompt for the value. Paste the token when prompted; do not place the token directly on the command line.
+
+This is normally a one-time production configuration. Normal deployments should preserve the Cloudflare secret.
+
+If release publishing begins returning:
+
+```json
+{ "ok": false, "error": "Unauthorized" }
+```
+
+verify that the Cloudflare runtime secret still matches the token used by the product repository.
+
+Each Morelord product repository that publishes releases should also define the same value as the GitHub Actions secret:
+
+```text
+RELEASE_PUBLISH_TOKEN
+```
+
+For local release publishing, the product project's uncommitted `.env` may contain:
+
+```env
+RELEASE_PUBLISH_TOKEN=your-token-here
+```
+
+A permanent Windows user or system environment variable is not required when the product release script loads the project's `.env` file.
+
+The token must never be committed to source control or hard-coded in `release.ps1`, `wrangler.toml`, `module.json`, workflow files, or application source.
+
+The expected configuration is:
+
+- **Cloudflare Worker:** `RELEASE_PUBLISH_TOKEN` — authoritative token used by the website API.
+- **GitHub repository secret:** `RELEASE_PUBLISH_TOKEN` — used by automated product releases.
+- **Local product `.env`:** `RELEASE_PUBLISH_TOKEN` — optional, used when publishing from a local release script.
+
+If Cloudflare environments such as production, staging, or preview are introduced later, configure the secret separately for each environment that hosts the release API.
+
+A reusable PowerShell client and example payload are included. The client defaults to `https://morelordgaming.com` and automatically loads `RELEASE_PUBLISH_TOKEN` from the website project's uncommitted `.env` file when present:
+
+```powershell
+./scripts/publish-release.ps1 -PayloadPath "./release-payload.json"
+```
+
+`publish-release.ps1` is **only** for publishing Morelord product/module release metadata to the website. It is not part of the Morelord Gaming website deployment workflow. Running it without `-PayloadPath` exits with a reminder instead of interactively prompting for a token or payload path.
 
 See `/docs/release-automation` for the payload format and workflow. Publishing the same product/version again updates the existing release and replaces its change list, making the operation safe to rerun after correcting release notes or URLs.
 
@@ -180,10 +233,21 @@ Full instructions are available at `/docs/authentication`.
 
 ## GitHub Actions production deployment
 
+For normal website code changes, the local release/deployment sequence is:
+
+```powershell
+npm run check
+npm run build
+git add .
+git commit -m "Describe the website changes"
+git push
+```
+
+Do **not** run `scripts/publish-release.ps1` for a website deployment. That helper publishes product/module release metadata only.
+
 The repository includes `.github/workflows/deploy.yml`. Pushes to `main` validate the app, apply remote D1 migrations, deploy the Worker and optionally verify the production health endpoints.
 
 Create a GitHub environment named `production`, then follow `/docs/deployment` for the required Cloudflare credentials, Worker variables and OAuth callback configuration.
-
 
 ## Stripe subscriptions
 
@@ -196,7 +260,6 @@ https://morelordgaming.com/api/stripe/webhook
 ```
 
 Administrator diagnostics are available at `/admin/billing`, and the setup walkthrough is available at `/docs/stripe`.
-
 
 ## Drakkenheim Harvesting 0.2.0
 

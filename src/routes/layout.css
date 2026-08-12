@@ -723,3 +723,42 @@ button.button:disabled {
 	.support-filter button { flex:1; }
 	.support-status { align-self:flex-start; }
 }
+
+/* Shared content-card rhythm */
+:root { --content-card-gap: 1.25rem; }
+.grid-2, .grid-3, .status-grid, .metric-grid, .admin-product-list, .admin-feature-list,
+.installation-list, .support-request-list, .docs-layout, .product-install-grid,
+.activation-grid, .admin-page-stack, .code-summary, .code-list, .feature-columns {
+	gap: var(--content-card-gap);
+}
+
+.current-membership {
+	display: inline-flex;
+	align-items: center;
+	gap: .65rem;
+	margin-top: 1rem;
+	padding: .65rem .85rem;
+	border: 1px solid #d49b2c55;
+	border-radius: 10px;
+	background: #17110dd9;
+	color: #d6c9b4;
+}
+.current-membership span { color: #a99b88; font-size: .75rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+.current-membership strong { color: var(--gold-light); }
+.current-membership small { color: #a99b88; text-transform: capitalize; }
+.current-tier-badge {
+	align-self: flex-start;
+	margin: .15rem 0 .45rem;
+	padding: .28rem .55rem;
+	border: 1px solid #7ea05c66;
+	border-radius: 999px;
+	background: #26391d88;
+	color: #c9e6a9;
+	font-size: .7rem;
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: .06em;
+}
+@media (max-width: 620px) {
+	.current-membership { align-items: flex-start; flex-direction: column; }
+}
