@@ -5,7 +5,8 @@
 	let copied = $state(false);
 
 	const standard = $derived(data.features.filter((feature) => feature.tier === 'standard'));
-	const premium = $derived(data.features.filter((feature) => feature.tier !== 'standard'));
+	const premium = $derived(data.features.filter((feature) => feature.tier === 'premium'));
+	const champion = $derived(data.features.filter((feature) => feature.tier === 'champion'));
 	const latestRelease = $derived(data.releases[0] ?? null);
 	const documentationUrl = $derived(`/docs/${data.product.slug}`);
 
@@ -31,6 +32,8 @@
 			<div class="actions">
 				{#if !data.hasPremiumEntitlement}
 					<a class="button" href="/pricing">Unlock premium features</a>
+				{:else if champion.length > 0 && data.membershipTier !== 'champion'}
+					<a class="button" href="/pricing">Unlock Champion features</a>
 				{/if}
 				<a class="button secondary" href={documentationUrl}>Read the guide</a>
 			</div>
@@ -80,7 +83,7 @@
 {/if}
 
 <section class="section brand-panel-section">
-	<div class="shell feature-columns">
+	<div class="shell feature-columns" class:three-tiers={champion.length > 0}>
 		<article class="card feature-tier-card">
 			<span class="tag">Included free</span>
 			<h2>Standard features</h2>
@@ -99,6 +102,17 @@
 				{/each}
 			</ul>
 		</article>
+		{#if champion.length > 0}
+			<article class="card feature-tier-card champion-tier-card">
+				<span class="tag">Tools Champion</span>
+				<h2>Champion features</h2>
+				<ul class="feature-list detailed-list">
+					{#each champion as feature}
+						<li><strong>{feature.name}</strong>{#if feature.description}<span>{feature.description}</span>{/if}</li>
+					{/each}
+				</ul>
+			</article>
+		{/if}
 	</div>
 </section>
 

@@ -114,7 +114,7 @@
 
 <style>
 	.audit-page { gap: 1.25rem; }
-	.audit-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; }
+	.audit-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--content-card-gap); }
 	.metric-filter { display: flex; align-items: baseline; justify-content: space-between; padding: 1rem 1.15rem; color: inherit; font: inherit; cursor: pointer; }
 	.metric-filter span { color: #9f9384; font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
 	.metric-filter strong { color: #f6dd9e; font-size: 1.8rem; }
@@ -127,7 +127,7 @@
 	.filter-buttons { display: flex; gap: .4rem; }
 	.filter-buttons button { min-height: 39px; padding: .55rem .75rem; border: 1px solid #d49b2c44; border-radius: 8px; background: #18110d; color: #a99c8b; font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
 	.filter-buttons button.active { border-color: #d49b2c99; color: #ffe09a; background: #3a290f; }
-	.audit-list { display: grid; gap: 1rem; }
+	.audit-list { display: grid; gap: var(--content-card-gap); }
 	.audit-record { padding: 1.25rem 1.35rem; border-left-width: 4px; }
 	.audit-record.healthy { border-left-color: #789a6a; } .audit-record.warning { border-left-color: #d49b2c; } .audit-record.error { border-left-color: #b94d43; }
 	.audit-record > header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }

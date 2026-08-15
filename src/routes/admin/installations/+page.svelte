@@ -115,7 +115,7 @@
 <style>
 	.installation-page { gap: 1.25rem; }
 	.install-metrics { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-	.analytics-grid { gap: 1rem; }
+	.analytics-grid { gap: var(--content-card-gap); }
 	.analytics-card { padding: 1.25rem; }
 	.analytics-card h2 { margin: .35rem 0 1rem; }
 	.analytics-card .muted { margin: .9rem 0 0; color: #8f8374; font-size: .82rem; }

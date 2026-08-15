@@ -42,7 +42,7 @@
 			<div class="recommended">Recommended</div><span class="tag">Premium</span><h3>Tools Premium</h3>{#if data.membershipTier === 'premium'}<div class="current-tier-badge">Current membership</div>{/if}
 			<div class="price">{formatPrice(annual ? 'premium-annual' : 'premium-monthly')} <small>{annual ? 'per year' : 'per month'}</small></div>
 			<p class="tier-summary">For GMs who want the complete toolkit.</p>
-			<ul class="feature-list"><li>Premium features across supported modules</li><li>Early-access releases</li><li>Premium Discord channels</li><li>Enhanced product support</li></ul>
+			<ul class="feature-list"><li>Premium features across supported modules</li><li>Craftworks core-source content packs</li><li>Early-access releases</li><li>Premium Discord channels</li></ul>
 			{#if data.membershipTier === 'premium' || data.membershipTier === 'champion'}
 				<a class="button secondary full-button" href="/account">Manage current membership</a>
 			{:else if data.user && data.prices[annual ? 'premium-annual' : 'premium-monthly']}
@@ -54,7 +54,7 @@
 			<span class="tag">Supporter</span><h3>Tools Champion</h3>{#if data.membershipTier === 'champion'}<div class="current-tier-badge">Current membership</div>{/if}
 			<div class="price">{formatPrice(annual ? 'champion-annual' : 'champion-monthly')} <small>{annual ? 'per year' : 'per month'}</small></div>
 			<p class="tier-summary">For supporters who want a closer role.</p>
-			<ul class="feature-list"><li>Everything in Tools Premium</li><li>Priority support</li><li>Development previews</li><li>Roadmap discussion and voting</li></ul>
+			<ul class="feature-list"><li>Everything in Tools Premium</li><li>Specialized Craftworks content packs, including Drakkenheim</li><li>Priority support</li><li>Development previews and roadmap voting</li></ul>
 			{#if data.membershipTier === 'champion'}
 				<a class="button secondary full-button" href="/account">Manage current membership</a>
 			{:else if data.user && data.prices[annual ? 'champion-annual' : 'champion-monthly']}

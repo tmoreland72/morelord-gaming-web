@@ -261,6 +261,6 @@ https://morelordgaming.com/api/stripe/webhook
 
 Administrator diagnostics are available at `/admin/billing`, and the setup walkthrough is available at `/docs/stripe`.
 
-## Drakkenheim Harvesting 0.2.0
+## Morelord Craftworks
 
-Migration `0009_harvesting_membership_workflows.sql` updates the product catalog, premium capability, manifest URL, and release history for the Standard GM-managed and Premium collaborative workflows.
+Migration `0014_craftworks.sql` replaces the standalone Drakkenheim Harvesting catalog entry with Morelord Craftworks while preserving existing installation references. Standard includes Craftworks and its SRD 5.1/5.2 packs, Premium adds advanced crafting and core-rule source packs, and Champion unlocks specialized packs that require additional logic, beginning with Monsters of Drakkenheim.

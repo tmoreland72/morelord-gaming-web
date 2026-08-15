@@ -211,11 +211,11 @@
 	.form-actions { display: flex; justify-content: flex-end; align-items: end; }
 	.form-actions .button { width: 100%; }
 
-	.code-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+	.code-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--content-card-gap); margin-bottom: 1.25rem; }
 	.summary-card { display: flex; align-items: baseline; justify-content: space-between; padding: 1rem 1.2rem; }
 	.summary-card span { color: #9f9384; font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
 	.summary-card strong { color: #fff0cd; font-family: var(--font-display); font-size: 1.8rem; }
-	.code-list { display: grid; gap: 1rem; }
+	.code-list { display: grid; gap: var(--content-card-gap); }
 	.code-row { padding: 1.35rem 1.45rem; }
 	.code-row-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.25rem; }
 	.code-identity { min-width: 0; }

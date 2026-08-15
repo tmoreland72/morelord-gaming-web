@@ -646,7 +646,7 @@
 	.type-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-		gap: 0.65rem;
+		gap: var(--content-card-gap);
 	}
 
 	.type-card {

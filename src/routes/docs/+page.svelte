@@ -40,10 +40,10 @@
 		</article>
 
 		<article class="card docs-card">
-			<div class="eyebrow">Drakkenheim</div>
-			<h2>Morelord Drakkenheim Harvesting</h2>
-			<p>Run collaborative harvesting sessions and finalize component rewards for the party.</p>
-			<a class="text-link" href="/docs/morelord-drakkenheim-harvesting">View documentation <span>→</span></a>
+			<div class="eyebrow">Crafting and acquisition</div>
+			<h2>Morelord Craftworks</h2>
+			<p>Gather, harvest, loot, manage materials and recipes, and use content packs matched to your membership.</p>
+			<a class="text-link" href="/docs/morelord-craftworks">View documentation <span>→</span></a>
 		</article>
 	</div>
 </section>
