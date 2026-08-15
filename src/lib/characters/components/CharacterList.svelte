@@ -48,11 +48,12 @@
 	}
 </script>
 
+<div class="character-list">
 <div class="section-heading">
 	<div>
 		<h2>Your Characters</h2>
 
-		<p>Characters imported from Foundry are stored locally in this browser.</p>
+		<p>Characters imported from Foundry are private to your Morelord Gaming account.</p>
 	</div>
 </div>
 
@@ -127,8 +128,12 @@
 		{/each}
 	</section>
 {/if}
+</div>
 
 <style>
+	.character-list {
+		width: 100%;
+	}
 	h2,
 	h3,
 	p {

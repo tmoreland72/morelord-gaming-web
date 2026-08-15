@@ -16,10 +16,9 @@
 
 	import TidyIcon from './TidyIcon.svelte';
 
-	import { closeIcon, savingThrowMarkerIcon } from '../icons/tidy-icons';
+	import { savingThrowMarkerIcon } from '../icons/tidy-icons';
 
 	export let character: StoredCharacter;
-	export let onClose: () => void;
 	export let onPortraitSelect: (file: File) => void;
 
 	let portraitInput: HTMLInputElement;
@@ -277,27 +276,6 @@
 </script>
 
 <section class="tidy-header">
-	<div class="header-tools">
-		<button
-			type="button"
-			class="sidebar-toggle"
-			aria-label="Toggle sidebar"
-			title="Sidebar toggle is not active yet"
-		>
-			<span class="toggle-knob"></span>
-		</button>
-
-		<button
-			type="button"
-			class="close-button"
-			aria-label="Close character sheet"
-			title="Close character sheet"
-			on:click={onClose}
-		>
-			<TidyIcon icon={closeIcon} />
-		</button>
-	</div>
-
 	<div class="header-body">
 		<aside class="portrait-column">
 			<input
@@ -469,69 +447,9 @@
 	.tidy-header {
 		overflow: hidden;
 		background:
-			linear-gradient(rgba(4, 5, 7, 0.9), rgba(5, 6, 8, 0.97)),
-			radial-gradient(circle at 48% 30%, rgba(56, 58, 64, 0.2), transparent 45%);
+			linear-gradient(90deg, rgba(22, 9, 31, 0.88), rgba(27, 10, 38, 0.78), rgba(8, 7, 12, 0.94)),
+			url('/characters/images/banner-character.webp') center 38% / cover no-repeat;
 		color: #eeeeee;
-	}
-
-	.header-tools {
-		display: flex;
-		min-height: 40px;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0 0.85rem;
-		border-bottom: 1px solid rgba(197, 184, 122, 0.28);
-		background: linear-gradient(
-			90deg,
-			rgba(14, 15, 18, 0.97),
-			rgba(25, 26, 31, 0.94),
-			rgba(8, 9, 11, 0.98)
-		);
-	}
-
-	.sidebar-toggle {
-		position: relative;
-		width: 58px;
-		height: 25px;
-		padding: 2px;
-		border: 1px solid #62656d;
-		border-radius: 999px;
-		background: #090a0c;
-		cursor: default;
-	}
-
-	.toggle-knob {
-		display: block;
-		width: 19px;
-		height: 19px;
-		border: 1px solid #91959d;
-		border-radius: 50%;
-		background: linear-gradient(#f0f1f3, #aeb2b9);
-	}
-
-	.close-button {
-		display: grid;
-		width: 32px;
-		height: 32px;
-		place-items: center;
-		padding: 0;
-		border: 0;
-		border-radius: 0.15rem;
-		background: transparent;
-		color: #eeeeee;
-		font-size: 1.15rem;
-		line-height: 1;
-		cursor: pointer;
-	}
-
-	.close-button:hover {
-		background: rgba(255, 255, 255, 0.08);
-		color: #ffffff;
-	}
-
-	.close-button:focus-visible {
-		outline: 2px solid #d4c477;
-		outline-offset: 2px;
 	}
 
 	.header-body {
@@ -755,12 +673,11 @@
 		width: 100px;
 		height: 100px;
 		place-items: center;
-		border: 5px double #a99d66;
-		border-radius: 50%;
-		background: radial-gradient(circle, #151619 48%, #3e3b2d);
+		border: 0;
+		background: url('/characters/images/badge_level_dark.webp') center / contain no-repeat;
 		color: #f8f7f2;
 		text-align: center;
-		box-shadow: 0 0 0 3px #161719;
+		box-shadow: none;
 	}
 
 	.level-emblem strong {
@@ -799,9 +716,8 @@
 		width: 70px;
 		height: 80px;
 		place-items: center;
-		clip-path: polygon(50% 0%, 94% 24%, 82% 78%, 50% 100%, 18% 78%, 6% 24%);
-		background: linear-gradient(#d4c99d, #686454);
-		color: #17181b;
+		background: url('/characters/images/badge_ac_dark.webp') center / contain no-repeat;
+		color: #eeeeee;
 		font-size: 2rem;
 		font-weight: 800;
 	}
@@ -833,8 +749,7 @@
 		justify-items: center;
 		padding: 0.55rem 0.25rem 1.6rem;
 		overflow: visible;
-		clip-path: polygon(50% 0%, 93% 24%, 93% 75%, 50% 100%, 7% 75%, 7% 24%);
-		background: linear-gradient(145deg, #9d936c 0, #696b70 7%, #181a1e 11%, #282b30 100%);
+		background: url('/characters/images/badge_ability_dark.webp') center / 100% 100% no-repeat;
 		color: #eeeeee;
 	}
 
@@ -859,8 +774,7 @@
 		height: 39px;
 		place-items: center;
 		transform: translateX(-50%);
-		clip-path: polygon(50% 0%, 93% 24%, 93% 75%, 50% 100%, 7% 75%, 7% 24%);
-		background: #111216;
+		background: url('/characters/images/badge_score_dark.webp') center / contain no-repeat;
 		color: #f0f0f0;
 		font-size: 1rem;
 		font-weight: 700;
@@ -898,8 +812,7 @@
 		width: 78px;
 		height: 84px;
 		place-items: center;
-		clip-path: polygon(50% 0%, 93% 24%, 93% 75%, 50% 100%, 7% 75%, 7% 24%);
-		background: linear-gradient(145deg, #696b70, #22252a);
+		background: url('/characters/images/badge_init_dark.webp') center / contain no-repeat;
 		color: #eeeeee;
 	}
 

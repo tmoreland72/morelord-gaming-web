@@ -25,7 +25,6 @@
 	} from '../icons/tidy-icons';
 
 	export let character: StoredCharacter;
-	export let onClose: () => void;
 	export let onPortraitChange: (file: File) => void;
 
 	type TabId = 'character' | 'inventory' | 'spellbook' | 'features' | 'biography' | 'diagnostics';
@@ -77,7 +76,7 @@
 </script>
 
 <section class="tidy-sheet">
-	<TidyStyleHeader {character} {onClose} onPortraitSelect={onPortraitChange} />
+	<TidyStyleHeader {character} onPortraitSelect={onPortraitChange} />
 
 	<nav class="tidy-navigation" aria-label="Character sheet sections">
 		{#each tabs as tab}

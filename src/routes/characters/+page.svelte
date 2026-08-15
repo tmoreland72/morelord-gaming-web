@@ -75,11 +75,10 @@
 			{form.success}
 		</section>{/if}
 	{#if selectedCharacter}
-		<CharacterSheet
-			character={selectedCharacter}
-			onClose={closeCharacter}
-			onPortraitChange={changePortrait}
-		/>
+		<div class="sheet-shell">
+			<button type="button" class="back-button" onclick={closeCharacter}>← Back to Characters</button>
+			<CharacterSheet character={selectedCharacter} onPortraitChange={changePortrait} />
+		</div>
 	{:else}
 		<CharacterList
 			characters={data.characters}
@@ -177,6 +176,25 @@
 	.character-manager > :global(.tidy5e-sheet) {
 		width: min(1200px, 100%);
 		margin-inline: auto;
+	}
+	.sheet-shell {
+		width: min(1200px, 100%);
+		margin-inline: auto;
+	}
+	.back-button {
+		margin: 0 0 0.75rem;
+		padding: 0.65rem 0.9rem;
+		border: 1px solid var(--tidy-border-gold);
+		border-radius: var(--tidy-radius-medium);
+		background: var(--tidy-surface-raised);
+		color: var(--tidy-text-bright);
+		font: inherit;
+		font-weight: 700;
+		cursor: pointer;
+	}
+	.back-button:hover {
+		border-color: var(--tidy-active-tab);
+		background: var(--tidy-dark-red);
 	}
 	.manager-message {
 		width: min(1200px, 100%);
