@@ -3,6 +3,8 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
 	faArrowDownWideShort,
 	faArrowRightFromBracket,
+	faArrowTurnDown,
+	faBolt,
 	faBookOpen,
 	faBoxOpen,
 	faBriefcase,
@@ -11,6 +13,9 @@ import {
 	faChevronRight,
 	faChevronUp,
 	faCircleInfo,
+	faCircle,
+	faCircleDot,
+	faCircleHalfStroke,
 	faCoins,
 	faDiamond,
 	faDiceD20,
@@ -20,6 +25,7 @@ import {
 	faFlask,
 	faGear,
 	faHammer,
+	faHeartCrack,
 	faLanguage,
 	faMagnifyingGlass,
 	faPerson,
@@ -27,6 +33,7 @@ import {
 	faRulerHorizontal,
 	faScaleBalanced,
 	faShieldHalved,
+	faShield,
 	faStar,
 	faSuitcase,
 	faToolbox,
@@ -38,6 +45,7 @@ import {
 
 import {
 	faBookmark as faBookmarkRegular,
+	faCircle as faCircleRegular,
 	faHeart as faHeartRegular,
 	faStar as faStarRegular
 } from '@fortawesome/free-regular-svg-icons';
@@ -110,7 +118,17 @@ export const toolsIcon: TidyIcon = faToolbox;
 
 export const savingThrowsIcon: TidyIcon = faShieldHalved;
 
-export const savingThrowMarkerIcon: TidyIcon = faDiamond;
+export const savingThrowMarkerIcon: TidyIcon = faShield;
+
+export const spellSlotIcon: TidyIcon = faDiamond;
+
+export const notProficientIcon: TidyIcon = faCircleRegular;
+
+export const halfProficientIcon: TidyIcon = faCircleHalfStroke;
+
+export const proficientIcon: TidyIcon = faCircle;
+
+export const expertiseIcon: TidyIcon = faCircleDot;
 
 export const speciesIcon: TidyIcon = faPerson;
 
@@ -123,6 +141,16 @@ export const armorIcon: TidyIcon = faShieldHalved;
 export const weaponsIcon: TidyIcon = faHammer;
 
 export const specialTraitsIcon: TidyIcon = faStarRegular;
+
+export const speedIcon: TidyIcon = faBolt;
+
+export const resistanceIcon: TidyIcon = faShieldHalved;
+
+export const immunityIcon: TidyIcon = faShield;
+
+export const vulnerabilityIcon: TidyIcon = faHeartCrack;
+
+export const traitContinuationIcon: TidyIcon = faArrowTurnDown;
 
 /*
  * Inventory

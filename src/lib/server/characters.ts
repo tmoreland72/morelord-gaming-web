@@ -17,14 +17,27 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<St
 export async function saveImportedCharacter(
 	d1: D1Database,
 	userId: string,
-	imported: ImportedActorFile
+	imported: ImportedActorFile,
+	replacementId?: string
 ): Promise<StoredCharacter> {
 	const db = getDb(d1);
-	const existingRow = imported.actor._id
+	const replacementRow = replacementId
+		? await db.query.characters.findFirst({
+				where: and(eq(characters.userId, userId), eq(characters.id, replacementId))
+			})
+		: undefined;
+	if (replacementId && !replacementRow) {
+		throw new Error('The character being replaced could not be found.');
+	}
+	const matchingActorRow = imported.actor._id
 		? await db.query.characters.findFirst({
 				where: and(eq(characters.userId, userId), eq(characters.foundryActorId, imported.actor._id))
 			})
 		: undefined;
+	if (replacementRow && matchingActorRow && matchingActorRow.id !== replacementRow.id) {
+		throw new Error('That exported character already exists in My Characters.');
+	}
+	const existingRow = replacementRow ?? matchingActorRow;
 	const existing = existingRow
 		? (JSON.parse(existingRow.contentJson) as StoredCharacter)
 		: undefined;

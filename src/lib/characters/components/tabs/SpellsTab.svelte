@@ -5,6 +5,8 @@
 	import type { StoredCharacter } from '../../models/stored-character';
 	import { getItemImageSrc } from '../../assets/image-resolver';
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
+	import TidyIcon from '../TidyIcon.svelte';
+	import { collapseIcon, searchIcon, spellSlotIcon } from '../../icons/tidy-icons';
 
 	export let character: StoredCharacter;
 
@@ -290,7 +292,7 @@
 <section class="tidy-spellbook" aria-label="Spellbook">
 	<div class="spell-toolbar">
 		<label class="spell-search">
-			<span aria-hidden="true">⌕</span>
+			<TidyIcon icon={searchIcon} />
 			<input
 				type="search"
 				bind:value={searchText}
@@ -332,14 +334,14 @@
 				>
 					<header class="spell-level-header">
 						<div class="level-title">
-							<span class="collapse-mark" aria-hidden="true">⌄</span>
+							<span class="collapse-mark"><TidyIcon icon={collapseIcon} /></span>
 							<strong>{group.label}</strong>
 							<span class="level-count">{group.spells.length}</span>
 						</div>
 
 						{#if getSlotSummary(group.level)}
 							<div class="slot-summary" title="Remaining spell slots">
-								<span class="slot-pip" aria-hidden="true">◆</span>
+								<span class="slot-pip"><TidyIcon icon={spellSlotIcon} /></span>
 								{getSlotSummary(group.level)}
 							</div>
 						{/if}

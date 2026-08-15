@@ -8,6 +8,19 @@
 	import { getItemImageSrc } from '../../assets/image-resolver';
 
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
+	import TidyIcon from '../TidyIcon.svelte';
+	import {
+		addIcon,
+		attunementIcon,
+		collapseIcon,
+		favoriteIcon,
+		filterIcon,
+		moreOptionsIcon,
+		searchIcon,
+		settingsIcon,
+		sortIcon,
+		carryingCapacityIcon
+	} from '../../icons/tidy-icons';
 
 	export let character: StoredCharacter;
 
@@ -396,10 +409,12 @@
 
 <section class="inventory-tab">
 	<div class="toolbar">
-		<button type="button" class="toolbar-icon" disabled title="Collapse sections"> ⌄ </button>
+		<button type="button" class="toolbar-icon" disabled title="Collapse sections"
+			><TidyIcon icon={collapseIcon} /></button
+		>
 
 		<label class="search-field">
-			<span>⌕</span>
+			<TidyIcon icon={searchIcon} />
 
 			<input type="search" value={searchText} placeholder="Search" on:input={handleSearch} />
 		</label>
@@ -415,11 +430,17 @@
 				Equipped
 			</button>
 
-			<button type="button" class="toolbar-icon" disabled> ▼ </button>
+			<button type="button" class="toolbar-icon" disabled aria-label="Filter"
+				><TidyIcon icon={filterIcon} /></button
+			>
 
-			<button type="button" class="toolbar-icon" disabled> ⇵ </button>
+			<button type="button" class="toolbar-icon" disabled aria-label="Sort"
+				><TidyIcon icon={sortIcon} /></button
+			>
 
-			<button type="button" class="toolbar-icon" disabled> ⚙ </button>
+			<button type="button" class="toolbar-icon" disabled aria-label="Settings"
+				><TidyIcon icon={settingsIcon} /></button
+			>
 		</div>
 	</div>
 
@@ -450,7 +471,7 @@
 			<div class="encumbrance-fill" style={`width: ${encumbrancePercent}%`}></div>
 
 			<strong>
-				⚖
+				<TidyIcon icon={carryingCapacityIcon} />
 				{formatNumber(totalWeight)}
 				/
 				{carryingCapacity}
@@ -470,7 +491,7 @@
 				>
 					<header class="group-header">
 						<div class="group-title">
-							<span class="group-toggle"> ⌄ </span>
+							<span class="group-toggle"><TidyIcon icon={collapseIcon} /></span>
 
 							<h3>
 								<span class="group-name">
@@ -492,19 +513,19 @@
 								<span>Price</span>
 								<span>Quantity</span>
 								<span>Weight</span>
-								<span>⌕</span>
-								<span>＋</span>
+								<span><TidyIcon icon={searchIcon} /></span>
+								<span><TidyIcon icon={addIcon} /></span>
 							{:else if group.id === 'container'}
 								<span></span>
 								<span></span>
-								<span>⌕</span>
-								<span>＋</span>
+								<span><TidyIcon icon={searchIcon} /></span>
+								<span><TidyIcon icon={addIcon} /></span>
 							{:else}
 								<span>Price</span>
 								<span>Quantity</span>
 								<span>Weight</span>
-								<span>⌕</span>
-								<span>＋</span>
+								<span><TidyIcon icon={searchIcon} /></span>
+								<span><TidyIcon icon={addIcon} /></span>
 							{/if}
 						</div>
 					</header>
@@ -588,9 +609,9 @@
 									</span>
 								{/if}
 
-								<span class="item-action"> ♡ </span>
+								<span class="item-action"><TidyIcon icon={favoriteIcon} /></span>
 
-								<span class="item-action"> ⋮ </span>
+								<span class="item-action"><TidyIcon icon={moreOptionsIcon} /></span>
 							</article>
 						{/each}
 					</div>
@@ -600,7 +621,7 @@
 	{/if}
 
 	<footer class="inventory-footer">
-		<div class="attunement-box">⚙ 0 / 3 Attuned</div>
+		<div class="attunement-box"><TidyIcon icon={attunementIcon} /> 0 / 3 Attuned</div>
 
 		<div class="currency-grid">
 			{#each [['pp', 'PP'], ['gp', 'GP'], ['ep', 'EP'], ['sp', 'SP'], ['cp', 'CP']] as denomination}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	const startPlayingProfile = 'https://startplaying.games/gm/morelord-gaming';
+	const adventuresWiki = 'https://www.legendkeeper.com/p/cmlpeiny512li0tondbni26j5';
 </script>
 
 <svelte:head>
@@ -30,6 +31,9 @@
 					rel="external noreferrer"
 				>
 					Request a private booking
+				</a>
+				<a class="button secondary" href={adventuresWiki} target="_blank" rel="external noreferrer">
+					Adventures Wiki
 				</a>
 			</div>
 		</div>
@@ -70,11 +74,16 @@
 				150 employees.
 			</p>
 			<p class="adventure-copy">
-				His games are relaxed, inclusive and story-driven. Rules provide a dependable structure,
-				but fun and narrative come first. New players receive patient guidance, experienced players
-				get meaningful tactical challenges, and everyone gets room to shape the story.
+				His games are relaxed, inclusive and story-driven. Rules provide a dependable structure, but
+				fun and narrative come first. New players receive patient guidance, experienced players get
+				meaningful tactical challenges, and everyone gets room to shape the story.
 			</p>
-			<a class="text-link dark-link" href={startPlayingProfile} target="_blank" rel="external noreferrer">
+			<a
+				class="text-link dark-link"
+				href={startPlayingProfile}
+				target="_blank"
+				rel="external noreferrer"
+			>
 				Read Troy’s full StartPlaying profile <span>→</span>
 			</a>
 		</div>
@@ -119,7 +128,10 @@
 			<div class="card icon-card">
 				<div class="feature-icon">⚔</div>
 				<h3>Tactical stakes</h3>
-				<p>Combat is exciting and consequential, but the table’s enjoyment always remains the priority.</p>
+				<p>
+					Combat is exciting and consequential, but the table’s enjoyment always remains the
+					priority.
+				</p>
 			</div>
 			<div class="card icon-card">
 				<div class="feature-icon">🔥</div>
@@ -134,7 +146,9 @@
 			<div class="card icon-card">
 				<div class="feature-icon">⏱</div>
 				<h3>Professional preparation</h3>
-				<p>Sessions are organized, punctual and supported by substantial preparation between games.</p>
+				<p>
+					Sessions are organized, punctual and supported by substantial preparation between games.
+				</p>
 			</div>
 		</div>
 	</div>
@@ -147,11 +161,16 @@
 				<div class="eyebrow">Player feedback</div>
 				<h2>What players say</h2>
 			</div>
-			<p>More reviews and current campaign listings are available on the Morelord Adventures profile.</p>
+			<p>
+				More reviews and current campaign listings are available on the Morelord Adventures profile.
+			</p>
 		</div>
 		<div class="grid-3">
 			<blockquote class="testimonial-card">
-				<p>“Very friendly, super patient, kept a pleasant group setting, and was always willing to teach and explain things.”</p>
+				<p>
+					“Very friendly, super patient, kept a pleasant group setting, and was always willing to
+					teach and explain things.”
+				</p>
 				<footer>— StartPlaying player review</footer>
 			</blockquote>
 			<blockquote class="testimonial-card">
@@ -159,7 +178,10 @@
 				<footer>— StartPlaying player review</footer>
 			</blockquote>
 			<blockquote class="testimonial-card">
-				<p>“He was awesome at going over things and helping us learn. You cannot go wrong with this DM.”</p>
+				<p>
+					“He was awesome at going over things and helping us learn. You cannot go wrong with this
+					DM.”
+				</p>
 				<footer>— StartPlaying player review</footer>
 			</blockquote>
 		</div>

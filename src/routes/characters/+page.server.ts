@@ -19,14 +19,24 @@ export const actions: Actions = {
 		const context = requireUserAndDb(locals.user?.id, platform?.env.DB);
 		const form = await request.formData();
 		const file = form.get('character');
+		const replacementId = String(form.get('replacementId') ?? '') || undefined;
 		if (!(file instanceof File) || file.size === 0)
 			return fail(400, { error: 'Choose a character JSON file.' });
 		if (file.size > 20 * 1024 * 1024)
 			return fail(413, { error: 'Character exports must be 20 MB or smaller.' });
 		try {
 			const imported = readActorJson(file.name, await file.text());
-			const character = await saveImportedCharacter(context.db, context.userId, imported);
-			return { success: `${character.name} was imported successfully.` };
+			const character = await saveImportedCharacter(
+				context.db,
+				context.userId,
+				imported,
+				replacementId
+			);
+			return {
+				success: replacementId
+					? `${character.name} replaced the selected character.`
+					: `${character.name} was imported successfully.`
+			};
 		} catch (cause) {
 			return fail(400, {
 				error: cause instanceof Error ? cause.message : 'The character could not be imported.'
@@ -55,7 +65,9 @@ export const actions: Actions = {
 	delete: async ({ request, locals, platform }) => {
 		const context = requireUserAndDb(locals.user?.id, platform?.env.DB);
 		const form = await request.formData();
-		await deleteCharacter(context.db, context.userId, String(form.get('id') ?? ''));
+		const id = String(form.get('id') ?? '');
+		if (!id) return fail(400, { error: 'The character could not be identified.' });
+		await deleteCharacter(context.db, context.userId, id);
 		return { success: 'The character was removed.' };
 	}
 };

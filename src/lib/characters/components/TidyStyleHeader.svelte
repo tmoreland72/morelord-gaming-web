@@ -70,6 +70,7 @@
 	$: identityParts = getIdentityParts();
 
 	$: portraitSource = getPortraitSource();
+	$: heroicInspiration = getHeroicInspiration();
 
 	function isRecord(value: unknown): value is UnknownRecord {
 		return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -189,6 +190,26 @@
 		}
 
 		return 8 + derived.proficiencyBonus + getAbilityModifier(character.actor, ability);
+	}
+
+	function getHeroicInspiration(): boolean | null {
+		const inspiration = getNestedValue(character.actor.system, 'attributes', 'inspiration');
+
+		if (typeof inspiration === 'boolean') {
+			return inspiration;
+		}
+
+		if (typeof inspiration === 'number') {
+			return inspiration > 0;
+		}
+
+		if (isRecord(inspiration)) {
+			const value = inspiration.value;
+			if (typeof value === 'boolean') return value;
+			if (typeof value === 'number') return value > 0;
+		}
+
+		return null;
 	}
 
 	function getIdentityParts(): IdentityPart[] {
@@ -369,15 +390,31 @@
 					</div>
 				</div>
 
-				<div class="level-emblem">
-					<strong>
-						{summary.totalLevel}
-					</strong>
+				<div class="level-cluster">
+					{#if heroicInspiration !== null}
+						<span
+							class="inspiration-emblem"
+							class:active={heroicInspiration}
+							title={heroicInspiration ? 'Heroic inspiration available' : 'No heroic inspiration'}
+						>
+							<img
+								src="/characters/images/badge_inspiration_single_dark.webp"
+								alt={heroicInspiration ? 'Heroic inspiration available' : 'No heroic inspiration'}
+							/>
+							{#if heroicInspiration}<span class="inspiration-core" aria-hidden="true"></span>{/if}
+						</span>
+					{/if}
 
-					<span>
-						PB
-						{formatSignedNumber(derived.proficiencyBonus)}
-					</span>
+					<div class="level-emblem">
+						<strong>
+							{summary.totalLevel}
+						</strong>
+
+						<span>
+							PB
+							{formatSignedNumber(derived.proficiencyBonus)}
+						</span>
+					</div>
 				</div>
 			</div>
 
@@ -457,12 +494,12 @@
 		grid-template-columns:
 			190px
 			minmax(0, 1fr);
-		min-height: 180px;
+		min-height: 160px;
 	}
 
 	.portrait-column {
 		min-width: 0;
-		padding: 0.7rem 0 0 0.7rem;
+		padding: 0;
 		border-right: 1px solid rgba(180, 162, 99, 0.55);
 		background: #0d0e11;
 	}
@@ -484,13 +521,11 @@
 		position: relative;
 		display: block;
 		width: 100%;
-		min-height: 231px;
+		min-height: 205px;
 		overflow: hidden;
 		padding: 0;
-		border: 1px solid #5d5a50;
-		border-right: 0;
-		border-bottom: 0;
-		border-radius: 0.12rem 0 0 0;
+		border: 0;
+		border-radius: 0;
 		background: linear-gradient(135deg, #343238, #111216);
 		color: inherit;
 		cursor: pointer;
@@ -500,7 +535,7 @@
 		display: block;
 		width: 100%;
 		height: 100%;
-		min-height: 231px;
+		min-height: 205px;
 		object-fit: cover;
 		object-position: center top;
 	}
@@ -509,7 +544,7 @@
 		display: grid;
 		width: 100%;
 		height: 100%;
-		min-height: 231px;
+		min-height: 205px;
 		place-items: center;
 		color: #f0ede4;
 		font-family: Georgia, serif;
@@ -572,7 +607,7 @@
 
 	.character-overview {
 		min-width: 0;
-		padding: 0.65rem 1.35rem 1rem;
+		padding: 0.5rem 1rem 0.65rem;
 	}
 
 	.identity-row {
@@ -580,9 +615,9 @@
 		grid-template-columns:
 			minmax(0, 1fr)
 			auto
-			105px;
+			92px;
 		align-items: start;
-		gap: 1.25rem;
+		gap: 0.85rem;
 	}
 
 	.identity {
@@ -590,7 +625,7 @@
 	}
 
 	.identity h1 {
-		margin: 0 0 0.55rem;
+		margin: 0 0 0.35rem;
 		color: #f1f0ec;
 		font-family: 'Nodesto Caps Condensed', 'Times New Roman', serif;
 		font-size: 2.05rem;
@@ -607,7 +642,7 @@
 		align-items: baseline;
 		gap: 0.18rem;
 		font-family: var(--tidy-font-body, 'Roboto Condensed', Arial, sans-serif);
-		font-size: 0.76rem;
+		font-size: 0.72rem;
 		font-weight: 600;
 		line-height: 1.35;
 	}
@@ -643,17 +678,17 @@
 
 	.xp-block {
 		display: grid;
-		min-width: 190px;
+		min-width: 165px;
 		align-self: center;
 		justify-items: end;
-		gap: 0.45rem;
+		gap: 0.3rem;
 		color: #d5c992;
 		font-size: 0.85rem;
 	}
 
 	.xp-track {
-		width: 170px;
-		height: 15px;
+		width: 150px;
+		height: 13px;
 		padding: 2px;
 		border: 1px solid #6b6d72;
 		border-radius: 999px;
@@ -668,39 +703,93 @@
 		background: #8d865f;
 	}
 
+	.level-cluster {
+		position: relative;
+		width: 92px;
+		height: 88px;
+	}
+
+	.inspiration-emblem {
+		position: absolute;
+		top: 20px;
+		left: -12px;
+		display: block;
+		width: 48px;
+		height: 48px;
+		z-index: 5;
+	}
+
+	.inspiration-emblem img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.9));
+	}
+
+	.inspiration-emblem.active img {
+		filter: sepia(1) saturate(3.2) hue-rotate(292deg) brightness(0.8)
+			drop-shadow(0 0 5px rgba(224, 66, 112, 0.58));
+	}
+
+	.inspiration-core {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 15px;
+		height: 15px;
+		transform: translate(-50%, -50%) rotate(45deg);
+		border: 2px solid #fff7fb;
+		background: #f7d9e7;
+		box-shadow:
+			0 0 0 3px #8d213b,
+			0 0 7px #f06b9c;
+	}
+
 	.level-emblem {
+		position: relative;
 		display: grid;
-		width: 100px;
-		height: 100px;
+		width: 88px;
+		height: 88px;
 		place-items: center;
 		border: 0;
 		background: url('/characters/images/badge_level_dark.webp') center / contain no-repeat;
 		color: #f8f7f2;
 		text-align: center;
 		box-shadow: none;
+		z-index: 1;
 	}
 
 	.level-emblem strong {
-		display: block;
-		font-size: 2.3rem;
+		position: absolute;
+		top: 21%;
+		left: 50%;
+		transform: translateX(-50%);
+		font-size: 2.05rem;
 		line-height: 1;
 	}
 
 	.level-emblem span {
+		position: absolute;
+		top: 59%;
+		left: 50%;
+		transform: translateX(-50%);
 		color: #d8ca91;
 		font-size: 0.8rem;
 		font-weight: 800;
+		white-space: nowrap;
 	}
 
 	.statistics-row {
 		display: grid;
 		grid-template-columns:
-			90px
-			minmax(0, 1fr)
-			92px;
+			62px
+			max-content
+			68px;
 		align-items: center;
-		gap: 1.15rem;
-		margin-top: 1.35rem;
+		justify-content: start;
+		gap: 0.9rem;
+		margin-top: 0.65rem;
 	}
 
 	.armor-class {
@@ -713,20 +802,20 @@
 
 	.armor-emblem {
 		display: grid;
-		width: 70px;
-		height: 80px;
+		width: 62px;
+		height: 70px;
 		place-items: center;
 		background: url('/characters/images/badge_ac_dark.webp') center / contain no-repeat;
 		color: #eeeeee;
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 800;
 	}
 
 	.ability-row {
 		display: grid;
-		grid-template-columns: repeat(6, minmax(76px, 1fr));
+		grid-template-columns: repeat(6, 96px);
 		align-items: start;
-		gap: clamp(0.35rem, 1vw, 0.85rem);
+		gap: 0.65rem;
 		min-width: 0;
 	}
 
@@ -734,20 +823,20 @@
 		display: grid;
 		min-width: 0;
 		justify-items: center;
-		gap: 0.5rem;
+		gap: 0.35rem;
 	}
 
 	.ability-hex {
 		position: relative;
 		display: grid;
-		width: 82px;
-		height: 92px;
+		width: 72px;
+		height: 81px;
 		grid-template-rows:
 			24px
 			1fr;
 		align-items: center;
 		justify-items: center;
-		padding: 0.55rem 0.25rem 1.6rem;
+		padding: 0.45rem 0.2rem 1.4rem;
 		overflow: visible;
 		background: url('/characters/images/badge_ability_dark.webp') center / 100% 100% no-repeat;
 		color: #eeeeee;
@@ -761,7 +850,7 @@
 	}
 
 	.ability-modifier {
-		font-size: 1.85rem;
+		font-size: 1.6rem;
 		line-height: 1;
 	}
 
@@ -770,13 +859,13 @@
 		bottom: -8px;
 		left: 50%;
 		display: grid;
-		width: 36px;
-		height: 39px;
+		width: 32px;
+		height: 35px;
 		place-items: center;
 		transform: translateX(-50%);
 		background: url('/characters/images/badge_score_dark.webp') center / contain no-repeat;
 		color: #f0f0f0;
-		font-size: 1rem;
+		font-size: 0.9rem;
 		font-weight: 700;
 		z-index: 2;
 	}
@@ -799,7 +888,7 @@
 
 	.saving-throw :global(.saving-throw-marker) {
 		color: #d0bf7a;
-		font-size: 0.52rem;
+		font-size: 0.9rem;
 	}
 
 	.initiative-stat {
@@ -809,8 +898,8 @@
 
 	.initiative-hex {
 		display: grid;
-		width: 78px;
-		height: 84px;
+		width: 68px;
+		height: 74px;
 		place-items: center;
 		background: url('/characters/images/badge_init_dark.webp') center / contain no-repeat;
 		color: #eeeeee;
@@ -818,7 +907,7 @@
 
 	.initiative-hex strong {
 		align-self: end;
-		font-size: 1.85rem;
+		font-size: 1.6rem;
 		line-height: 1;
 	}
 
@@ -852,7 +941,7 @@
 		}
 
 		.portrait-column {
-			padding: 0.7rem;
+			padding: 0;
 			border-right: 0;
 			border-bottom: 1px solid rgba(180, 162, 99, 0.55);
 		}
@@ -874,8 +963,8 @@
 		}
 
 		.portrait-frame {
-			border: 1px solid #5d5a50;
-			border-radius: 0.12rem 0 0 0.12rem;
+			border: 0;
+			border-radius: 0;
 		}
 
 		.identity-row {
@@ -888,9 +977,25 @@
 			display: none;
 		}
 
+		.level-cluster,
 		.level-emblem {
 			width: 82px;
 			height: 82px;
+		}
+
+		.inspiration-emblem {
+			top: 20px;
+			left: -11px;
+			width: 44px;
+			height: 44px;
+		}
+
+		.inspiration-core {
+			width: 13px;
+			height: 13px;
+			box-shadow:
+				0 0 0 2px #8d213b,
+				0 0 6px #f06b9c;
 		}
 
 		.statistics-row {
@@ -923,7 +1028,7 @@
 		}
 
 		.portrait-frame {
-			border-radius: 0.12rem 0.12rem 0 0;
+			border-radius: 0;
 		}
 
 		.identity-row {
@@ -932,9 +1037,22 @@
 				74px;
 		}
 
+		.level-cluster,
 		.level-emblem {
 			width: 72px;
 			height: 72px;
+		}
+
+		.inspiration-emblem {
+			top: 18px;
+			left: -9px;
+			width: 38px;
+			height: 38px;
+		}
+
+		.inspiration-core {
+			width: 11px;
+			height: 11px;
 		}
 
 		.level-emblem strong {

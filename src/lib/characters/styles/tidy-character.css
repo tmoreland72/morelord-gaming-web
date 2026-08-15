@@ -7,6 +7,10 @@
 	font-family: var(--tidy-font-body);
 }
 
+.character-tab.sidebar-only {
+	grid-template-columns: 1fr;
+}
+
 .character-tab h3 {
 	margin: 0;
 }
@@ -338,6 +342,18 @@
 	font-size: 0.77rem;
 	font-weight: 600;
 	line-height: 1;
+}
+
+.character-tab .trait-tag.resistance {
+	border-color: #4d9b68;
+	background: #256b3f;
+	color: #effff3;
+}
+
+.character-tab .trait-tag.vulnerability {
+	border-color: #b93d45;
+	background: #82141c;
+	color: #fff0f1;
 }
 
 .character-tab .muted {

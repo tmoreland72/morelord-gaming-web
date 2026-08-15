@@ -100,11 +100,20 @@
 		{#if activeTab === 'character'}
 			<SummaryTab {character} />
 		{:else if activeTab === 'inventory'}
-			<InventoryTab {character} />
+			<div class="tab-with-proficiencies">
+				<SummaryTab {character} sidebarOnly />
+				<InventoryTab {character} />
+			</div>
 		{:else if activeTab === 'spellbook'}
-			<SpellsTab {character} />
+			<div class="tab-with-proficiencies">
+				<SummaryTab {character} sidebarOnly />
+				<SpellsTab {character} />
+			</div>
 		{:else if activeTab === 'features'}
-			<FeaturesTab {character} />
+			<div class="tab-with-proficiencies">
+				<SummaryTab {character} sidebarOnly />
+				<FeaturesTab {character} />
+			</div>
 		{:else if activeTab === 'biography'}
 			<BiographyTab actor={character.actor} />
 		{:else if activeTab === 'diagnostics'}
@@ -119,20 +128,24 @@
 	}
 
 	.tidy-sheet {
+		box-sizing: border-box;
 		width: 100%;
 		min-height: 720px;
 		overflow: hidden;
-		border: 1px solid #3f4146;
-		border-radius: 0.35rem;
+		padding: 0;
+		border: 1px solid rgba(176, 157, 90, 0.7);
+		border-radius: 0.25rem;
 		background: linear-gradient(rgba(12, 13, 15, 0.98), rgba(8, 9, 11, 0.99));
-		box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+		box-shadow:
+			0 12px 35px rgba(0, 0, 0, 0.5),
+			0 0 0 1px rgba(0, 0, 0, 0.72);
 		font-family: var(--tidy-font-body, 'Roboto Condensed', Arial, sans-serif);
 		font-size: 0.86rem;
 	}
 
 	.tidy-navigation {
 		display: flex;
-		min-height: 40px;
+		min-height: 36px;
 		align-items: center;
 		gap: 0.1rem;
 		padding: 0 0.7rem;
@@ -145,7 +158,7 @@
 	.tidy-navigation button {
 		position: relative;
 		display: flex;
-		min-height: 39px;
+		min-height: 35px;
 		flex: 0 0 auto;
 		align-items: center;
 		gap: 0.4rem;
@@ -230,6 +243,23 @@
 		border-color: #3d4046;
 		border-radius: 0.25rem;
 		background: rgba(28, 30, 34, 0.94);
+	}
+
+	.tab-with-proficiencies {
+		display: grid;
+		grid-template-columns: 300px minmax(0, 1fr);
+		align-items: start;
+		gap: 1rem;
+	}
+
+	.tab-with-proficiencies > :global(*) {
+		min-width: 0;
+	}
+
+	@media (max-width: 980px) {
+		.tab-with-proficiencies {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	@media (max-width: 760px) {

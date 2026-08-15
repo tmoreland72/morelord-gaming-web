@@ -18,21 +18,32 @@
 	let { data, form } = $props();
 	let selectedCharacter = $state<StoredCharacter | null>(null);
 	let fileInput: HTMLInputElement;
+	let replacementIdInput: HTMLInputElement;
 	let importForm: HTMLFormElement;
 	let portraitInput: HTMLInputElement;
+	let portraitIdInput: HTMLInputElement;
 	let portraitForm: HTMLFormElement;
-	let portraitCharacterId = $state('');
-	let deleteCharacterId = $state('');
+	let deleteIdInput: HTMLInputElement;
 	let deleteForm: HTMLFormElement;
 	let importing = $state(false);
+	let actionMessageVisible = $state(true);
 
 	function openFilePicker() {
+		replacementIdInput.value = '';
+		fileInput.click();
+	}
+	function replaceCharacter(character: StoredCharacter) {
+		replacementIdInput.value = character.localId;
 		fileInput.click();
 	}
 	function submitImport() {
-		if (fileInput.files?.length) importForm.requestSubmit();
+		if (fileInput.files?.length) {
+			actionMessageVisible = true;
+			importForm.requestSubmit();
+		}
 	}
 	function openCharacter(character: StoredCharacter) {
+		actionMessageVisible = false;
 		selectedCharacter = character;
 	}
 	function closeCharacter() {
@@ -40,12 +51,14 @@
 	}
 	function removeCharacter(character: StoredCharacter) {
 		if (!confirm(`Remove ${character.name} from My Characters?`)) return;
-		deleteCharacterId = character.localId;
+		deleteIdInput.value = character.localId;
+		actionMessageVisible = true;
 		deleteForm.requestSubmit();
 	}
 	function changePortrait(file: File) {
 		if (!selectedCharacter) return;
-		portraitCharacterId = selectedCharacter.localId;
+		portraitIdInput.value = selectedCharacter.localId;
+		actionMessageVisible = true;
 		const transfer = new DataTransfer();
 		transfer.items.add(file);
 		portraitInput.files = transfer.files;
@@ -55,28 +68,39 @@
 
 <svelte:head><title>My Characters | Morelord Gaming</title></svelte:head>
 
-<div class="character-manager">
-	{#if !selectedCharacter}
-		<header class="character-header">
+{#if !selectedCharacter}
+	<section class="page-hero compact-hero character-hero">
+		<div class="shell character-hero-content">
 			<div>
 				<div class="eyebrow">Your adventuring party</div>
 				<h1>My Characters</h1>
-				<p>Import and view your Foundry D&amp;D characters anywhere.</p>
+				<p class="lead">Import and view your Foundry D&amp;D characters anywhere.</p>
 			</div>
-			<button type="button" class="import-button" disabled={importing} onclick={openFilePicker}
-				>{importing ? 'Importing…' : 'Import Character'}</button
-			>
-		</header>
-	{/if}
-	{#if form?.error}<section class="manager-message error-message" role="alert">
+			<button type="button" class="button" disabled={importing} onclick={openFilePicker}>
+				{importing ? 'Importing…' : 'Import Character'}
+			</button>
+		</div>
+	</section>
+{/if}
+
+<div class:sheet-mode={selectedCharacter} class="character-manager">
+	{#if actionMessageVisible && form?.error}<section
+			class="manager-message error-message"
+			role="alert"
+		>
 			{form.error}
 		</section>{/if}
-	{#if form?.success}<section class="manager-message success-message" role="status">
+	{#if actionMessageVisible && form?.success}<section
+			class="manager-message success-message"
+			role="status"
+		>
 			{form.success}
 		</section>{/if}
 	{#if selectedCharacter}
 		<div class="sheet-shell">
-			<button type="button" class="back-button" onclick={closeCharacter}>← Back to Characters</button>
+			<button type="button" class="back-button" onclick={closeCharacter}
+				>← Back to Characters</button
+			>
 			<CharacterSheet character={selectedCharacter} onPortraitChange={changePortrait} />
 		</div>
 	{:else}
@@ -85,6 +109,7 @@
 			loading={false}
 			onOpen={openCharacter}
 			onRemove={removeCharacter}
+			onReplace={replaceCharacter}
 			onImport={openFilePicker}
 		/>
 	{/if}
@@ -105,6 +130,7 @@
 		};
 	}}
 >
+	<input bind:this={replacementIdInput} name="replacementId" type="hidden" />
 	<input
 		bind:this={fileInput}
 		name="character"
@@ -120,57 +146,37 @@
 	enctype="multipart/form-data"
 	class="hidden-form"
 >
-	<input name="id" value={portraitCharacterId} /><input
+	<input bind:this={portraitIdInput} name="id" /><input
 		bind:this={portraitInput}
 		name="portrait"
 		type="file"
 	/>
 </form>
 <form bind:this={deleteForm} method="POST" action="?/delete" class="hidden-form">
-	<input name="id" value={deleteCharacterId} />
+	<input bind:this={deleteIdInput} name="id" />
 </form>
 
 <style>
 	.character-manager {
 		min-height: 70vh;
-		padding: 2rem;
-		background: radial-gradient(
-			circle at top,
-			var(--tidy-surface-dark) 0,
-			var(--tidy-background) 34rem
-		);
-		color: var(--tidy-text);
-		font-family: 'Roboto Condensed', Arial, sans-serif;
+		padding: 3rem 1rem 5rem;
+		background:
+			radial-gradient(circle at 15% 0, #4a221644, transparent 35rem),
+			linear-gradient(180deg, #17110d, #100c09);
+		color: #f7eedb;
 	}
-	.character-header {
+	.character-hero-content {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 2rem;
-		width: min(1200px, 100%);
-		margin: 0 auto 1.5rem;
-		padding: 1.25rem 0;
-		border-bottom: 1px solid var(--tidy-border-gold);
 	}
-	.character-header h1 {
-		margin: 0.2rem 0;
-		color: var(--tidy-text-bright);
-		font-family: var(--tidy-font-display);
-		font-size: 2.4rem;
+	.character-hero h1 {
+		margin-bottom: 0.65rem;
 	}
-	.character-header p {
+	.character-hero .lead {
 		margin: 0;
-		color: var(--tidy-text-muted);
-	}
-	.import-button {
-		padding: 0.75rem 1.1rem;
-		border: 1px solid var(--tidy-proficient);
-		border-radius: var(--tidy-radius-medium);
-		background: var(--tidy-dark-red);
-		color: var(--tidy-text-bright);
-		font: inherit;
-		font-weight: 600;
-		cursor: pointer;
+		font-size: 1.08rem;
 	}
 	.character-manager > :global(.character-list),
 	.character-manager > :global(.tidy5e-sheet) {
@@ -184,17 +190,17 @@
 	.back-button {
 		margin: 0 0 0.75rem;
 		padding: 0.65rem 0.9rem;
-		border: 1px solid var(--tidy-border-gold);
-		border-radius: var(--tidy-radius-medium);
-		background: var(--tidy-surface-raised);
-		color: var(--tidy-text-bright);
+		border: 1px solid #dba53577;
+		border-radius: 8px;
+		background: #17110dd9;
+		color: #f6dfae;
 		font: inherit;
 		font-weight: 700;
 		cursor: pointer;
 	}
 	.back-button:hover {
-		border-color: var(--tidy-active-tab);
-		background: var(--tidy-dark-red);
+		border-color: #e5a512;
+		background: #7d1716;
 	}
 	.manager-message {
 		width: min(1200px, 100%);
@@ -215,17 +221,14 @@
 	}
 	@media (max-width: 600px) {
 		.character-manager {
-			padding: 0.5rem;
+			padding: 1.5rem 0.5rem 3rem;
 		}
-		.character-header {
+		.character-hero-content {
 			align-items: flex-start;
-			padding: 1rem 0.5rem;
+			flex-direction: column;
 		}
-		.character-header h1 {
-			font-size: 1.7rem;
-		}
-		.character-header p {
-			display: none;
+		.character-hero-content .button {
+			width: 100%;
 		}
 	}
 </style>
