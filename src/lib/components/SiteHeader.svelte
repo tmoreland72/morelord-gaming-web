@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	let { loggedIn = false }: { loggedIn?: boolean } = $props();
 
-	const links = [
+	const publicLinks = [
 		{ href: '/adventures', label: 'Adventures' },
 		{ href: '/tools', label: 'Tools' },
-		{ href: '/pricing', label: 'Memberships' },
+		{ href: '/pricing', label: 'Memberships' }
+	];
+	const trailingLinks = [
 		{ href: '/releases', label: 'Releases' },
 		{ href: '/docs', label: 'Docs' }
 	];
@@ -33,12 +36,31 @@
 		</button>
 
 		<nav class:open={menuOpen} aria-label="Primary navigation">
-			{#each links as link}
+			{#each publicLinks as link}
 				<a class:active={isActive(link.href)} href={link.href} onclick={() => (menuOpen = false)}>
 					{link.label}
 				</a>
 			{/each}
-			<a class="account-link" class:active={isActive('/account')} href="/account" onclick={() => (menuOpen = false)}>
+			{#if loggedIn}
+				<a
+					class:active={isActive('/characters')}
+					href="/characters"
+					onclick={() => (menuOpen = false)}
+				>
+					My Characters
+				</a>
+			{/if}
+			{#each trailingLinks as link}
+				<a class:active={isActive(link.href)} href={link.href} onclick={() => (menuOpen = false)}>
+					{link.label}
+				</a>
+			{/each}
+			<a
+				class="account-link"
+				class:active={isActive('/account')}
+				href="/account"
+				onclick={() => (menuOpen = false)}
+			>
 				Account
 			</a>
 		</nav>

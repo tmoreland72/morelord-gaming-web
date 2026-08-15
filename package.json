@@ -63,5 +63,14 @@
 		"vitest": "^4.1.8",
 		"vitest-browser-svelte": "^2.1.1",
 		"wrangler": "^4.118.0"
+	},
+	"dependencies": {
+		"@fontsource/roboto-condensed": "^5.3.0",
+		"@fortawesome/fontawesome-svg-core": "^7.3.1",
+		"@fortawesome/free-regular-svg-icons": "^7.3.1",
+		"@fortawesome/free-solid-svg-icons": "^7.3.1",
+		"@fortawesome/svelte-fontawesome": "^0.2.4",
+		"dompurify": "^3.4.13",
+		"zod": "^4.4.3"
 	}
 }

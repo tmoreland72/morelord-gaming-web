@@ -174,3 +174,14 @@ export const discordConnections = sqliteTable('discord_connections', {
 	lastSyncedAt: integer('last_synced_at', { mode: 'timestamp_ms' }),
 	...timestamps
 });
+
+export const characters = sqliteTable('characters', {
+	id: text('id').primaryKey(),
+	userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+	foundryActorId: text('foundry_actor_id'),
+	name: text('name').notNull(),
+	contentJson: text('content_json').notNull(),
+	...timestamps
+}, (table) => [
+	uniqueIndex('characters_user_foundry_actor_unique').on(table.userId, table.foundryActorId)
+]);

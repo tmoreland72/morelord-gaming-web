@@ -1,0 +1,149 @@
+.biography-tab {
+	display: grid;
+	gap: 1.3rem;
+	min-height: 460px;
+	padding: 1.1rem;
+	background: var(--tidy-background);
+}
+
+.biography-section {
+	min-width: 0;
+}
+
+.biography-heading {
+	position: relative;
+	padding-bottom: 0.45rem;
+	border-bottom: 1px solid var(--tidy-border-gold);
+}
+
+.biography-heading::after {
+	content: '';
+	position: absolute;
+	right: 0;
+	bottom: -1px;
+	width: 8px;
+	height: 8px;
+	border-right: 1px solid var(--tidy-border-gold);
+	border-bottom: 1px solid var(--tidy-border-gold);
+	transform: skewX(-35deg);
+	transform-origin: bottom right;
+}
+
+.biography-heading h2 {
+	display: flex;
+	align-items: center;
+	gap: 0.38rem;
+	margin: 0;
+	color: var(--tidy-font-bright-white);
+	font-family: var(--tidy-font-display);
+	font-size: 1.08rem;
+	font-weight: 700;
+	letter-spacing: 0.015em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.biography-heading-icon {
+	display: inline-flex;
+	width: 1rem;
+	align-items: center;
+	justify-content: center;
+	color: var(--tidy-font-bright-white);
+	font-family: var(--tidy-font-body);
+	font-size: 0.76rem;
+}
+
+.biography-copy {
+	padding-top: 0.38rem;
+	color: var(--tidy-font-white);
+	font-size: 0.91rem;
+	font-weight: 600;
+	line-height: 1.42;
+	overflow-wrap: anywhere;
+}
+
+.biography-copy :is(p, ul, ol, blockquote) {
+	margin-top: 0;
+	margin-bottom: 0.55rem;
+}
+
+.biography-copy :is(p, ul, ol, blockquote):last-child {
+	margin-bottom: 0;
+}
+
+.biography-copy a {
+	color: var(--tidy-font-gold);
+}
+
+.biography-columns {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
+	gap: 2.8rem;
+	align-items: start;
+}
+
+.biography-narrative-column {
+	display: grid;
+	gap: 1.15rem;
+}
+
+.characteristics-list {
+	display: grid;
+	gap: 0.48rem;
+	margin: 0;
+	padding-top: 0.65rem;
+}
+
+.characteristic-row {
+	display: grid;
+	grid-template-columns: minmax(95px, 0.5fr) minmax(150px, 1fr);
+	gap: 0.7rem;
+	align-items: center;
+}
+
+.characteristic-row dt {
+	margin: 0;
+	color: var(--tidy-font-white);
+	font-size: 0.91rem;
+	font-weight: 700;
+}
+
+.characteristic-row dd {
+	min-height: 2.15rem;
+	margin: 0;
+	padding: 0.48rem 0.7rem;
+	border: 1px solid var(--tidy-border-soft);
+	border-radius: var(--tidy-radius-small);
+	background: var(--tidy-surface-dark);
+	color: var(--tidy-font-white);
+	font-size: 0.88rem;
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.biography-empty {
+	display: grid;
+	min-height: 300px;
+	place-items: center;
+	border: 1px dashed var(--tidy-border-soft);
+	color: var(--tidy-font-grey);
+	text-align: center;
+}
+
+@media (max-width: 850px) {
+	.biography-columns {
+		grid-template-columns: 1fr;
+		gap: 1.3rem;
+	}
+}
+
+@media (max-width: 520px) {
+	.biography-tab {
+		padding: 0.75rem;
+	}
+
+	.characteristic-row {
+		grid-template-columns: 1fr;
+		gap: 0.2rem;
+	}
+}

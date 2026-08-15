@@ -4,7 +4,7 @@
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 	import SiteFooter from '$lib/components/SiteFooter.svelte';
 
-	let { children } = $props();
+	let { data, children } = $props();
 </script>
 
 <svelte:head>
@@ -12,6 +12,6 @@
 	<meta name="theme-color" content="#15111d" />
 </svelte:head>
 
-<SiteHeader />
+<SiteHeader loggedIn={data.loggedIn} />
 <main>{@render children()}</main>
 <SiteFooter />

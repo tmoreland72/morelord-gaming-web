@@ -1,0 +1,550 @@
+.inventory-tab {
+	display: flex;
+	min-height: 590px;
+	flex-direction: column;
+	gap: 0.55rem;
+	color: var(--tidy-font-white);
+	font-family: var(--tidy-font-body);
+}
+
+.inventory-tab .toolbar {
+	display: grid;
+	grid-template-columns:
+		30px
+		minmax(180px, 1fr)
+		auto;
+	gap: 0.25rem;
+}
+
+.inventory-tab .toolbar button,
+.inventory-tab .search-field {
+	min-height: 30px;
+	border: 1px solid var(--tidy-border);
+	border-radius: var(--tidy-radius-small);
+	background: var(--tidy-surface);
+	color: var(--tidy-font-white);
+}
+
+.inventory-tab .toolbar-icon {
+	width: 30px;
+	padding: 0;
+}
+
+.inventory-tab .search-field {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0 0.55rem;
+}
+
+.inventory-tab .search-field span {
+	color: var(--tidy-font-grey);
+}
+
+.inventory-tab .search-field input {
+	width: 100%;
+	min-width: 0;
+	border: 0;
+	outline: 0;
+	background: transparent;
+	color: var(--tidy-font-white);
+	font-size: 0.8rem;
+}
+
+.inventory-tab .search-field input::placeholder {
+	color: var(--tidy-font-grey);
+}
+
+.inventory-tab .toolbar-filters {
+	display: flex;
+}
+
+.inventory-tab .toolbar-filters button {
+	padding: 0 0.6rem;
+	border-radius: 0;
+	color: var(--tidy-font-white);
+	font-size: 0.75rem;
+	cursor: pointer;
+}
+
+.inventory-tab .toolbar-filters button:disabled {
+	cursor: default;
+	opacity: 1;
+}
+
+.inventory-tab .toolbar-filters button.active {
+	border-color: #93824d;
+	background: #403923;
+	color: #fff4c5;
+}
+
+.inventory-tab .encumbrance-summary {
+	display: grid;
+	grid-template-columns:
+		auto
+		auto
+		auto
+		minmax(220px, 1fr);
+	align-items: center;
+	gap: 0.3rem;
+}
+
+.inventory-tab .summary-badge {
+	display: flex;
+	min-height: 25px;
+	align-items: center;
+	gap: 0.28rem;
+	padding: 0.3rem 0.5rem;
+	border: 1px solid #45494f;
+	border-radius: 0.14rem;
+	background: var(--tidy-surface-raised);
+	line-height: 1;
+}
+
+.inventory-tab .badge-label {
+	color: var(--tidy-font-grey);
+	font-size: 0.72rem;
+	font-weight: 400;
+}
+
+.inventory-tab .badge-value {
+	color: var(--tidy-font-bright-white);
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.inventory-tab .encumbrance-bar {
+	position: relative;
+	height: 25px;
+	overflow: hidden;
+	border: 1px solid #565b63;
+	border-radius: var(--tidy-radius-small);
+	background: #3a3f4b;
+}
+
+.inventory-tab .encumbrance-fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	background: linear-gradient(90deg, #8c3518, #bd571c);
+}
+
+.inventory-tab .encumbrance-bar > strong {
+	position: relative;
+	display: flex;
+	height: 100%;
+	align-items: center;
+	gap: 0.3rem;
+	padding-left: 0.65rem;
+	color: var(--tidy-font-bright-white);
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.inventory-tab .group-list {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.inventory-tab .inventory-group {
+	overflow: hidden;
+}
+
+.inventory-tab .group-header {
+	display: grid;
+	grid-template-columns:
+		minmax(180px, 1fr)
+		auto;
+	min-height: var(--tidy-section-height);
+	align-items: stretch;
+	background: var(--tidy-dark-red);
+	color: var(--tidy-font-bright-white);
+}
+
+.inventory-tab .group-title {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding-left: 0.55rem;
+}
+
+.inventory-tab .group-toggle {
+	color: var(--tidy-font-bright-white);
+	font-size: 0.9rem;
+	line-height: 1;
+}
+
+.inventory-tab .group-title h3 {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.015em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.inventory-tab .group-name {
+	color: var(--tidy-font-bright-white);
+}
+
+.inventory-tab .group-count {
+	color: var(--tidy-font-grey);
+	font-size: 0.78rem;
+	font-weight: 600;
+}
+
+.inventory-tab .group-columns {
+	display: grid;
+	grid-template-columns:
+		58px
+		58px
+		58px
+		28px
+		28px;
+	align-items: stretch;
+	color: var(--tidy-font-bright-white);
+	font-size: 0.72rem;
+	font-weight: 600;
+	text-align: center;
+}
+
+.inventory-tab .weapon-group .group-columns {
+	grid-template-columns:
+		58px
+		58px
+		58px
+		72px
+		58px
+		58px
+		58px
+		28px
+		28px;
+}
+
+.inventory-tab .container-group .group-columns {
+	grid-template-columns:
+		90px
+		120px
+		28px
+		28px;
+}
+
+.inventory-tab .group-columns span {
+	display: grid;
+	min-width: 0;
+	height: 100%;
+	place-items: center;
+	overflow: hidden;
+	border-left: 1px solid rgba(255, 255, 255, 0.18);
+	color: var(--tidy-font-bright-white);
+	white-space: nowrap;
+}
+
+.inventory-tab .item-list {
+	border-right: 1px solid #34373c;
+	border-left: 1px solid #34373c;
+}
+
+.inventory-tab .item-row {
+	display: grid;
+	grid-template-columns:
+		minmax(180px, 1fr)
+		58px
+		58px
+		58px
+		28px
+		28px;
+	min-height: var(--tidy-row-height);
+	align-items: center;
+	border-bottom: 1px solid var(--tidy-border-soft);
+	background: var(--tidy-surface-row);
+	color: var(--tidy-font-white);
+	font-size: 0.8rem;
+	font-weight: 400;
+}
+
+.inventory-tab .weapon-group .item-row {
+	grid-template-columns:
+		minmax(180px, 1fr)
+		58px
+		58px
+		58px
+		72px
+		58px
+		58px
+		58px
+		28px
+		28px;
+}
+
+.inventory-tab .container-group .item-row {
+	grid-template-columns:
+		minmax(180px, 1fr)
+		90px
+		120px
+		28px
+		28px;
+}
+
+.inventory-tab .item-row:nth-child(even) {
+	background: var(--tidy-surface-row-alt);
+}
+
+.inventory-tab .item-row > span {
+	display: grid;
+	height: 100%;
+	place-items: center;
+	padding: 0 0.3rem;
+	border-left: 1px solid #33363b;
+	color: var(--tidy-font-white);
+	font-size: 0.8rem;
+	font-weight: 400;
+	line-height: 1;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.inventory-tab .item-identity {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	gap: 0.55rem;
+	padding: 0.25rem 0.4rem;
+}
+
+.inventory-tab .item-image {
+	width: 30px;
+	height: 30px;
+	flex: 0 0 30px;
+	overflow: hidden;
+	border: 1px solid #64686f;
+	border-radius: 0.08rem;
+	background: linear-gradient(#2e3136, #1c1e22);
+}
+
+.inventory-tab .item-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.inventory-tab .item-identity strong {
+	min-width: 0;
+	overflow: hidden;
+	color: var(--tidy-font-white);
+	font-size: 0.86rem;
+	font-weight: 400;
+	line-height: 1.15;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.inventory-tab .activation-value,
+.inventory-tab .roll-value,
+.inventory-tab .formula-value {
+	color: var(--tidy-font-white) !important;
+	font-size: 0.8rem;
+	font-weight: 400;
+}
+
+.inventory-tab .price-value,
+.inventory-tab .weight-value {
+	display: flex !important;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 0.2rem;
+}
+
+.inventory-tab .price-value strong,
+.inventory-tab .weight-value strong {
+	color: var(--tidy-font-white);
+	font-size: 0.82rem;
+	font-weight: 500;
+	line-height: 1;
+}
+
+.inventory-tab .price-value small,
+.inventory-tab .weight-value small {
+	color: var(--tidy-font-grey);
+	font-size: 0.78rem;
+	font-weight: 400;
+	line-height: 1;
+	text-transform: none;
+}
+
+.inventory-tab .quantity-field {
+	display: grid;
+	width: 30px;
+	height: 26px;
+	place-items: center;
+	border: 1px solid #555a62;
+	background: var(--tidy-surface-raised);
+	color: var(--tidy-font-white);
+	font-size: 0.8rem;
+	font-weight: 400;
+}
+
+.inventory-tab .item-action {
+	color: var(--tidy-font-grey) !important;
+	font-size: 0.82rem;
+}
+
+.inventory-tab .container-contents {
+	color: var(--tidy-font-white) !important;
+}
+
+.inventory-tab .container-meter {
+	width: calc(100% - 12px);
+	height: 17px !important;
+	align-self: center;
+	justify-self: center;
+	border: 1px solid #555a62 !important;
+	background: #17191c;
+}
+
+.inventory-tab .inventory-footer {
+	display: grid;
+	grid-template-columns:
+		auto
+		minmax(0, 1fr);
+	align-items: center;
+	gap: 0.5rem;
+	margin-top: auto;
+	padding-top: 1rem;
+}
+
+.inventory-tab .attunement-box,
+.inventory-tab .currency-box {
+	min-height: 29px;
+	border: 1px solid #4d5158;
+	border-radius: var(--tidy-radius-small);
+	background: var(--tidy-surface-raised);
+}
+
+.inventory-tab .attunement-box {
+	display: flex;
+	align-items: center;
+	padding: 0 0.55rem;
+	color: var(--tidy-font-white);
+	font-size: 0.72rem;
+}
+
+.inventory-tab .currency-grid {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 0.35rem;
+}
+
+.inventory-tab .currency-box {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 0.5rem;
+	color: var(--tidy-font-bright-white);
+	font-size: 0.72rem;
+}
+
+.inventory-tab .currency-box strong {
+	color: var(--tidy-font-grey);
+	font-weight: 400;
+}
+
+.inventory-tab .empty-state {
+	padding: 2rem;
+	border: 1px dashed #4b4f56;
+	color: var(--tidy-font-grey);
+	text-align: center;
+}
+
+@media (max-width: 900px) {
+	.inventory-tab .toolbar-filters button:nth-child(-n + 3) {
+		display: none;
+	}
+
+	.inventory-tab .group-columns span:nth-child(-n + 4) {
+		display: none;
+	}
+
+	.inventory-tab .weapon-group .group-columns {
+		grid-template-columns:
+			58px
+			58px
+			58px
+			28px
+			28px;
+	}
+
+	.inventory-tab .weapon-group .item-row {
+		grid-template-columns:
+			minmax(180px, 1fr)
+			58px
+			58px
+			58px
+			28px
+			28px;
+	}
+
+	.inventory-tab .weapon-group .item-row > span:nth-of-type(-n + 4) {
+		display: none;
+	}
+}
+
+@media (max-width: 700px) {
+	.inventory-tab .toolbar {
+		grid-template-columns:
+			30px
+			minmax(130px, 1fr)
+			auto;
+	}
+
+	.inventory-tab .toolbar-filters button:not(.active):not(.toolbar-icon) {
+		display: none;
+	}
+
+	.inventory-tab .encumbrance-summary {
+		grid-template-columns: repeat(3, auto);
+	}
+
+	.inventory-tab .encumbrance-bar {
+		grid-column: 1 / -1;
+	}
+
+	.inventory-tab .item-row,
+	.inventory-tab .weapon-group .item-row {
+		grid-template-columns:
+			minmax(150px, 1fr)
+			54px
+			54px;
+	}
+
+	.inventory-tab .item-row > span {
+		display: none;
+	}
+
+	.inventory-tab .item-row > span:nth-last-child(4),
+	.inventory-tab .item-row > span:nth-last-child(3) {
+		display: grid;
+	}
+
+	.inventory-tab .group-columns {
+		display: none;
+	}
+
+	.inventory-tab .container-group .item-row {
+		grid-template-columns:
+			minmax(150px, 1fr)
+			90px;
+	}
+
+	.inventory-tab .container-group .item-action,
+	.inventory-tab .container-meter {
+		display: none;
+	}
+
+	.inventory-tab .inventory-footer {
+		grid-template-columns: 1fr;
+	}
+}

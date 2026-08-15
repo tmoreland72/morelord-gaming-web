@@ -1,0 +1,137 @@
+:root {
+	/*
+   * Primary typography colors
+   */
+
+	--tidy-font-white: #eeeeee;
+	--tidy-font-bright-white: #ffffff;
+	--tidy-font-gold: #b7a66c;
+	--tidy-font-grey: #9b9b9f;
+	--tidy-font-dark-grey: #73757a;
+
+	/*
+   * Primary accent colors
+   */
+
+	--tidy-dark-red: #650019;
+	--tidy-proficient: #b72e49;
+	--tidy-expertise: #cf3554;
+	--tidy-active-tab: #d37ca9;
+
+	/*
+   * Backgrounds and surfaces
+   */
+
+	--tidy-background: #111214;
+	--tidy-background-deep: #08090b;
+
+	--tidy-surface: #24272c;
+	--tidy-surface-raised: #292c31;
+	--tidy-surface-dark: #191a1d;
+
+	--tidy-surface-row: rgba(19, 20, 22, 0.86);
+
+	--tidy-surface-row-alt: rgba(23, 24, 27, 0.9);
+
+	/*
+   * Borders
+   */
+
+	--tidy-border: #4a4e55;
+	--tidy-border-strong: #565a63;
+	--tidy-border-soft: #35383d;
+	--tidy-border-gold: #665b32;
+
+	/*
+   * Compatibility aliases
+   *
+   * These prevent existing components from breaking while
+   * the remaining styles are migrated to the semantic names.
+   */
+
+	--tidy-text: var(--tidy-font-white);
+	--tidy-text-bright: var(--tidy-font-bright-white);
+	--tidy-text-muted: var(--tidy-font-grey);
+	--tidy-text-subtle: var(--tidy-font-dark-grey);
+
+	--tidy-gold: var(--tidy-font-gold);
+	--tidy-gold-muted: #8a783e;
+	--tidy-red: var(--tidy-dark-red);
+
+	/*
+   * Fonts
+   */
+
+	--tidy-font-body: 'Roboto Condensed', Arial, sans-serif;
+
+	--tidy-font-display: 'Nodesto Caps Condensed', 'Times New Roman', serif;
+
+	/*
+   * Font sizes
+   */
+
+	--tidy-font-size-xs: 0.68rem;
+	--tidy-font-size-sm: 0.72rem;
+	--tidy-font-size-md: 0.8rem;
+	--tidy-font-size-lg: 0.86rem;
+
+	/*
+   * Layout
+   */
+
+	--tidy-row-height: 37px;
+	--tidy-section-height: 27px;
+
+	--tidy-radius-small: 0.12rem;
+	--tidy-radius-medium: 0.2rem;
+
+	/*
+   * Application chrome and status surfaces
+   */
+
+	--tidy-shadow-color: rgba(0, 0, 0, 0.48);
+	--tidy-danger-border: #9b4054;
+	--tidy-danger-surface: #34131b;
+	--tidy-success-border: #55795b;
+	--tidy-success-surface: #172a1c;
+}
+
+.tidy-sheet {
+	color: var(--tidy-font-white);
+	font-family: var(--tidy-font-body);
+}
+
+.tidy-sheet button,
+.tidy-sheet input,
+.tidy-sheet select,
+.tidy-sheet textarea {
+	font-family: inherit;
+}
+
+.tidy-muted {
+	color: var(--tidy-font-grey);
+	font-weight: 400;
+}
+
+.tidy-value {
+	color: var(--tidy-font-white);
+	font-weight: 600;
+}
+
+.tidy-gold {
+	color: var(--tidy-font-gold);
+}
+
+.tidy-tag {
+	display: inline-flex;
+	min-height: 27px;
+	align-items: center;
+	padding: 0.25rem 0.55rem;
+	border: 1px solid #51555c;
+	border-radius: 0.15rem;
+	background: var(--tidy-surface-raised);
+	color: var(--tidy-font-white);
+	font-size: 0.77rem;
+	font-weight: 600;
+	line-height: 1;
+}

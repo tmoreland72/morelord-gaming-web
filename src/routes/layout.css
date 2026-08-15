@@ -762,3 +762,10 @@ button.button:disabled {
 @media (max-width: 620px) {
 	.current-membership { align-items: flex-start; flex-direction: column; }
 }
+
+@font-face {
+	font-family: 'Nodesto Caps Condensed';
+	src: url('/fonts/nodesto-caps-condensed-bold.woff2') format('woff2');
+	font-weight: 700;
+	font-display: swap;
+}
