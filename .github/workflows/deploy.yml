@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  repository_dispatch:
+    types:
+      - product-docs-updated
   workflow_dispatch:
 
 concurrency:
@@ -30,6 +33,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
+      - name: Check out Morelord Marketplace documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-marketplace
+          path: .product-docs/morelord-marketplace
+
+      - name: Synchronize product documentation
+        run: npm run docs:sync
 
       - name: Install dependencies
         run: npm ci
@@ -79,6 +91,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
+      - name: Check out Morelord Marketplace documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-marketplace
+          path: .product-docs/morelord-marketplace
+
+      - name: Synchronize product documentation
+        run: npm run docs:sync
 
       - name: Install dependencies
         run: npm ci

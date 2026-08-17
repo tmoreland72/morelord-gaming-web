@@ -29,7 +29,8 @@
 		"dev:setup": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-setup.ps1",
 		"verify": "powershell -ExecutionPolicy Bypass -File ./scripts/verify.ps1",
 		"test:smoke": "playwright test tests/site.e2e.ts",
-		"auth:secret": "node scripts/generate-auth-secret.mjs"
+		"auth:secret": "node scripts/generate-auth-secret.mjs",
+		"docs:sync": "node scripts/sync-product-docs.mjs"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

@@ -513,6 +513,216 @@ button.button:disabled {
 	.docs-wide { grid-column: auto; }
 }
 
+/* Repository-authored product documentation */
+.docs-hero {
+	padding-block: 4.5rem 3.25rem;
+}
+.docs-hero h1 {
+	max-width: 960px;
+	font-size: clamp(2.5rem, 6vw, 4.6rem);
+}
+.docs-breadcrumbs {
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	margin-bottom: 1.35rem;
+	color: #a99b87;
+	font-size: 0.82rem;
+}
+.docs-breadcrumbs a {
+	color: #e7c66f;
+	text-decoration: none;
+}
+.docs-breadcrumbs a:hover {
+	color: #ffe39a;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+.docs-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.55rem;
+	margin-top: 1.35rem;
+}
+.docs-meta .tag {
+	text-transform: capitalize;
+}
+.product-docs-layout {
+	display: grid;
+	grid-template-columns: minmax(230px, 0.3fr) minmax(0, 1fr);
+	align-items: start;
+	gap: 1.4rem;
+	max-width: 1180px;
+}
+.product-docs-sidebar {
+	position: sticky;
+	top: 7rem;
+	padding: 1.25rem;
+}
+.product-docs-sidebar h2 {
+	margin: 0.35rem 0 1rem;
+	font-size: 1.5rem;
+}
+.product-docs-sidebar nav {
+	display: grid;
+	gap: 0.35rem;
+}
+.product-docs-sidebar nav a {
+	display: grid;
+	gap: 0.12rem;
+	padding: 0.7rem 0.75rem;
+	border-left: 3px solid transparent;
+	border-radius: 0 8px 8px 0;
+	color: #d1c3ad;
+	text-decoration: none;
+}
+.product-docs-sidebar nav a:hover {
+	background: #d49b2c0d;
+	color: #ffe19a;
+}
+.product-docs-sidebar nav a.active {
+	border-left-color: var(--gold);
+	background: #d49b2c16;
+	color: #ffe19a;
+}
+.product-docs-sidebar nav small {
+	color: #918472;
+	font-size: 0.68rem;
+	text-transform: capitalize;
+}
+.product-docs-back {
+	display: inline-flex;
+	margin-top: 1.25rem;
+}
+.docs-prose {
+	min-width: 0;
+	padding: clamp(1.35rem, 4vw, 2.6rem);
+}
+.docs-prose > h1:first-child {
+	display: none;
+}
+.docs-prose h2,
+.docs-prose h3,
+.docs-prose h4 {
+	scroll-margin-top: 7rem;
+}
+.docs-prose h2 {
+	margin: 2.3rem 0 0.8rem;
+	padding-bottom: 0.45rem;
+	border-bottom: 1px solid #d49b2c2b;
+	font-size: clamp(1.7rem, 4vw, 2.35rem);
+}
+.docs-prose h2:first-of-type {
+	margin-top: 0;
+}
+.docs-prose h3 {
+	margin: 1.8rem 0 0.65rem;
+	color: #f2ce78;
+	font-size: 1.35rem;
+}
+.docs-prose h4 {
+	margin: 1.4rem 0 0.55rem;
+	color: #e7c66f;
+}
+.docs-prose p,
+.docs-prose li {
+	color: #d0c3ae;
+	line-height: 1.78;
+}
+.docs-prose a {
+	color: #f0cb6b;
+	text-decoration: underline;
+	text-decoration-color: #d49b2c77;
+	text-underline-offset: 3px;
+}
+.docs-prose a:hover {
+	color: #ffe5a1;
+	text-decoration-color: currentColor;
+}
+.docs-prose ul,
+.docs-prose ol {
+	padding-left: 1.5rem;
+}
+.docs-prose li + li {
+	margin-top: 0.35rem;
+}
+.docs-prose img {
+	display: block;
+	width: auto;
+	max-width: 100%;
+	height: auto;
+	margin: 1.5rem auto 0.65rem;
+	border: 1px solid #d49b2c45;
+	border-radius: 12px;
+	box-shadow: 0 18px 45px #0007;
+}
+.docs-prose img + em {
+	display: block;
+	color: #998c79;
+	font-size: 0.85rem;
+	text-align: center;
+}
+.docs-prose table {
+	display: block;
+	overflow-x: auto;
+	width: 100%;
+	margin: 1.25rem 0;
+	border-collapse: collapse;
+}
+.docs-prose th,
+.docs-prose td {
+	padding: 0.7rem 0.8rem;
+	border: 1px solid #d49b2c33;
+	text-align: left;
+	vertical-align: top;
+}
+.docs-prose th {
+	background: #3a2617;
+	color: #f3d58c;
+}
+.docs-prose td {
+	color: #cdbfa9;
+}
+.docs-prose blockquote {
+	margin: 1.4rem 0;
+	padding: 0.8rem 1.1rem;
+	border-left: 4px solid var(--gold);
+	background: #d49b2c0d;
+}
+.docs-prose blockquote p {
+	margin: 0;
+}
+.docs-prose hr {
+	margin: 2rem 0;
+	border: 0;
+	border-top: 1px solid #d49b2c33;
+}
+
+@media (max-width: 880px) {
+	.product-docs-layout {
+		grid-template-columns: 1fr;
+	}
+	.product-docs-sidebar {
+		position: static;
+	}
+	.product-docs-sidebar nav {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 560px) {
+	.docs-breadcrumbs {
+		align-items: flex-start;
+		flex-wrap: wrap;
+	}
+	.product-docs-sidebar nav {
+		grid-template-columns: 1fr;
+	}
+	.docs-prose {
+		padding: 1.1rem;
+	}
+}
+
 /* Product administration */
 .admin-toolbar { display:flex; justify-content:flex-end; gap:.75rem; flex-wrap:wrap; }
 .admin-product-list, .admin-feature-list { display:grid; gap:.9rem; }
