@@ -216,6 +216,12 @@ A reusable PowerShell client and example payload are included. The client defaul
 
 See `/docs/release-automation` for the payload format and workflow. Publishing the same product/version again updates the existing release and replaces its change list, making the operation safe to rerun after correcting release notes or URLs.
 
+### Discord release announcements
+
+Create a webhook for the Discord announcements channel, then add its URL to the website repository's GitHub **production** environment as the `DISCORD_RELEASE_WEBHOOK_URL` secret. The deployment workflow uploads it to the Cloudflare Worker; product repositories do not need the webhook URL.
+
+When `POST /api/releases` receives a release that has not been announced, it posts an embed to Discord and records the returned message ID. Re-publishing the same product/version does not create a duplicate announcement. If Discord delivery fails, the API returns `502` after saving the release; rerun the product release publish step to retry the missing announcement safely.
+
 ## Authentication setup
 
 Google and GitHub sign-in are implemented through Better Auth. Google is intended to be the primary provider; GitHub is optional.

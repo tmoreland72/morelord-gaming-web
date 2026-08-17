@@ -84,6 +84,7 @@ jobs:
       DISCORD_CLIENT_ID: ${{ secrets.DISCORD_CLIENT_ID }}
       DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+      DISCORD_RELEASE_WEBHOOK_URL: ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}
 
       ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
       ORIGIN: ${{ vars.ORIGIN }}
@@ -181,19 +182,22 @@ jobs:
             | npx wrangler secret bulk
 
       - name: Upload optional Discord runtime secrets
-        if: ${{ env.DISCORD_CLIENT_ID != '' || env.DISCORD_CLIENT_SECRET != '' || env.DISCORD_BOT_TOKEN != '' }}
+        if: ${{ env.DISCORD_CLIENT_ID != '' || env.DISCORD_CLIENT_SECRET != '' || env.DISCORD_BOT_TOKEN != '' || env.DISCORD_RELEASE_WEBHOOK_URL != '' }}
         shell: bash
         run: |
           set -euo pipefail
-          required=(DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET DISCORD_BOT_TOKEN)
-          for name in "${required[@]}"; do
-            if [ -z "${!name:-}" ]; then echo "Discord is partially configured; missing $name"; exit 1; fi
-          done
+          if [ -n "$DISCORD_CLIENT_ID" ] || [ -n "$DISCORD_CLIENT_SECRET" ] || [ -n "$DISCORD_BOT_TOKEN" ]; then
+            required=(DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET DISCORD_BOT_TOKEN)
+            for name in "${required[@]}"; do
+              if [ -z "${!name:-}" ]; then echo "Discord account linking is partially configured; missing $name"; exit 1; fi
+            done
+          fi
           jq -n \
             --arg client "$DISCORD_CLIENT_ID" \
             --arg secret "$DISCORD_CLIENT_SECRET" \
             --arg bot "$DISCORD_BOT_TOKEN" \
-            '{DISCORD_CLIENT_ID:$client,DISCORD_CLIENT_SECRET:$secret,DISCORD_BOT_TOKEN:$bot}' \
+            --arg releaseWebhook "$DISCORD_RELEASE_WEBHOOK_URL" \
+            '{DISCORD_CLIENT_ID:$client,DISCORD_CLIENT_SECRET:$secret,DISCORD_BOT_TOKEN:$bot,DISCORD_RELEASE_WEBHOOK_URL:$releaseWebhook} | with_entries(select(.value != ""))' \
             | npx wrangler secret bulk
 
       - name: Deploy Worker and runtime configuration

@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { publishDiscordRelease } from '$lib/server/release-announcement';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
@@ -30,7 +31,11 @@ function unauthorized() {
 }
 
 function optionalString(value: unknown, maximumLength: number): boolean {
-	return value === undefined || value === null || (typeof value === 'string' && value.length <= maximumLength);
+	return (
+		value === undefined ||
+		value === null ||
+		(typeof value === 'string' && value.length <= maximumLength)
+	);
 }
 
 function optionalUrl(value: unknown): boolean {
@@ -50,8 +55,10 @@ function validate(input: unknown): input is ReleaseInput {
 	const value = input as Record<string, unknown>;
 
 	if (typeof value.productSlug !== 'string' || !slugPattern.test(value.productSlug)) return false;
-	if (typeof value.version !== 'string' || !semanticVersionPattern.test(value.version)) return false;
-	if (typeof value.title !== 'string' || !value.title.trim() || value.title.length > 160) return false;
+	if (typeof value.version !== 'string' || !semanticVersionPattern.test(value.version))
+		return false;
+	if (typeof value.title !== 'string' || !value.title.trim() || value.title.length > 160)
+		return false;
 	if (!optionalString(value.summary, 2_000)) return false;
 	if (!optionalString(value.publishedAt, 100)) return false;
 	if (!optionalUrl(value.githubReleaseUrl)) return false;
@@ -112,9 +119,9 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	const db = platform.env.DB;
 	const product = await db
-		.prepare('SELECT id FROM products WHERE slug = ?1 AND status = ?2')
+		.prepare('SELECT id, name FROM products WHERE slug = ?1 AND status = ?2')
 		.bind(input.productSlug, 'active')
-		.first<{ id: string }>();
+		.first<{ id: string; name: string }>();
 
 	if (!product) {
 		return json(
@@ -136,11 +143,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	const statements = [
 		db
-			.prepare(`INSERT INTO releases (id, product_id, version, title, summary, published_at, github_release_url, download_url, manifest_url, created_at)
+			.prepare(
+				`INSERT INTO releases (id, product_id, version, title, summary, published_at, github_release_url, download_url, manifest_url, created_at)
 			VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
 			ON CONFLICT(product_id, version) DO UPDATE SET title=excluded.title, summary=excluded.summary,
 			published_at=excluded.published_at, github_release_url=excluded.github_release_url,
-			download_url=excluded.download_url, manifest_url=excluded.manifest_url`)
+			download_url=excluded.download_url, manifest_url=excluded.manifest_url`
+			)
 			.bind(
 				releaseId,
 				product.id,
@@ -159,8 +168,10 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	for (const [index, change] of (input.changes ?? []).entries()) {
 		statements.push(
 			db
-				.prepare(`INSERT INTO release_changes (id, release_id, category, tier, description, sort_order)
-			VALUES (?1, ?2, ?3, ?4, ?5, ?6)`)
+				.prepare(
+					`INSERT INTO release_changes (id, release_id, category, tier, description, sort_order)
+			VALUES (?1, ?2, ?3, ?4, ?5, ?6)`
+				)
 				.bind(
 					crypto.randomUUID(),
 					releaseId,
@@ -174,12 +185,63 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 
 	await db.batch(statements);
 
+	const publicPath = `/releases#${input.productSlug}-${input.version}`;
+	const runtimeWebhook = runtimeEnv?.DISCORD_RELEASE_WEBHOOK_URL;
+	const webhookUrl =
+		typeof runtimeWebhook === 'string' && runtimeWebhook.length > 0
+			? runtimeWebhook
+			: env.DISCORD_RELEASE_WEBHOOK_URL;
+
+	if (webhookUrl) {
+		const announcement = await db
+			.prepare('SELECT external_message_id FROM release_announcements WHERE release_id = ?1')
+			.bind(releaseId)
+			.first<{ external_message_id: string }>();
+
+		if (!announcement) {
+			const runtimeOrigin = runtimeEnv?.ORIGIN;
+			const origin =
+				typeof runtimeOrigin === 'string' && runtimeOrigin.length > 0 ? runtimeOrigin : env.ORIGIN;
+			const publicUrl = new URL(publicPath, origin || request.url).toString();
+
+			try {
+				const messageId = await publishDiscordRelease(webhookUrl, {
+					productName: product.name,
+					productSlug: input.productSlug,
+					version: input.version,
+					title: input.title.trim(),
+					summary: input.summary?.trim(),
+					publicUrl,
+					githubReleaseUrl: input.githubReleaseUrl,
+					changes: input.changes ?? []
+				});
+				await db
+					.prepare(
+						`INSERT INTO release_announcements (release_id, provider, external_message_id, announced_at)
+						 VALUES (?1, 'discord', ?2, ?3)`
+					)
+					.bind(releaseId, messageId, Date.now())
+					.run();
+			} catch (error) {
+				console.error('Discord release announcement failed.', error);
+				return json(
+					{
+						ok: false,
+						error:
+							'The release was saved, but its Discord announcement failed. Retry this request safely.'
+					},
+					{ status: 502 }
+				);
+			}
+		}
+	}
+
 	return json({
 		ok: true,
 		action: existing ? 'updated' : 'created',
 		releaseId,
 		productSlug: input.productSlug,
 		version: input.version,
-		publicUrl: `/releases#${input.productSlug}-${input.version}`
+		publicUrl: publicPath
 	});
 };
