@@ -40,6 +40,12 @@ jobs:
           repository: tmoreland72/morelord-marketplace
           path: .product-docs/morelord-marketplace
 
+      - name: Check out Morelord Craftworks documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-craftworks
+          path: .product-docs/morelord-craftworks
+
       - name: Synchronize product documentation
         run: npm run docs:sync
 
@@ -97,6 +103,12 @@ jobs:
         with:
           repository: tmoreland72/morelord-marketplace
           path: .product-docs/morelord-marketplace
+
+      - name: Check out Morelord Craftworks documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-craftworks
+          path: .product-docs/morelord-craftworks
 
       - name: Synchronize product documentation
         run: npm run docs:sync

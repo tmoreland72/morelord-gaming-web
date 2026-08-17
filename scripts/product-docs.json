@@ -1,6 +1,12 @@
 {
 	"products": [
 		{
+			"slug": "morelord-craftworks",
+			"repository": "tmoreland72/morelord-craftworks",
+			"branch": "main",
+			"docsPath": "docs"
+		},
+		{
 			"slug": "morelord-marketplace",
 			"repository": "tmoreland72/morelord-marketplace",
 			"branch": "main",
