@@ -16,9 +16,7 @@ for (const publicPage of publicPages) {
 	test(`${publicPage.path} renders`, async ({ page }) => {
 		const response = await page.goto(publicPage.path);
 		expect(response?.ok()).toBeTruthy();
-		await expect(
-			page.getByRole('heading', { level: 1, name: publicPage.heading })
-		).toBeVisible();
+		await expect(page.getByRole('heading', { level: 1, name: publicPage.heading })).toBeVisible();
 	});
 }
 
@@ -28,6 +26,18 @@ test('health endpoint confirms the local D1 binding', async ({ request }) => {
 	const body = await response.json();
 	expect(body.status).toBe('ok');
 	expect(body.database).toEqual({ available: true, healthy: true });
+});
+
+test('home page and footer link to the configured Discord server', async ({ page }) => {
+	await page.goto('/');
+
+	const discordInviteUrl = 'https://discord.gg/B5YKQf579E';
+	await expect(
+		page.getByRole('main').getByRole('link', { name: 'Join our Discord' })
+	).toHaveAttribute('href', discordInviteUrl);
+	await expect(
+		page.getByRole('contentinfo').getByRole('link', { name: 'Join our Discord' })
+	).toHaveAttribute('href', discordInviteUrl);
 });
 
 test('release publishing rejects unauthenticated requests', async ({ request }) => {
@@ -52,7 +62,9 @@ test('authentication setup documentation renders', async ({ page }) => {
 	await expect(page.getByRole('heading', { level: 1, name: 'Authentication setup' })).toBeVisible();
 });
 
-test('authentication status reports local readiness without exposing secrets', async ({ request }) => {
+test('authentication status reports local readiness without exposing secrets', async ({
+	request
+}) => {
 	const response = await request.get('/api/system/auth-status');
 	expect(response.status()).toBe(200);
 	const body = await response.json();

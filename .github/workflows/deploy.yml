@@ -40,6 +40,12 @@ jobs:
           repository: tmoreland72/morelord-marketplace
           path: .product-docs/morelord-marketplace
 
+      - name: Check out Morelord Core documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-core
+          path: .product-docs/morelord-core
+
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v4
         with:
@@ -85,6 +91,7 @@ jobs:
       DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
       DISCORD_RELEASE_WEBHOOK_URL: ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}
+      DISCORD_INVITE_URL: ${{ secrets.DISCORD_INVITE_URL }}
 
       ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
       ORIGIN: ${{ vars.ORIGIN }}
@@ -104,6 +111,12 @@ jobs:
         with:
           repository: tmoreland72/morelord-marketplace
           path: .product-docs/morelord-marketplace
+
+      - name: Check out Morelord Core documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-core
+          path: .product-docs/morelord-core
 
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v4
@@ -182,7 +195,7 @@ jobs:
             | npx wrangler secret bulk
 
       - name: Upload optional Discord runtime secrets
-        if: ${{ env.DISCORD_CLIENT_ID != '' || env.DISCORD_CLIENT_SECRET != '' || env.DISCORD_BOT_TOKEN != '' || env.DISCORD_RELEASE_WEBHOOK_URL != '' }}
+        if: ${{ env.DISCORD_CLIENT_ID != '' || env.DISCORD_CLIENT_SECRET != '' || env.DISCORD_BOT_TOKEN != '' || env.DISCORD_RELEASE_WEBHOOK_URL != '' || env.DISCORD_INVITE_URL != '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -197,7 +210,8 @@ jobs:
             --arg secret "$DISCORD_CLIENT_SECRET" \
             --arg bot "$DISCORD_BOT_TOKEN" \
             --arg releaseWebhook "$DISCORD_RELEASE_WEBHOOK_URL" \
-            '{DISCORD_CLIENT_ID:$client,DISCORD_CLIENT_SECRET:$secret,DISCORD_BOT_TOKEN:$bot,DISCORD_RELEASE_WEBHOOK_URL:$releaseWebhook} | with_entries(select(.value != ""))' \
+            --arg inviteUrl "$DISCORD_INVITE_URL" \
+            '{DISCORD_CLIENT_ID:$client,DISCORD_CLIENT_SECRET:$secret,DISCORD_BOT_TOKEN:$bot,DISCORD_RELEASE_WEBHOOK_URL:$releaseWebhook,DISCORD_INVITE_URL:$inviteUrl} | with_entries(select(.value != ""))' \
             | npx wrangler secret bulk
 
       - name: Deploy Worker and runtime configuration

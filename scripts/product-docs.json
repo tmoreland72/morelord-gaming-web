@@ -1,6 +1,23 @@
 {
 	"products": [
 		{
+			"slug": "morelord-core",
+			"repository": "tmoreland72/morelord-core",
+			"branch": "main",
+			"docsPath": ".",
+			"assetsPath": null,
+			"documents": [
+				{
+					"source": "CORE-GM-PRODUCT-GUIDE.md",
+					"title": "Morelord Core: GM Product Guide",
+					"description": "Connect a Foundry VTT world to Morelord Gaming and manage shared product access.",
+					"slug": "morelord-core",
+					"audience": "game-master",
+					"foundry": 13
+				}
+			]
+		},
+		{
 			"slug": "morelord-craftworks",
 			"repository": "tmoreland72/morelord-craftworks",
 			"branch": "main",

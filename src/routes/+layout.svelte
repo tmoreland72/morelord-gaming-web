@@ -14,4 +14,4 @@
 
 <SiteHeader loggedIn={data.loggedIn} />
 <main>{@render children()}</main>
-<SiteFooter />
+<SiteFooter discordInviteUrl={data.discordInviteUrl} />

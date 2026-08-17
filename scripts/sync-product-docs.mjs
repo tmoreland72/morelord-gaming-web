@@ -44,6 +44,28 @@ function frontmatterValue(markdown, key) {
 	return match?.[1]?.replace(/^['"]|['"]$/g, '') ?? null;
 }
 
+function configuredMarkdown(markdown, product, document) {
+	if (!document || markdown.startsWith('---\n') || markdown.startsWith('---\r\n')) {
+		return markdown;
+	}
+
+	const metadata = {
+		title: document.title,
+		description: document.description,
+		slug: document.slug,
+		product: product.slug,
+		audience: document.audience,
+		version: document.version,
+		foundry: document.foundry,
+		order: document.order
+	};
+	const frontmatter = Object.entries(metadata)
+		.filter(([, value]) => value !== undefined)
+		.map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
+		.join('\n');
+	return `---\n${frontmatter}\n---\n\n${markdown}`;
+}
+
 function routeForDocument(productSlug, markdown, filename) {
 	const declaredSlug = frontmatterValue(markdown, 'slug');
 	if (declaredSlug) return `/docs/${declaredSlug.replace(/^\/+|\/+$/g, '')}`;
@@ -84,16 +106,31 @@ for (const product of registry.products) {
 		);
 	}
 
-	const markdownFiles = filesBelow(docsSource).filter(
-		(path) => extname(path).toLowerCase() === '.md'
+	const configuredDocuments = new Map(
+		(product.documents ?? []).map((document) => [resolve(docsSource, document.source), document])
 	);
-	const readme = markdownFiles.find((path) => basename(path).toLowerCase() === 'readme.md');
-	if (!readme) throw new Error(`${product.slug} must provide docs/README.md`);
+	const markdownFiles = configuredDocuments.size
+		? [...configuredDocuments.keys()]
+		: filesBelow(docsSource).filter((path) => extname(path).toLowerCase() === '.md');
+	for (const sourceFile of markdownFiles) {
+		if (!existsSync(sourceFile)) throw new Error(`Configured document not found: ${sourceFile}`);
+	}
+
+	const markdownBySource = new Map(
+		markdownFiles.map((sourceFile) => [
+			resolve(sourceFile),
+			configuredMarkdown(
+				readFileSync(sourceFile, 'utf8'),
+				product,
+				configuredDocuments.get(resolve(sourceFile))
+			)
+		])
+	);
 
 	const documentRoutes = new Map();
 	const seenRoutes = new Set();
 	for (const sourceFile of markdownFiles) {
-		const markdown = readFileSync(sourceFile, 'utf8');
+		const markdown = markdownBySource.get(resolve(sourceFile));
 		for (const requiredKey of ['title', 'product']) {
 			if (!frontmatterValue(markdown, requiredKey)) {
 				throw new Error(`${sourceFile} is missing required frontmatter: ${requiredKey}`);
@@ -107,6 +144,9 @@ for (const product of registry.products) {
 		seenRoutes.add(route);
 		documentRoutes.set(resolve(sourceFile), route);
 	}
+	if (!seenRoutes.has(`/docs/${product.slug}`)) {
+		throw new Error(`${product.slug} must provide a documentation landing route`);
+	}
 
 	const contentTarget = join(contentRoot, product.slug);
 	const assetsTarget = join(assetsRoot, product.slug);
@@ -119,12 +159,13 @@ for (const product of registry.products) {
 	for (const sourceFile of markdownFiles) {
 		const targetFile = join(contentTarget, relative(docsSource, sourceFile));
 		mkdirSync(dirname(targetFile), { recursive: true });
-		const markdown = readFileSync(sourceFile, 'utf8');
+		const markdown = markdownBySource.get(resolve(sourceFile));
 		writeFileSync(targetFile, rewriteLinks(markdown, product.slug, documentRoutes, sourceFile));
 	}
 
-	const sourceAssets = join(docsSource, 'assets');
-	if (existsSync(sourceAssets))
+	const sourceAssets =
+		product.assetsPath === null ? null : join(docsSource, product.assetsPath ?? 'assets');
+	if (sourceAssets && existsSync(sourceAssets))
 		cpSync(sourceAssets, join(assetsTarget, 'assets'), { recursive: true });
 	console.log(`Synced ${markdownFiles.length} documents for ${product.slug}.`);
 }
