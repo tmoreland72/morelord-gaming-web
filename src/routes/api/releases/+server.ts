@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { getDiscordSettings } from '$lib/server/discord';
 import { publishDiscordRelease } from '$lib/server/release-announcement';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -199,22 +200,27 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			.first<{ external_message_id: string }>();
 
 		if (!announcement) {
+			const discordSettings = await getDiscordSettings(db);
 			const runtimeOrigin = runtimeEnv?.ORIGIN;
 			const origin =
 				typeof runtimeOrigin === 'string' && runtimeOrigin.length > 0 ? runtimeOrigin : env.ORIGIN;
 			const publicUrl = new URL(publicPath, origin || request.url).toString();
 
 			try {
-				const messageId = await publishDiscordRelease(webhookUrl, {
-					productName: product.name,
-					productSlug: input.productSlug,
-					version: input.version,
-					title: input.title.trim(),
-					summary: input.summary?.trim(),
-					publicUrl,
-					githubReleaseUrl: input.githubReleaseUrl,
-					changes: input.changes ?? []
-				});
+				const messageId = await publishDiscordRelease(
+					webhookUrl,
+					{
+						productName: product.name,
+						productSlug: input.productSlug,
+						version: input.version,
+						title: input.title.trim(),
+						summary: input.summary?.trim(),
+						publicUrl,
+						githubReleaseUrl: input.githubReleaseUrl,
+						changes: input.changes ?? []
+					},
+					discordSettings.roleToolsId
+				);
 				await db
 					.prepare(
 						`INSERT INTO release_announcements (release_id, provider, external_message_id, announced_at)

@@ -16,15 +16,23 @@ const release = {
 
 describe('Discord release announcements', () => {
 	it('builds an embed linked to the GitHub release', () => {
-		const message = buildDiscordReleaseMessage(release);
+		const message = buildDiscordReleaseMessage(release, '123456789');
 
-		expect(message.allowed_mentions).toEqual({ parse: [] });
+		expect(message.content).toBe('<@&123456789>');
+		expect(message.allowed_mentions).toEqual({ parse: [], roles: ['123456789'] });
 		expect(message.embeds[0]).toMatchObject({
 			title: 'Morelord Craftworks 0.3.1 — A better harvest',
 			url: release.githubReleaseUrl,
 			description: release.summary
 		});
 		expect(message.embeds[0].fields[0].value).toContain('**New · premium:** Harvest creatures.');
+	});
+
+	it('does not allow broad mentions when the Tools role is not configured', () => {
+		const message = buildDiscordReleaseMessage(release);
+
+		expect(message.content).toBeUndefined();
+		expect(message.allowed_mentions).toEqual({ parse: [], roles: [] });
 	});
 
 	it('requests a response and returns the Discord message ID', async () => {
@@ -36,19 +44,29 @@ describe('Discord release announcements', () => {
 		);
 
 		await expect(
-			publishDiscordRelease('https://discord.com/api/webhooks/1/token', release, fetcher)
+			publishDiscordRelease(
+				'https://discord.com/api/webhooks/1/token',
+				release,
+				'123456789',
+				fetcher
+			)
 		).resolves.toBe('discord-message-id');
 		expect(fetcher).toHaveBeenCalledWith(
 			expect.objectContaining({ search: '?wait=true' }),
 			expect.objectContaining({ method: 'POST' })
 		);
+		const request = fetcher.mock.calls[0]?.[1];
+		expect(JSON.parse(String(request?.body))).toMatchObject({
+			content: '<@&123456789>',
+			allowed_mentions: { parse: [], roles: ['123456789'] }
+		});
 	});
 
 	it('reports Discord delivery failures', async () => {
 		const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(null, { status: 429 }));
 
 		await expect(
-			publishDiscordRelease('https://discord.com/api/webhooks/1/token', release, fetcher)
+			publishDiscordRelease('https://discord.com/api/webhooks/1/token', release, null, fetcher)
 		).rejects.toThrow('Discord webhook returned 429.');
 	});
 });

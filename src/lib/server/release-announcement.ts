@@ -21,7 +21,10 @@ const categoryLabels = {
 	security: 'Security'
 } as const;
 
-export function buildDiscordReleaseMessage(release: ReleaseAnnouncement) {
+export function buildDiscordReleaseMessage(
+	release: ReleaseAnnouncement,
+	toolsRoleId?: string | null
+) {
 	const displayedChanges = release.changes.slice(0, 10);
 	const changes = displayedChanges.map((change) => {
 		const tier = change.tier && change.tier !== 'standard' ? ` · ${change.tier}` : '';
@@ -34,7 +37,11 @@ export function buildDiscordReleaseMessage(release: ReleaseAnnouncement) {
 
 	return {
 		username: 'Morelord Gaming Releases',
-		allowed_mentions: { parse: [] as string[] },
+		content: toolsRoleId ? `<@&${toolsRoleId}>` : undefined,
+		allowed_mentions: {
+			parse: [] as string[],
+			roles: toolsRoleId ? [toolsRoleId] : ([] as string[])
+		},
 		embeds: [
 			{
 				title: `${release.productName} ${release.version} — ${release.title}`.slice(0, 256),
@@ -54,6 +61,7 @@ export function buildDiscordReleaseMessage(release: ReleaseAnnouncement) {
 export async function publishDiscordRelease(
 	webhookUrl: string,
 	release: ReleaseAnnouncement,
+	toolsRoleId?: string | null,
 	fetcher: typeof fetch = fetch
 ): Promise<string> {
 	const url = new URL(webhookUrl);
@@ -62,7 +70,7 @@ export async function publishDiscordRelease(
 	const response = await fetcher(url, {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify(buildDiscordReleaseMessage(release))
+		body: JSON.stringify(buildDiscordReleaseMessage(release, toolsRoleId))
 	});
 
 	if (!response.ok) {
