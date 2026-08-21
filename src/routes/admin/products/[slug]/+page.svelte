@@ -13,6 +13,11 @@
 		await update({ reset: result.type === 'success', invalidateAll: true });
 	};
 
+	const saveFeatureForm: SubmitFunction = ({ formElement }) => async ({ result, update }) => {
+		await update({ reset: false, invalidateAll: true });
+		if (result.type === 'success') formElement.closest('details')?.removeAttribute('open');
+	};
+
 	function field(name: 'slug' | 'name' | 'summary' | 'status' | 'githubRepository' | 'manifestUrl', fallback: string): string {
 		if (!form || typeof form !== 'object' || !('fields' in form)) return fallback;
 		const fields = (form as { fields?: Record<string, unknown> }).fields;
@@ -108,7 +113,7 @@
 							</form>
 							<details class="feature-edit-panel">
 								<summary class="button secondary">Update</summary>
-								<form method="POST" action="?/updateFeature" use:enhance={keepForm} class="admin-editor inline-feature-editor">
+								<form method="POST" action="?/updateFeature" use:enhance={saveFeatureForm} class="admin-editor inline-feature-editor">
 									<input type="hidden" name="featureId" value={feature.id} />
 									<div class="form-grid">
 										<label><span>Feature key</span><input name="key" required value={feature.key} pattern="[a-z0-9]+(?:[.-][a-z0-9]+)*" /></label>
