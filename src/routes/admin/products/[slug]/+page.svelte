@@ -106,16 +106,20 @@
 								<button class="button secondary order-button" type="submit" name="direction" value="up" disabled={index === 0} aria-label={`Move ${feature.name} up`}>↑</button>
 								<button class="button secondary order-button" type="submit" name="direction" value="down" disabled={index === data.features.length - 1} aria-label={`Move ${feature.name} down`}>↓</button>
 							</form>
-							<form method="POST" action="?/updateFeature" use:enhance={keepForm} class="feature-tier-form">
-								<input type="hidden" name="featureId" value={feature.id} />
-								<select name="tier" aria-label={`Tier for ${feature.name}`} value={feature.tier}>
-									<option value="standard">Standard</option>
-									<option value="premium">Premium</option>
-									<option value="champion">Champion</option>
-								</select>
-								<button class="button secondary" type="submit">Update</button>
-							</form>
-							<form method="POST" action="?/removeFeature" use:enhance={keepForm}>
+							<details class="feature-edit-panel">
+								<summary class="button secondary">Update</summary>
+								<form method="POST" action="?/updateFeature" use:enhance={keepForm} class="admin-editor inline-feature-editor">
+									<input type="hidden" name="featureId" value={feature.id} />
+									<div class="form-grid">
+										<label><span>Feature key</span><input name="key" required value={feature.key} pattern="[a-z0-9]+(?:[.-][a-z0-9]+)*" /></label>
+										<label><span>Display name</span><input name="name" required maxlength="120" value={feature.name} /></label>
+										<label class="form-span-2"><span>Description</span><textarea name="description" rows="3">{feature.description ?? ''}</textarea></label>
+										<label><span>Required tier</span><select name="tier" value={feature.tier}><option value="standard">Standard</option><option value="premium">Premium</option><option value="champion">Champion</option></select></label>
+									</div>
+									<div class="actions"><button class="button" type="submit">Save feature</button></div>
+								</form>
+							</details>
+							<form method="POST" action="?/removeFeature" use:enhance={keepForm} class="feature-remove-form">
 								<input type="hidden" name="featureId" value={feature.id} />
 								<button class="button secondary danger-button" type="submit">Remove</button>
 							</form>

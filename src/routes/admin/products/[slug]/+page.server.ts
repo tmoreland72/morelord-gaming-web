@@ -150,11 +150,30 @@ export const actions: Actions = {
 
 		const formData = await request.formData();
 		const featureId = value(formData, 'featureId');
+		const key = value(formData, 'key').toLowerCase();
+		const name = value(formData, 'name');
+		const description = value(formData, 'description');
 		const tier = value(formData, 'tier');
-		if (!featureId || !['standard', 'premium', 'champion'].includes(tier)) return fail(400, { featureError: 'Invalid feature update.' });
+		if (!featureId || !FEATURE_KEY_PATTERN.test(key)) return fail(400, { featureError: 'Enter a valid feature key.' });
+		if (name.length < 3 || name.length > 120) return fail(400, { featureError: 'Feature name must be 3–120 characters.' });
+		if (!['standard', 'premium', 'champion'].includes(tier)) return fail(400, { featureError: 'Select a valid feature tier.' });
 
-		await platform.env.DB.prepare('UPDATE product_features SET tier = ? WHERE product_id = ? AND feature_id = ?')
-			.bind(tier, product.id, featureId).run();
+		const assignment = await platform.env.DB.prepare(
+			'SELECT feature_id FROM product_features WHERE product_id = ? AND feature_id = ? LIMIT 1'
+		).bind(product.id, featureId).first();
+		if (!assignment) return fail(404, { featureError: 'Feature assignment not found.' });
+
+		const duplicate = await platform.env.DB.prepare('SELECT id FROM features WHERE key = ? AND id != ? LIMIT 1')
+			.bind(key, featureId).first();
+		if (duplicate) return fail(409, { featureError: 'That feature key is already in use.' });
+
+		const now = Date.now();
+		await platform.env.DB.batch([
+			platform.env.DB.prepare('UPDATE features SET key = ?, name = ?, description = ?, updated_at = ? WHERE id = ?')
+				.bind(key, name, nullable(description), now, featureId),
+			platform.env.DB.prepare('UPDATE product_features SET tier = ? WHERE product_id = ? AND feature_id = ?')
+				.bind(tier, product.id, featureId)
+		]);
 		return { featureSaved: true };
 	},
 
