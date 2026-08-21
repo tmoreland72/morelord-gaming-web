@@ -45,17 +45,18 @@ export const load: PageServerLoad = async ({ locals, platform, params }) => {
 
 	const featureRows = product
 		? await platform.env.DB.prepare(`
-			SELECT f.id, f.key, f.name, f.description, pf.tier
+			SELECT f.id, f.key, f.name, f.description, pf.tier, pf.sort_order AS sortOrder
 			FROM product_features pf
 			INNER JOIN features f ON f.id = pf.feature_id
 			WHERE pf.product_id = ?
-			ORDER BY CASE pf.tier WHEN 'standard' THEN 1 WHEN 'premium' THEN 2 ELSE 3 END, f.name
+			ORDER BY pf.sort_order, f.name
 		`).bind(product.id).all<{
 			id: string;
 			key: string;
 			name: string;
 			description: string | null;
 			tier: 'standard' | 'premium' | 'champion';
+			sortOrder: number;
 		}>()
 		: { results: [] };
 
@@ -90,6 +91,7 @@ export const actions: Actions = {
 			await platform.env.DB.prepare(`
 				UPDATE products SET slug = ?, name = ?, summary = ?, status = ?, github_repository = ?, manifest_url = ?, updated_at = ? WHERE id = ?
 			`).bind(slug, name, summary, status, nullable(githubRepository), nullable(manifestUrl), now, existing.id).run();
+			if (slug === params.slug) return { productSaved: true };
 		} else {
 			const id = crypto.randomUUID();
 			await platform.env.DB.prepare(`
@@ -129,12 +131,15 @@ export const actions: Actions = {
 				.bind(featureId, key, name, nullable(description), now, now).run();
 		}
 
+		const nextOrder = await platform.env.DB.prepare(
+			'SELECT COALESCE(MAX(sort_order), -1) + 1 AS value FROM product_features WHERE product_id = ?'
+		).bind(product.id).first<{ value: number }>();
 		await platform.env.DB.prepare(`
-			INSERT INTO product_features (product_id, feature_id, tier) VALUES (?, ?, ?)
+			INSERT INTO product_features (product_id, feature_id, tier, sort_order) VALUES (?, ?, ?, ?)
 			ON CONFLICT(product_id, feature_id) DO UPDATE SET tier = excluded.tier
-		`).bind(product.id, featureId, tier).run();
+		`).bind(product.id, featureId, tier, nextOrder?.value ?? 0).run();
 
-		redirect(303, `/admin/products/${product.slug}?saved=feature`);
+		return { featureSaved: true };
 	},
 
 	updateFeature: async ({ request, locals, platform, params }) => {
@@ -150,7 +155,36 @@ export const actions: Actions = {
 
 		await platform.env.DB.prepare('UPDATE product_features SET tier = ? WHERE product_id = ? AND feature_id = ?')
 			.bind(tier, product.id, featureId).run();
-		redirect(303, `/admin/products/${product.slug}?saved=feature`);
+		return { featureSaved: true };
+	},
+
+	reorderFeature: async ({ request, locals, platform, params }) => {
+		requireAdmin(locals);
+		if (!platform?.env?.DB) return fail(503, { featureError: 'D1 database binding is unavailable.' });
+		const product = await resolveProduct(platform.env.DB, params.slug);
+		if (!product) return fail(404, { featureError: 'Product not found.' });
+
+		const formData = await request.formData();
+		const featureId = value(formData, 'featureId');
+		const direction = value(formData, 'direction');
+		if (!featureId || !['up', 'down'].includes(direction)) return fail(400, { featureError: 'Invalid feature order update.' });
+
+		const rows = await platform.env.DB.prepare(
+			'SELECT feature_id AS featureId FROM product_features WHERE product_id = ? ORDER BY sort_order, feature_id'
+		).bind(product.id).all<{ featureId: string }>();
+		const currentIndex = rows.results.findIndex((row) => row.featureId === featureId);
+		const targetIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+		if (currentIndex < 0 || targetIndex < 0 || targetIndex >= rows.results.length) {
+			return { featureSaved: true };
+		}
+
+		const reordered = [...rows.results];
+		[reordered[currentIndex], reordered[targetIndex]] = [reordered[targetIndex], reordered[currentIndex]];
+		await platform.env.DB.batch(reordered.map((row, index) =>
+			platform.env.DB.prepare('UPDATE product_features SET sort_order = ? WHERE product_id = ? AND feature_id = ?')
+				.bind(index, product.id, row.featureId)
+		));
+		return { featureSaved: true };
 	},
 
 	removeFeature: async ({ request, locals, platform, params }) => {
@@ -161,6 +195,6 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const featureId = value(formData, 'featureId');
 		await platform.env.DB.prepare('DELETE FROM product_features WHERE product_id = ? AND feature_id = ?').bind(product.id, featureId).run();
-		redirect(303, `/admin/products/${product.slug}?saved=removed`);
+		return { featureSaved: true };
 	}
 };

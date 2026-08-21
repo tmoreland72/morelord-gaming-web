@@ -40,7 +40,7 @@ export async function getProductBySlug(d1: D1Database, slug: string) {
 		.from(productFeatures)
 		.innerJoin(features, eq(productFeatures.featureId, features.id))
 		.where(eq(productFeatures.productId, product.id))
-		.orderBy(asc(productFeatures.tier), asc(features.name));
+		.orderBy(asc(productFeatures.sortOrder), asc(features.name));
 
 	const releaseRows = await db
 		.select()

@@ -28,7 +28,8 @@ export const features = sqliteTable('features', {
 export const productFeatures = sqliteTable('product_features', {
 	productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
 	featureId: text('feature_id').notNull().references(() => features.id, { onDelete: 'cascade' }),
-	tier: text('tier', { enum: ['standard', 'premium', 'champion'] }).notNull().default('standard')
+	tier: text('tier', { enum: ['standard', 'premium', 'champion'] }).notNull().default('standard'),
+	sortOrder: integer('sort_order').notNull().default(0)
 }, (table) => [primaryKey({ columns: [table.productId, table.featureId] })]);
 
 export const subscriptionTiers = sqliteTable('subscription_tiers', {
