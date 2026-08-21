@@ -52,6 +52,12 @@ jobs:
           repository: tmoreland72/morelord-craftworks
           path: .product-docs/morelord-craftworks
 
+      - name: Check out Morelord Encounters documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-encounters
+          path: .product-docs/morelord-encounters
+
       - name: Synchronize product documentation
         run: npm run docs:sync
 
@@ -123,6 +129,12 @@ jobs:
         with:
           repository: tmoreland72/morelord-craftworks
           path: .product-docs/morelord-craftworks
+
+      - name: Check out Morelord Encounters documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-encounters
+          path: .product-docs/morelord-encounters
 
       - name: Synchronize product documentation
         run: npm run docs:sync

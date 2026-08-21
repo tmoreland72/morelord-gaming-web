@@ -24,6 +24,13 @@
 			"docsPath": "docs"
 		},
 		{
+			"slug": "morelord-encounters",
+			"repository": "tmoreland72/morelord-encounters",
+			"branch": "main",
+			"docsPath": "docs",
+			"assetsPath": null
+		},
+		{
 			"slug": "morelord-marketplace",
 			"repository": "tmoreland72/morelord-marketplace",
 			"branch": "main",

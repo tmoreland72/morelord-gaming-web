@@ -45,5 +45,12 @@
 			<p>Gather, harvest, loot, manage materials and recipes, and use content packs matched to your membership.</p>
 			<a class="text-link" href="/docs/morelord-craftworks">View documentation <span>→</span></a>
 		</article>
+
+		<article class="card docs-card">
+			<div class="eyebrow">Encounter building</div>
+			<h2>Morelord Encounters</h2>
+			<p>Build varied, difficulty-aware, terrain-relevant encounters from installed monster compendiums.</p>
+			<a class="text-link" href="/docs/morelord-encounters">View documentation <span>→</span></a>
+		</article>
 	</div>
 </section>
