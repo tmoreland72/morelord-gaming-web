@@ -19,6 +19,7 @@
 	--tidy-active-tab: #d37ca9;
 	--tidy-category-background: linear-gradient(90deg, #650019 0%, #a60028 100%);
 	--tidy-category-font-size: 0.92rem;
+	--tidy-category-letter-spacing: 0.015em;
 
 	/*
    * Backgrounds and surfaces

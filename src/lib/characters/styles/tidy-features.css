@@ -125,7 +125,14 @@
 
 .features-tab .group-name {
 	overflow: hidden;
+	color: var(--tidy-font-bright-white);
+	font-family: var(--tidy-font-display);
+	font-size: var(--tidy-category-font-size);
+	font-weight: 700;
+	letter-spacing: var(--tidy-category-letter-spacing);
+	line-height: 1;
 	text-overflow: ellipsis;
+	text-transform: uppercase;
 	white-space: nowrap;
 }
 

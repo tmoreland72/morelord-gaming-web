@@ -42,7 +42,9 @@
 		sourceItems.filter((item) => Boolean(item._id)).map((item) => [item._id as string, item])
 	);
 	$: features = actor.items.filter((item) => item.type === 'feat');
-	$: visibleFeatures = features.filter(matchesFilters);
+	$: visibleFeatures = features.filter((feature) =>
+		matchesFilters(feature, searchText, actionFilter)
+	);
 	$: groups = buildGroups(visibleFeatures);
 	$: allGroupsCollapsed =
 		groups.length > 0 && groups.every((group) => collapsedGroups.has(group.id));
@@ -226,8 +228,8 @@
 		return '–';
 	}
 
-	function matchesFilters(item: FoundryActorItem): boolean {
-		const query = searchText.trim().toLocaleLowerCase();
+	function matchesFilters(item: FoundryActorItem, search: string, action: string): boolean {
+		const query = search.trim().toLocaleLowerCase();
 		if (query) {
 			const sourceName = getSourceItem(item)?.name ?? '';
 			const identifier = asString(item.system?.identifier) ?? '';
@@ -235,8 +237,8 @@
 			if (!haystack.includes(query)) return false;
 		}
 
-		if (actionFilter === 'all') return true;
-		return getActivationType(item) === actionFilter;
+		if (action === 'all') return true;
+		return getActivationType(item) === action;
 	}
 
 	function setActionFilter(value: string): void {

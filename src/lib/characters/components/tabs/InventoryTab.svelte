@@ -63,7 +63,16 @@
 		.filter((item) => inventoryTypes.includes(item.type))
 		.sort(sortInventoryItems);
 
-	$: visibleInventory = allInventory.filter(matchesFilters);
+	$: visibleInventory = allInventory.filter((item) =>
+		matchesFilters(
+			item,
+			searchText,
+			equippedOnly,
+			activationFilters,
+			rarityFilters,
+			miscellaneousFilters
+		)
+	);
 
 	$: groups = createGroups(visibleInventory);
 	$: allGroupsCollapsed =
@@ -186,20 +195,20 @@
 		);
 	}
 
-	function matchesActivationFilters(item: FoundryActorItem): boolean {
-		if (activationFilters.length === 0) return true;
+	function matchesActivationFilters(item: FoundryActorItem, filters: string[]): boolean {
+		if (filters.length === 0) return true;
 
-		return activationFilters.some((filter) => {
+		return filters.some((filter) => {
 			if (filter === 'can-use') return getActivities(item).length > 0;
 			if (filter === 'magical') return isMagical(item);
 			return hasActivation(item, filter);
 		});
 	}
 
-	function matchesMiscellaneousFilters(item: FoundryActorItem): boolean {
-		if (miscellaneousFilters.length === 0) return true;
+	function matchesMiscellaneousFilters(item: FoundryActorItem, filters: string[]): boolean {
+		if (filters.length === 0) return true;
 
-		return miscellaneousFilters.some((filter) => {
+		return filters.some((filter) => {
 			if (filter === 'equipped') return item.system?.equipped === true;
 			if (filter === 'attuned') return item.system?.attuned === true;
 
@@ -210,23 +219,30 @@
 		});
 	}
 
-	function matchesFilters(item: FoundryActorItem): boolean {
-		const search = searchText.trim().toLowerCase();
+	function matchesFilters(
+		item: FoundryActorItem,
+		query: string,
+		onlyEquipped: boolean,
+		activation: string[],
+		rarities: string[],
+		miscellaneous: string[]
+	): boolean {
+		const search = query.trim().toLowerCase();
 
 		if (search && !item.name.toLowerCase().includes(search)) {
 			return false;
 		}
 
-		if (equippedOnly && item.system?.equipped !== true) {
+		if (onlyEquipped && item.system?.equipped !== true) {
 			return false;
 		}
 
-		if (!matchesActivationFilters(item)) return false;
+		if (!matchesActivationFilters(item, activation)) return false;
 
 		const rarity = (asString(item.system?.rarity) ?? '').toLowerCase().replace(/\s+/g, '-');
-		if (rarityFilters.length > 0 && !rarityFilters.includes(rarity)) return false;
+		if (rarities.length > 0 && !rarities.includes(rarity)) return false;
 
-		if (!matchesMiscellaneousFilters(item)) return false;
+		if (!matchesMiscellaneousFilters(item, miscellaneous)) return false;
 
 		return true;
 	}

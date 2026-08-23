@@ -35,7 +35,9 @@
 
 	$: actor = character.actor;
 	$: allSpells = actor.items.filter((item) => item.type === 'spell').sort(sortSpells);
-	$: visibleSpells = allSpells.filter(matchesFilters);
+	$: visibleSpells = allSpells.filter((spell) =>
+		matchesFilters(spell, searchText, preparedOnly, concentrationOnly)
+	);
 	$: spellGroups = createSpellGroups(visibleSpells);
 	$: allGroupsCollapsed =
 		spellGroups.length > 0 && spellGroups.every((group) => collapsedGroups.includes(group.id));
@@ -253,16 +255,21 @@
 		}
 	}
 
-	function matchesFilters(item: FoundryActorItem): boolean {
-		const query = searchText.trim().toLocaleLowerCase();
+	function matchesFilters(
+		item: FoundryActorItem,
+		search: string,
+		onlyPrepared: boolean,
+		onlyConcentration: boolean
+	): boolean {
+		const query = search.trim().toLocaleLowerCase();
 
 		if (query) {
 			const haystack = `${item.name} ${getSchool(item)}`.toLocaleLowerCase();
 			if (!haystack.includes(query)) return false;
 		}
 
-		if (preparedOnly && !isPrepared(item)) return false;
-		if (concentrationOnly && !isConcentration(item)) return false;
+		if (onlyPrepared && !isPrepared(item)) return false;
+		if (onlyConcentration && !isConcentration(item)) return false;
 
 		return true;
 	}
@@ -570,6 +577,16 @@
 		cursor: pointer;
 		font: inherit;
 		text-transform: inherit;
+	}
+
+	.level-title strong {
+		color: var(--tidy-font-bright-white);
+		font-family: var(--tidy-font-display);
+		font-size: var(--tidy-category-font-size);
+		font-weight: 700;
+		letter-spacing: var(--tidy-category-letter-spacing);
+		line-height: 1;
+		text-transform: uppercase;
 	}
 
 	.collapse-mark {
