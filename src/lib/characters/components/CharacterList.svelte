@@ -44,6 +44,12 @@
 			.filter((value): value is string => typeof value === 'string' && value.length > 0)
 			.join(' • ');
 	}
+
+	function getClassDescription(character: CharacterListItem): string {
+		const { classes, subclasses } = character.summary;
+		const classNames = classes.map((item) => `${item.name} ${item.levels}`).join(' / ');
+		return subclasses.length > 0 ? `${classNames} — ${subclasses.join(' / ')}` : classNames;
+	}
 </script>
 
 <div class="character-list">
@@ -99,7 +105,7 @@
 
 							<p class="class-line">
 								{#if summary.classes.length > 0}
-									{summary.classes.map((item) => `${item.name} ${item.levels}`).join(' / ')}
+									{getClassDescription(character)}
 								{:else}
 									Character
 								{/if}

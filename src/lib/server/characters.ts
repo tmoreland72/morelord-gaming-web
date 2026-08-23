@@ -13,6 +13,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 		name: string;
 		importedAt: string;
 		classesJson: string;
+		subclassesJson: string;
 		species: string | null;
 		background: string | null;
 		spellCount: number;
@@ -34,6 +35,11 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
 					WHERE json_extract(item.value, '$.type') = 'class'
 				), '[]') AS classesJson,
+				COALESCE((
+					SELECT json_group_array(json_extract(item.value, '$.name'))
+					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') = 'subclass'
+				), '[]') AS subclassesJson,
 				(
 					SELECT json_extract(item.value, '$.name')
 					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
@@ -60,12 +66,14 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 
 	return result.results.map((row) => {
 		const classes = JSON.parse(row.classesJson) as CharacterListItem['summary']['classes'];
+		const subclasses = JSON.parse(row.subclassesJson) as CharacterListItem['summary']['subclasses'];
 		return {
 			localId: row.localId,
 			name: row.name,
 			importedAt: row.importedAt,
 			summary: {
 				classes,
+				subclasses,
 				totalLevel: classes.reduce((total, item) => total + item.levels, 0),
 				species: row.species ?? undefined,
 				background: row.background ?? undefined,

@@ -8,6 +8,7 @@ export interface CharacterClassSummary {
 
 export interface CharacterSummary {
 	classes: CharacterClassSummary[];
+	subclasses: string[];
 	totalLevel: number;
 	species?: string;
 	background?: string;
@@ -40,6 +41,7 @@ export function createCharacterSummary(character: StoredCharacter): CharacterSum
 			name: item.name,
 			levels: getClassLevels(item)
 		}));
+	const subclasses = items.filter((item) => item.type === 'subclass').map((item) => item.name);
 
 	const speciesItem = items.find((item) => item.type === 'race' || item.type === 'species');
 
@@ -57,6 +59,7 @@ export function createCharacterSummary(character: StoredCharacter): CharacterSum
 
 	return {
 		classes,
+		subclasses,
 		totalLevel: classes.reduce((total, item) => total + item.levels, 0),
 		species: speciesItem?.name,
 		background: backgroundItem?.name,
