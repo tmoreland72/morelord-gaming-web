@@ -161,10 +161,14 @@
 	}
 
 	function getUsesLabel(item: FoundryActorItem): string {
-		const max = asNumber(getNestedValue(item.system, 'uses', 'max'));
-		const spent = asNumber(getNestedValue(item.system, 'uses', 'spent')) ?? 0;
-		if (!max || max <= 0) return '–';
-		return `${Math.max(0, max - spent)} / ${max}`;
+		for (const uses of getUsePools(item)) {
+			const max = asNumber(getNestedValue(uses, 'max'));
+			if (!max || max <= 0) continue;
+			const value = asNumber(getNestedValue(uses, 'value'));
+			const spent = asNumber(getNestedValue(uses, 'spent')) ?? 0;
+			return `${value ?? Math.max(0, max - spent)} / ${max}`;
+		}
+		return '–';
 	}
 
 	function getRecoveryLabel(item: FoundryActorItem): string {
@@ -188,6 +192,29 @@
 		return isRecord(activities) ? Object.values(activities).filter(isRecord) : [];
 	}
 
+	function getDerivedItem(item: FoundryActorItem): UnknownRecord | undefined {
+		if (!item._id) return undefined;
+		const items = character.derived?.items;
+		if (!isRecord(items)) return undefined;
+		const derivedItem = items[item._id];
+		return isRecord(derivedItem) ? derivedItem : undefined;
+	}
+
+	function getUsePools(item: FoundryActorItem): unknown[] {
+		const derivedItem = getDerivedItem(item);
+		const derivedActivities = getNestedValue(derivedItem, 'activities');
+		const preparedActivityUses = isRecord(derivedActivities)
+			? Object.values(derivedActivities).map((activity) => getNestedValue(activity, 'uses'))
+			: [];
+
+		return [
+			getNestedValue(derivedItem, 'uses'),
+			getNestedValue(item.system, 'uses'),
+			...preparedActivityUses,
+			...getActivities(item).map((activity) => getNestedValue(activity, 'uses'))
+		];
+	}
+
 	function getActivationTypes(item: FoundryActorItem): string[] {
 		const values = [
 			asString(getNestedValue(item.system, 'activation', 'type')),
@@ -200,31 +227,6 @@
 
 	function getActivationType(item: FoundryActorItem): string | undefined {
 		return getActivationTypes(item)[0];
-	}
-
-	function hasUsesRemaining(item: FoundryActorItem): boolean {
-		const max = asNumber(getNestedValue(item.system, 'uses', 'max'));
-		const remaining = asNumber(getNestedValue(item.system, 'uses', 'value'));
-		const spent = asNumber(getNestedValue(item.system, 'uses', 'spent')) ?? 0;
-		if (remaining !== undefined) return remaining > 0;
-		if (max !== undefined) return max > spent;
-
-		return getActivities(item).some((activity) => {
-			const activityMax = asNumber(getNestedValue(activity, 'uses', 'max'));
-			const activityRemaining = asNumber(getNestedValue(activity, 'uses', 'value'));
-			const activitySpent = asNumber(getNestedValue(activity, 'uses', 'spent')) ?? 0;
-			return activityRemaining !== undefined
-				? activityRemaining > 0
-				: activityMax !== undefined && activityMax > activitySpent;
-		});
-	}
-
-	function canUseFeature(item: FoundryActorItem): boolean {
-		const passiveTypes = ['passive', 'none', ''];
-		return (
-			getActivationTypes(item).some((type) => !passiveTypes.includes(type)) &&
-			hasUsesRemaining(item)
-		);
 	}
 
 	function getTimeLabel(item: FoundryActorItem): string {
@@ -268,9 +270,7 @@
 		}
 
 		if (filters.length === 0) return true;
-		return filters.some((filter) =>
-			filter === 'can-use' ? canUseFeature(item) : getActivationTypes(item).includes(filter)
-		);
+		return filters.some((filter) => getActivationTypes(item).includes(filter));
 	}
 
 	function toggleFeatureFilter(value: string): void {
@@ -358,11 +358,6 @@
 				type="button"
 				on:click={() => toggleFeatureFilter('reaction')}>Reaction</button
 			>
-			<button
-				class:active={featureFilters.includes('can-use')}
-				type="button"
-				on:click={() => toggleFeatureFilter('can-use')}>Can Use</button
-			>
 		</div>
 
 		<div class="filter-menu-container">
@@ -387,17 +382,6 @@
 									on:click={() => toggleFeatureFilter(option[0])}>{option[1]}</button
 								>
 							{/each}
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend>Miscellaneous</legend>
-						<div class="filter-options">
-							<button
-								type="button"
-								class:active={featureFilters.includes('can-use')}
-								on:click={() => toggleFeatureFilter('can-use')}>Can Use</button
-							>
 						</div>
 					</fieldset>
 

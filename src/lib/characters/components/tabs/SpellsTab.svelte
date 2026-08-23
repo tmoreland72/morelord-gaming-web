@@ -441,7 +441,7 @@
 			<input
 				type="search"
 				bind:value={searchText}
-				placeholder="Search spells"
+				placeholder="Search"
 				aria-label="Search spells"
 			/>
 		</label>
@@ -668,17 +668,17 @@
 
 	.spell-toolbar {
 		display: flex;
-		align-items: stretch;
-		gap: 0.4rem;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	.collapse-all-button {
-		width: 35px;
-		min-height: 35px;
-		flex: 0 0 35px;
-		border: 1px solid var(--tidy-border-strong);
-		border-radius: var(--tidy-radius-medium);
-		background: var(--tidy-surface-raised);
+		width: 30px;
+		min-height: 30px;
+		flex: 0 0 30px;
+		border: 1px solid var(--tidy-border);
+		border-radius: var(--tidy-radius-small);
+		background: var(--tidy-surface);
 		color: var(--tidy-font-white);
 		cursor: pointer;
 	}
@@ -688,11 +688,11 @@
 		min-width: 0;
 		flex: 1 1 auto;
 		align-items: center;
-		gap: 0.5rem;
-		min-height: 35px;
-		padding: 0 0.65rem;
-		border: 1px solid var(--tidy-border-strong);
-		border-radius: var(--tidy-radius-medium);
+		gap: 0.4rem;
+		min-height: 30px;
+		padding: 0 0.55rem;
+		border: 1px solid var(--tidy-border);
+		border-radius: var(--tidy-radius-small);
 		background: var(--tidy-surface);
 		color: var(--tidy-font-grey);
 	}
@@ -703,7 +703,7 @@
 		outline: 0;
 		background: transparent;
 		color: var(--tidy-font-white);
-		font-size: var(--tidy-font-size-md);
+		font-size: 0.8rem;
 	}
 
 	.spell-search input::placeholder {
@@ -716,11 +716,11 @@
 	}
 
 	.spell-filters button {
-		min-height: 35px;
-		padding: 0 0.75rem;
-		border: 1px solid var(--tidy-border-strong);
-		border-radius: var(--tidy-radius-medium);
-		background: var(--tidy-surface-raised);
+		min-height: 30px;
+		padding: 0 0.6rem;
+		border: 1px solid var(--tidy-border);
+		border-radius: 0;
+		background: var(--tidy-surface);
 		color: var(--tidy-font-white);
 		font-size: var(--tidy-font-size-sm);
 		font-weight: 700;
@@ -732,11 +732,11 @@
 	}
 
 	.filter-button {
-		width: 35px;
-		height: 35px;
-		border: 1px solid var(--tidy-border-strong);
-		border-radius: var(--tidy-radius-medium);
-		background: var(--tidy-surface-raised);
+		width: 30px;
+		height: 30px;
+		border: 1px solid var(--tidy-border);
+		border-radius: var(--tidy-radius-small);
+		background: var(--tidy-surface);
 		color: var(--tidy-font-white);
 		cursor: pointer;
 	}

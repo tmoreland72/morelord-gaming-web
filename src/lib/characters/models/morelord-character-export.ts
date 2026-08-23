@@ -80,6 +80,7 @@ export interface MorelordDerivedCharacter {
 	abilities?: Record<string, unknown>;
 	skills?: Record<string, unknown>;
 	tools?: Record<string, unknown>;
+	items?: Record<string, unknown>;
 	passivePerception?: number;
 	spellcasting?: Record<string, unknown>;
 	[key: string]: unknown;
