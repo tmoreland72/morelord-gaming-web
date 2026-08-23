@@ -85,7 +85,14 @@
 						aria-label={`Open ${character.name}`}
 						on:click={() => onOpen(character)}
 					>
-						<div class="portrait">{getInitials(character.name)}</div>
+						<div class="portrait">
+							{getInitials(character.name)}
+							<img
+								src={`/characters/${encodeURIComponent(character.localId)}/portrait`}
+								alt={`${character.name} portrait`}
+								on:error={(event) => event.currentTarget.remove()}
+							/>
+						</div>
 
 						<div class="character-details">
 							<h3>{character.name}</h3>
@@ -246,6 +253,7 @@
 	}
 
 	.portrait {
+		position: relative;
 		display: grid;
 		width: 76px;
 		height: 76px;
@@ -257,6 +265,14 @@
 		overflow: hidden;
 		font-size: 1.4rem;
 		font-weight: 700;
+	}
+
+	.portrait img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 
 	.character-details {
