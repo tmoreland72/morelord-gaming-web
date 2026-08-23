@@ -10,15 +10,13 @@
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
 	import TidyIcon from '../TidyIcon.svelte';
 	import {
-		addIcon,
 		attunementIcon,
-		collapseIcon,
-		favoriteIcon,
+		collapseAllDoubleIcon,
+		expandAllIcon,
+		expandIcon,
 		filterIcon,
-		moreOptionsIcon,
+		nextIcon,
 		searchIcon,
-		settingsIcon,
-		sortIcon,
 		carryingCapacityIcon
 	} from '../../icons/tidy-icons';
 
@@ -54,6 +52,11 @@
 
 	let searchText = '';
 	let equippedOnly = false;
+	let activationFilters: string[] = [];
+	let rarityFilters: string[] = [];
+	let miscellaneousFilters: string[] = [];
+	let filterMenuOpen = false;
+	let collapsedGroups: string[] = [];
 	let selectedItem: FoundryActorItem | null = null;
 
 	$: allInventory = actor.items
@@ -63,6 +66,8 @@
 	$: visibleInventory = allInventory.filter(matchesFilters);
 
 	$: groups = createGroups(visibleInventory);
+	$: allGroupsCollapsed =
+		groups.length > 0 && groups.every((group) => collapsedGroups.includes(group.id));
 
 	$: strengthScore = getAbilityScore('str');
 
@@ -125,6 +130,86 @@
 		equippedOnly = !equippedOnly;
 	}
 
+	function toggleFilter(collection: string[], value: string): string[] {
+		return collection.includes(value)
+			? collection.filter((entry) => entry !== value)
+			: [...collection, value];
+	}
+
+	function toggleActivation(value: string): void {
+		activationFilters = toggleFilter(activationFilters, value);
+	}
+
+	function toggleRarity(value: string): void {
+		rarityFilters = toggleFilter(rarityFilters, value);
+	}
+
+	function toggleMiscellaneous(value: string): void {
+		miscellaneousFilters = toggleFilter(miscellaneousFilters, value);
+	}
+
+	function clearFilters(): void {
+		activationFilters = [];
+		rarityFilters = [];
+		miscellaneousFilters = [];
+		equippedOnly = false;
+	}
+
+	function toggleGroup(id: string): void {
+		collapsedGroups = collapsedGroups.includes(id)
+			? collapsedGroups.filter((groupId) => groupId !== id)
+			: [...collapsedGroups, id];
+	}
+
+	function toggleAllGroups(): void {
+		collapsedGroups = allGroupsCollapsed ? [] : groups.map((group) => group.id);
+	}
+
+	function getActivities(item: FoundryActorItem): UnknownRecord[] {
+		const activities = item.system?.activities;
+
+		return isRecord(activities) ? Object.values(activities).filter(isRecord) : [];
+	}
+
+	function hasActivation(item: FoundryActorItem, activation: string): boolean {
+		return getActivities(item).some(
+			(activity) => asString(getNestedValue(activity, 'activation', 'type')) === activation
+		);
+	}
+
+	function isMagical(item: FoundryActorItem): boolean {
+		const properties = item.system?.properties;
+
+		return (
+			(Array.isArray(properties) && properties.includes('mgc')) ||
+			(asNumber(item.system?.magicalBonus) ?? 0) > 0
+		);
+	}
+
+	function matchesActivationFilters(item: FoundryActorItem): boolean {
+		if (activationFilters.length === 0) return true;
+
+		return activationFilters.some((filter) => {
+			if (filter === 'can-use') return getActivities(item).length > 0;
+			if (filter === 'magical') return isMagical(item);
+			return hasActivation(item, filter);
+		});
+	}
+
+	function matchesMiscellaneousFilters(item: FoundryActorItem): boolean {
+		if (miscellaneousFilters.length === 0) return true;
+
+		return miscellaneousFilters.some((filter) => {
+			if (filter === 'equipped') return item.system?.equipped === true;
+			if (filter === 'attuned') return item.system?.attuned === true;
+
+			const attunement = item.system?.attunement;
+			if (filter === 'optional-attunement') return attunement === 'optional' || attunement === 1;
+			if (filter === 'attunement-required') return attunement === 'required' || attunement === 2;
+			return false;
+		});
+	}
+
 	function matchesFilters(item: FoundryActorItem): boolean {
 		const search = searchText.trim().toLowerCase();
 
@@ -135,6 +220,13 @@
 		if (equippedOnly && item.system?.equipped !== true) {
 			return false;
 		}
+
+		if (!matchesActivationFilters(item)) return false;
+
+		const rarity = (asString(item.system?.rarity) ?? '').toLowerCase().replace(/\s+/g, '-');
+		if (rarityFilters.length > 0 && !rarityFilters.includes(rarity)) return false;
+
+		if (!matchesMiscellaneousFilters(item)) return false;
 
 		return true;
 	}
@@ -231,13 +323,7 @@
 	}
 
 	function getFirstActivity(item: FoundryActorItem): UnknownRecord | undefined {
-		const activities = item.system?.activities;
-
-		if (!isRecord(activities)) {
-			return undefined;
-		}
-
-		return Object.values(activities).find(isRecord);
+		return getActivities(item)[0];
 	}
 
 	function getActivationLabel(item: FoundryActorItem): string {
@@ -409,8 +495,12 @@
 
 <section class="inventory-tab">
 	<div class="toolbar">
-		<button type="button" class="toolbar-icon" disabled title="Collapse sections"
-			><TidyIcon icon={collapseIcon} /></button
+		<button
+			type="button"
+			class="toolbar-icon"
+			title={allGroupsCollapsed ? 'Expand all sections' : 'Collapse all sections'}
+			on:click={toggleAllGroups}
+			><TidyIcon icon={allGroupsCollapsed ? expandAllIcon : collapseAllDoubleIcon} /></button
 		>
 
 		<label class="search-field">
@@ -420,27 +510,88 @@
 		</label>
 
 		<div class="toolbar-filters">
-			<button type="button" disabled> Action </button>
+			<button
+				type="button"
+				class:active={activationFilters.includes('action')}
+				on:click={() => toggleActivation('action')}>Action</button
+			>
 
-			<button type="button" disabled> Bonus Action </button>
+			<button
+				type="button"
+				class:active={activationFilters.includes('bonus')}
+				on:click={() => toggleActivation('bonus')}>Bonus Action</button
+			>
 
-			<button type="button" disabled> Reaction </button>
+			<button
+				type="button"
+				class:active={activationFilters.includes('reaction')}
+				on:click={() => toggleActivation('reaction')}>Reaction</button
+			>
 
 			<button type="button" class:active={equippedOnly} on:click={toggleEquipped}>
 				Equipped
 			</button>
 
-			<button type="button" class="toolbar-icon" disabled aria-label="Filter"
-				><TidyIcon icon={filterIcon} /></button
-			>
+			<div class="filter-menu-container">
+				<button
+					type="button"
+					class="toolbar-icon"
+					class:active={filterMenuOpen ||
+						rarityFilters.length > 0 ||
+						miscellaneousFilters.length > 0}
+					aria-label="Filter"
+					aria-expanded={filterMenuOpen}
+					on:click={() => (filterMenuOpen = !filterMenuOpen)}><TidyIcon icon={filterIcon} /></button
+				>
 
-			<button type="button" class="toolbar-icon" disabled aria-label="Sort"
-				><TidyIcon icon={sortIcon} /></button
-			>
+				{#if filterMenuOpen}
+					<div class="filter-menu">
+						<fieldset>
+							<legend>Activation Cost</legend>
+							<div class="filter-options">
+								{#each [['action', 'Action'], ['bonus', 'Bonus Action'], ['reaction', 'Reaction'], ['can-use', 'Can Use'], ['magical', 'Magical']] as option (option[0])}
+									<button
+										type="button"
+										class:active={activationFilters.includes(option[0])}
+										on:click={() => toggleActivation(option[0])}>{option[1]}</button
+									>
+								{/each}
+							</div>
+						</fieldset>
 
-			<button type="button" class="toolbar-icon" disabled aria-label="Settings"
-				><TidyIcon icon={settingsIcon} /></button
-			>
+						<fieldset>
+							<legend>Rarity</legend>
+							<div class="filter-options">
+								{#each [['common', 'Common'], ['uncommon', 'Uncommon'], ['rare', 'Rare'], ['very-rare', 'Very Rare'], ['legendary', 'Legendary'], ['artifact', 'Artifact']] as option (option[0])}
+									<button
+										type="button"
+										class:active={rarityFilters.includes(option[0])}
+										on:click={() => toggleRarity(option[0])}>{option[1]}</button
+									>
+								{/each}
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend>Miscellaneous</legend>
+							<div class="filter-options">
+								<button type="button" class:active={equippedOnly} on:click={toggleEquipped}
+									>Equipped</button
+								>
+								{#each [['optional-attunement', 'Optional Attunement'], ['attunement-required', 'Attunement Required'], ['attuned', 'Attuned']] as option (option[0])}
+									<button
+										type="button"
+										class:active={miscellaneousFilters.includes(option[0])}
+										on:click={() => toggleMiscellaneous(option[0])}>{option[1]}</button
+									>
+								{/each}
+							</div>
+						</fieldset>
+
+						<button type="button" class="clear-filters" on:click={clearFilters}>× Clear All</button>
+					</div>
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -490,8 +641,17 @@
 					class="inventory-group"
 				>
 					<header class="group-header">
-						<div class="group-title">
-							<span class="group-toggle"><TidyIcon icon={collapseIcon} /></span>
+						<button
+							type="button"
+							class="group-title"
+							aria-expanded={!collapsedGroups.includes(group.id)}
+							on:click={() => toggleGroup(group.id)}
+						>
+							<span class="group-toggle"
+								><TidyIcon
+									icon={collapsedGroups.includes(group.id) ? nextIcon : expandIcon}
+								/></span
+							>
 
 							<h3>
 								<span class="group-name">
@@ -502,7 +662,7 @@
 									{group.items.length}
 								</span>
 							</h3>
-						</div>
+						</button>
 
 						<div class="group-columns">
 							{#if group.id === 'weapon'}
@@ -513,108 +673,100 @@
 								<span>Price</span>
 								<span>Quantity</span>
 								<span>Weight</span>
-								<span><TidyIcon icon={searchIcon} /></span>
-								<span><TidyIcon icon={addIcon} /></span>
 							{:else if group.id === 'container'}
 								<span></span>
 								<span></span>
-								<span><TidyIcon icon={searchIcon} /></span>
-								<span><TidyIcon icon={addIcon} /></span>
 							{:else}
 								<span>Price</span>
 								<span>Quantity</span>
 								<span>Weight</span>
-								<span><TidyIcon icon={searchIcon} /></span>
-								<span><TidyIcon icon={addIcon} /></span>
 							{/if}
 						</div>
 					</header>
 
-					<div class="item-list">
-						{#each group.items as item}
-							{@const price = getPriceParts(item)}
+					{#if !collapsedGroups.includes(group.id)}
+						<div class="item-list">
+							{#each group.items as item}
+								{@const price = getPriceParts(item)}
 
-							{@const weight = getWeightParts(item)}
+								{@const weight = getWeightParts(item)}
 
-							<article class="item-row">
-								<button
-									type="button"
-									class="item-identity item-details-button"
-									disabled={!hasItemDetails(item)}
-									aria-label={`View details for ${item.name}`}
-									on:click={() => openItemDetails(item)}
-								>
-									<span class="item-image">
-										{#if getItemImageSrc(character, item)}
-											<img src={getItemImageSrc(character, item) ?? ''} alt="" />
-										{/if}
-									</span>
-
-									<strong>
-										{item.name}
-									</strong>
-								</button>
-
-								{#if group.id === 'weapon'}
-									<span>
-										{getUsesLabel(item)}
-									</span>
-
-									<span class="activation-value">
-										{getActivationLabel(item)}
-									</span>
-
-									<span class="roll-value">
-										{getRollModifier(item)}
-									</span>
-
-									<span class="formula-value">
-										{getDamageLabel(item)}
-									</span>
-								{/if}
-
-								{#if group.id === 'container'}
-									<span class="container-contents">
-										{getContainerCount(item)}
-									</span>
-
-									<span class="container-meter"></span>
-								{:else}
-									<span class="price-value">
-										<strong>
-											{price.value}
-										</strong>
-
-										{#if price.unit}
-											<small>
-												{price.unit}
-											</small>
-										{/if}
-									</span>
-
-									<span>
-										<span class="quantity-field">
-											{getQuantity(item)}
+								<article class="item-row">
+									<button
+										type="button"
+										class="item-identity item-details-button"
+										disabled={!hasItemDetails(item)}
+										aria-label={`View details for ${item.name}`}
+										on:click={() => openItemDetails(item)}
+									>
+										<span class="item-image">
+											{#if getItemImageSrc(character, item)}
+												<img src={getItemImageSrc(character, item) ?? ''} alt="" />
+											{/if}
 										</span>
-									</span>
 
-									<span class="weight-value">
 										<strong>
-											{weight.value}
+											{item.name}
 										</strong>
+									</button>
 
-										<small>
-											{weight.unit}
-										</small>
-									</span>
-								{/if}
+									{#if group.id === 'weapon'}
+										<span>
+											{getUsesLabel(item)}
+										</span>
 
-								<span class="item-action"><TidyIcon icon={favoriteIcon} /></span>
+										<span class="activation-value">
+											{getActivationLabel(item)}
+										</span>
 
-								<span class="item-action"><TidyIcon icon={moreOptionsIcon} /></span>
-							</article>
-						{/each}
-					</div>
+										<span class="roll-value">
+											{getRollModifier(item)}
+										</span>
+
+										<span class="formula-value">
+											{getDamageLabel(item)}
+										</span>
+									{/if}
+
+									{#if group.id === 'container'}
+										<span class="container-contents">
+											{getContainerCount(item)}
+										</span>
+
+										<span class="container-meter"></span>
+									{:else}
+										<span class="price-value">
+											<strong>
+												{price.value}
+											</strong>
+
+											{#if price.unit}
+												<small>
+													{price.unit}
+												</small>
+											{/if}
+										</span>
+
+										<span>
+											<span class="quantity-field">
+												{getQuantity(item)}
+											</span>
+										</span>
+
+										<span class="weight-value">
+											<strong>
+												{weight.value}
+											</strong>
+
+											<small>
+												{weight.unit}
+											</small>
+										</span>
+									{/if}
+								</article>
+							{/each}
+						</div>
+					{/if}
 				</section>
 			{/each}
 		</div>

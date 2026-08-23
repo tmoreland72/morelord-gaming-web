@@ -4,6 +4,8 @@ import {
 	faArrowDownWideShort,
 	faArrowRightFromBracket,
 	faArrowTurnDown,
+	faAnglesDown,
+	faAnglesUp,
 	faBolt,
 	faBookOpen,
 	faBoxOpen,
@@ -89,6 +91,10 @@ export const expandIcon: TidyIcon = faChevronDown;
 export const collapseIcon: TidyIcon = faChevronUp;
 
 export const collapseAllIcon: TidyIcon = faChevronUp;
+
+export const expandAllIcon: TidyIcon = faAnglesDown;
+
+export const collapseAllDoubleIcon: TidyIcon = faAnglesUp;
 
 export const nextIcon: TidyIcon = faChevronRight;
 

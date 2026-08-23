@@ -484,7 +484,7 @@
 	.tidy-header {
 		overflow: hidden;
 		background:
-			linear-gradient(90deg, rgba(22, 9, 31, 0.88), rgba(27, 10, 38, 0.78), rgba(8, 7, 12, 0.94)),
+			linear-gradient(90deg, rgba(72, 42, 4, 0.9), rgba(104, 60, 3, 0.78), rgba(18, 12, 4, 0.94)),
 			url('/characters/images/banner-character.webp') center 38% / cover no-repeat;
 		color: #eeeeee;
 	}

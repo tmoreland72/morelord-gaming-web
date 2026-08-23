@@ -63,7 +63,7 @@
 
 .features-tab .toolbar-filters button.active {
 	border-color: var(--tidy-border-gold);
-	background: var(--tidy-dark-red);
+	background: var(--tidy-category-background);
 	color: var(--tidy-font-bright-white);
 }
 
@@ -116,7 +116,7 @@
 	gap: 0.35rem;
 	margin: 0;
 	font-family: var(--tidy-font-display);
-	font-size: 0.92rem;
+	font-size: var(--tidy-category-font-size);
 	font-weight: 700;
 	letter-spacing: 0.015em;
 	line-height: 1;
@@ -138,7 +138,7 @@
 
 .features-tab .group-columns {
 	display: grid;
-	grid-template-columns: 86px 70px 100px 120px 34px 34px;
+	grid-template-columns: 86px 70px 100px 120px;
 	align-items: stretch;
 	font-size: var(--tidy-font-size-sm);
 	font-weight: 600;
@@ -162,7 +162,7 @@
 
 .features-tab .feature-row {
 	display: grid;
-	grid-template-columns: minmax(180px, 1fr) 86px 70px 100px 120px 34px 34px;
+	grid-template-columns: minmax(180px, 1fr) 86px 70px 100px 120px;
 	min-height: var(--tidy-row-height);
 	align-items: center;
 	border-bottom: 1px solid var(--tidy-border-soft);
@@ -213,8 +213,7 @@
 	object-fit: cover;
 }
 
-.features-tab .feature-cell,
-.features-tab .row-action {
+.features-tab .feature-cell {
 	display: grid;
 	min-width: 0;
 	height: 100%;
@@ -238,15 +237,6 @@
 	white-space: nowrap;
 }
 
-.features-tab .row-action {
-	padding: 0;
-	font-size: 1rem;
-}
-
-.features-tab .bookmark {
-	color: var(--tidy-font-grey);
-}
-
 .features-tab .empty-state {
 	padding: 2rem;
 	border: 1px dashed var(--tidy-border);
@@ -263,9 +253,12 @@
 		display: none;
 	}
 
-	.features-tab .group-columns,
+	.features-tab .group-columns {
+		grid-template-columns: 70px 62px 86px 100px;
+	}
+
 	.features-tab .feature-row {
-		grid-template-columns: minmax(180px, 1fr) 70px 62px 86px 100px 30px 30px;
+		grid-template-columns: minmax(180px, 1fr) 70px 62px 86px 100px;
 	}
 }
 
@@ -280,20 +273,18 @@
 	}
 
 	.features-tab .group-columns {
-		grid-template-columns: 70px 62px 30px;
+		grid-template-columns: 70px 62px;
 	}
 
 	.features-tab .group-columns span:nth-child(3),
 	.features-tab .group-columns span:nth-child(4),
-	.features-tab .group-columns span:nth-child(6),
 	.features-tab .feature-row > :nth-child(4),
-	.features-tab .feature-row > :nth-child(5),
-	.features-tab .feature-row > :nth-child(7) {
+	.features-tab .feature-row > :nth-child(5) {
 		display: none;
 	}
 
 	.features-tab .feature-row {
-		grid-template-columns: minmax(150px, 1fr) 70px 62px 30px;
+		grid-template-columns: minmax(150px, 1fr) 70px 62px;
 	}
 }
 

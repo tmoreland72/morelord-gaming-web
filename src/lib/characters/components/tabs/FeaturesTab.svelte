@@ -3,12 +3,10 @@
 <script lang="ts">
 	import TidyIcon from '../TidyIcon.svelte';
 	import {
-		addIcon,
-		bookmarkIcon,
-		collapseAllIcon,
+		collapseAllDoubleIcon,
 		expandIcon,
+		expandAllIcon,
 		filterIcon,
-		moreOptionsIcon,
 		nextIcon,
 		searchIcon,
 		settingsIcon,
@@ -46,6 +44,8 @@
 	$: features = actor.items.filter((item) => item.type === 'feat');
 	$: visibleFeatures = features.filter(matchesFilters);
 	$: groups = buildGroups(visibleFeatures);
+	$: allGroupsCollapsed =
+		groups.length > 0 && groups.every((group) => collapsedGroups.has(group.id));
 
 	function isRecord(value: unknown): value is UnknownRecord {
 		return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -250,7 +250,7 @@
 	}
 
 	function toggleAllGroups(): void {
-		if (collapsedGroups.size === groups.length) {
+		if (allGroupsCollapsed) {
 			collapsedGroups = new Set();
 		} else {
 			collapsedGroups = new Set(groups.map((group) => group.id));
@@ -287,8 +287,9 @@
 		<button
 			class="toolbar-icon"
 			type="button"
-			title="Collapse or expand all groups"
-			on:click={toggleAllGroups}><TidyIcon icon={collapseAllIcon} /></button
+			title={allGroupsCollapsed ? 'Expand all groups' : 'Collapse all groups'}
+			on:click={toggleAllGroups}
+			><TidyIcon icon={allGroupsCollapsed ? expandAllIcon : collapseAllDoubleIcon} /></button
 		>
 
 		<label class="search-field">
@@ -357,8 +358,6 @@
 							<span>Time</span>
 							<span>Recovery</span>
 							<span>Source</span>
-							<span><TidyIcon icon={searchIcon} /></span>
-							<span><TidyIcon icon={addIcon} /></span>
 						</div>
 					</header>
 
@@ -387,12 +386,6 @@
 									<span class="feature-cell">{getTimeLabel(feature)}</span>
 									<span class="feature-cell">{getRecoveryLabel(feature)}</span>
 									<span class="feature-cell source-cell">{getSourceLabel(feature)}</span>
-									<button class="row-action bookmark" type="button" title="Favorite" disabled
-										><TidyIcon icon={bookmarkIcon} /></button
-									>
-									<button class="row-action" type="button" title="More options" disabled
-										><TidyIcon icon={moreOptionsIcon} /></button
-									>
 								</article>
 							{/each}
 						</div>

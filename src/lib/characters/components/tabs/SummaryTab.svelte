@@ -48,6 +48,24 @@
 		tone?: 'resistance' | 'vulnerability';
 	}
 
+	interface ToolRow {
+		key: string;
+		name: string;
+		ability: string;
+		proficiency: number;
+		item?: FoundryActorItem;
+	}
+
+	const toolLabels: Record<string, string> = {
+		calligrapher: "Calligrapher's Supplies",
+		cook: "Cook's Utensils",
+		forg: 'Forgery Kit',
+		herb: 'Herbalism Kit',
+		navg: "Navigator's Tools",
+		poison: "Poisoner's Kit",
+		thief: "Thieves' Tools"
+	};
+
 	const abilityLabels: Record<string, string> = {
 		str: 'STR',
 		dex: 'DEX',
@@ -67,9 +85,7 @@
 
 	$: background = actor.items.find((item) => item.type === 'background');
 
-	$: tools = actor.items
-		.filter((item) => item.type === 'tool')
-		.sort((left, right) => left.name.localeCompare(right.name));
+	$: tools = getTools(actor);
 
 	$: traitRows = createTraitRows();
 
@@ -240,7 +256,61 @@
 		];
 	}
 
-	function getToolAbility(item: FoundryActorItem): string {
+	function normalizeToolName(value: string): string {
+		return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+	}
+
+	function getTools(currentActor: StoredCharacter['actor']): ToolRow[] {
+		const toolItems = currentActor.items.filter((item) => item.type === 'tool');
+		const systemTools = isRecord(currentActor.system.tools) ? currentActor.system.tools : {};
+		const matchedItems: FoundryActorItem[] = [];
+		const rows = Object.entries(systemTools).flatMap(([key, value]) => {
+			if (!isRecord(value)) return [];
+
+			const proficiency = asNumber(value.value) ?? 0;
+			if (proficiency <= 0) return [];
+
+			const name = toolLabels[key] ?? formatLabel(key);
+			const aliases = [normalizeToolName(key), normalizeToolName(name)];
+			const item = toolItems.find((candidate) => {
+				const identifier = asString(candidate.system?.identifier) ?? '';
+				return (
+					aliases.includes(normalizeToolName(candidate.name)) ||
+					aliases.includes(normalizeToolName(identifier))
+				);
+			});
+
+			if (item) matchedItems.push(item);
+
+			return [
+				{
+					key,
+					name,
+					ability: asString(value.ability) ?? getToolItemAbility(item),
+					proficiency,
+					item
+				}
+			];
+		});
+
+		for (const item of toolItems) {
+			if (matchedItems.includes(item)) continue;
+
+			rows.push({
+				key: asString(item.system?.identifier) ?? item.name,
+				name: item.name,
+				ability: getToolItemAbility(item),
+				proficiency: asNumber(item.system?.proficient) ?? 1,
+				item
+			});
+		}
+
+		return rows.sort((left, right) => left.name.localeCompare(right.name));
+	}
+
+	function getToolItemAbility(item?: FoundryActorItem): string {
+		if (!item) return '';
+
 		const ability = asString(item.system?.ability);
 
 		if (ability) {
@@ -251,19 +321,13 @@
 
 		const activityAbility = asString(getNestedValue(activity, 'check', 'ability'));
 
-		return activityAbility ? activityAbility.toUpperCase() : '—';
+		return activityAbility ?? '';
 	}
 
-	function getToolModifier(item: FoundryActorItem): number {
-		const ability = getToolAbility(item).toLowerCase();
+	function getToolModifier(tool: ToolRow): number {
+		const baseModifier = getAbilityModifierFromDerived(tool.ability);
 
-		const skill = derived.skills.find((entry) => entry.ability === ability);
-
-		const proficiency = asNumber(item.system?.proficient) ?? 1;
-
-		const baseModifier = getAbilityModifierFromDerived(ability);
-
-		return baseModifier + derived.proficiencyBonus * proficiency;
+		return baseModifier + derived.proficiencyBonus * tool.proficiency;
 	}
 
 	function getAbilityModifierFromDerived(ability: string): number {
@@ -385,26 +449,20 @@
 				<div class="tool-list">
 					{#each tools as tool}
 						<div class="tool-row">
-							<span class="proficiency-marker trained"><TidyIcon icon={proficientIcon} /></span>
-
-							<span class="tool-item-image">
-								{#if getItemImageSrc(character, tool)}
-									<img src={getItemImageSrc(character, tool)} alt="" />
-								{:else}
-									{tool.name.charAt(0).toUpperCase()}
-								{/if}
+							<span class:expert={tool.proficiency >= 2} class="proficiency-marker trained">
+								<TidyIcon icon={getProficiencyIcon(tool.proficiency)} />
 							</span>
 
 							<span class="tool-ability">
-								{getToolAbility(tool)}
+								{abilityLabels[tool.ability] ?? (tool.ability.toUpperCase() || '—')}
 							</span>
 
 							<button
 								type="button"
 								class="item-details-button"
-								disabled={!hasItemDetails(tool)}
+								disabled={!tool.item || !hasItemDetails(tool.item)}
 								aria-label={`View details for ${tool.name}`}
-								on:click={() => openItemDetails(tool)}
+								on:click={() => tool.item && openItemDetails(tool.item)}
 							>
 								<strong>
 									{tool.name}

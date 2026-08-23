@@ -6,7 +6,14 @@
 	import { getItemImageSrc } from '../../assets/image-resolver';
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
 	import TidyIcon from '../TidyIcon.svelte';
-	import { collapseIcon, searchIcon, spellSlotIcon } from '../../icons/tidy-icons';
+	import {
+		collapseAllDoubleIcon,
+		expandAllIcon,
+		expandIcon,
+		nextIcon,
+		searchIcon,
+		spellSlotIcon
+	} from '../../icons/tidy-icons';
 
 	export let character: StoredCharacter;
 
@@ -23,12 +30,25 @@
 	let searchText = '';
 	let preparedOnly = false;
 	let concentrationOnly = false;
+	let collapsedGroups: string[] = [];
 	let selectedItem: FoundryActorItem | null = null;
 
 	$: actor = character.actor;
 	$: allSpells = actor.items.filter((item) => item.type === 'spell').sort(sortSpells);
 	$: visibleSpells = allSpells.filter(matchesFilters);
 	$: spellGroups = createSpellGroups(visibleSpells);
+	$: allGroupsCollapsed =
+		spellGroups.length > 0 && spellGroups.every((group) => collapsedGroups.includes(group.id));
+
+	function toggleGroup(id: string): void {
+		collapsedGroups = collapsedGroups.includes(id)
+			? collapsedGroups.filter((groupId) => groupId !== id)
+			: [...collapsedGroups, id];
+	}
+
+	function toggleAllGroups(): void {
+		collapsedGroups = allGroupsCollapsed ? [] : spellGroups.map((group) => group.id);
+	}
 
 	function asRecord(value: unknown): UnknownRecord | undefined {
 		return typeof value === 'object' && value !== null ? (value as UnknownRecord) : undefined;
@@ -291,6 +311,14 @@
 
 <section class="tidy-spellbook" aria-label="Spellbook">
 	<div class="spell-toolbar">
+		<button
+			type="button"
+			class="collapse-all-button"
+			title={allGroupsCollapsed ? 'Expand all spell levels' : 'Collapse all spell levels'}
+			on:click={toggleAllGroups}
+			><TidyIcon icon={allGroupsCollapsed ? expandAllIcon : collapseAllDoubleIcon} /></button
+		>
+
 		<label class="spell-search">
 			<TidyIcon icon={searchIcon} />
 			<input
@@ -333,11 +361,20 @@
 					class:cantrip={group.tone === 'cantrip'}
 				>
 					<header class="spell-level-header">
-						<div class="level-title">
-							<span class="collapse-mark"><TidyIcon icon={collapseIcon} /></span>
+						<button
+							type="button"
+							class="level-title"
+							aria-expanded={!collapsedGroups.includes(group.id)}
+							on:click={() => toggleGroup(group.id)}
+						>
+							<span class="collapse-mark"
+								><TidyIcon
+									icon={collapsedGroups.includes(group.id) ? nextIcon : expandIcon}
+								/></span
+							>
 							<strong>{group.label}</strong>
 							<span class="level-count">{group.spells.length}</span>
-						</div>
+						</button>
 
 						{#if getSlotSummary(group.level)}
 							<div class="slot-summary" title="Remaining spell slots">
@@ -355,46 +392,48 @@
 						</div>
 					</header>
 
-					<div class="spell-list">
-						{#each group.spells as spell}
-							<article class="spell-row" class:unprepared={!isPrepared(spell)}>
-								<button
-									type="button"
-									class="spell-primary item-details-button"
-									disabled={!hasItemDetails(spell)}
-									aria-label={`View details for ${spell.name}`}
-									on:click={() => openItemDetails(spell)}
-								>
-									<span class="spell-icon">
-										{#if getItemImageSrc(character, spell)}
-											<img src={getItemImageSrc(character, spell)} alt="" />
-										{:else}
-											<span>{spell.name.charAt(0).toUpperCase()}</span>
-										{/if}
-									</span>
+					{#if !collapsedGroups.includes(group.id)}
+						<div class="spell-list">
+							{#each group.spells as spell}
+								<article class="spell-row" class:unprepared={!isPrepared(spell)}>
+									<button
+										type="button"
+										class="spell-primary item-details-button"
+										disabled={!hasItemDetails(spell)}
+										aria-label={`View details for ${spell.name}`}
+										on:click={() => openItemDetails(spell)}
+									>
+										<span class="spell-icon">
+											{#if getItemImageSrc(character, spell)}
+												<img src={getItemImageSrc(character, spell)} alt="" />
+											{:else}
+												<span>{spell.name.charAt(0).toUpperCase()}</span>
+											{/if}
+										</span>
 
-									<span class="spell-name-block">
-										<strong>{spell.name}</strong>
-										<small>
-											{getSchool(spell)}
-											{#if isAlwaysPrepared(spell)}
-												· Always Prepared{/if}
-											{#if isRitual(spell)}
-												· Ritual{/if}
-										</small>
-									</span>
-								</button>
+										<span class="spell-name-block">
+											<strong>{spell.name}</strong>
+											<small>
+												{getSchool(spell)}
+												{#if isAlwaysPrepared(spell)}
+													· Always Prepared{/if}
+												{#if isRitual(spell)}
+													· Ritual{/if}
+											</small>
+										</span>
+									</button>
 
-								<div class="spell-cell components" title="Components">
-									{getComponents(spell)}
-								</div>
-								<div class="spell-cell" title="Casting time">{getActivation(spell)}</div>
-								<div class="spell-cell target" title="Target">{getTarget(spell)}</div>
-								<div class="spell-cell" title="Range">{getRange(spell)}</div>
-								<div class="spell-cell roll" title="Roll">{getRoll(spell)}</div>
-							</article>
-						{/each}
-					</div>
+									<div class="spell-cell components" title="Components">
+										{getComponents(spell)}
+									</div>
+									<div class="spell-cell" title="Casting time">{getActivation(spell)}</div>
+									<div class="spell-cell target" title="Target">{getTarget(spell)}</div>
+									<div class="spell-cell" title="Range">{getRange(spell)}</div>
+									<div class="spell-cell roll" title="Roll">{getRoll(spell)}</div>
+								</article>
+							{/each}
+						</div>
+					{/if}
 				</section>
 			{/each}
 		</div>
@@ -415,6 +454,17 @@
 		display: flex;
 		align-items: stretch;
 		gap: 0.4rem;
+	}
+
+	.collapse-all-button {
+		width: 35px;
+		min-height: 35px;
+		flex: 0 0 35px;
+		border: 1px solid var(--tidy-border-strong);
+		border-radius: var(--tidy-radius-medium);
+		background: var(--tidy-surface-raised);
+		color: var(--tidy-font-white);
+		cursor: pointer;
 	}
 
 	.spell-search {
@@ -461,10 +511,15 @@
 		cursor: pointer;
 	}
 
-	.spell-filters button:hover,
-	.spell-filters button.active {
+	.spell-filters button:hover {
 		border-color: var(--tidy-font-gold);
 		color: var(--tidy-font-gold);
+	}
+
+	.spell-filters button.active {
+		border-color: #c43d49;
+		background: var(--tidy-dark-red);
+		color: var(--tidy-font-bright-white);
 	}
 
 	.spell-groups {
@@ -484,18 +539,19 @@
 		grid-template-columns: minmax(240px, 1fr) auto minmax(440px, 42%);
 		min-height: var(--tidy-section-height);
 		align-items: center;
-		background: var(--tidy-dark-red);
+		background: var(--tidy-category-background);
 		color: var(--tidy-font-bright-white);
-		font-size: var(--tidy-font-size-sm);
+		font-family: var(--tidy-font-display);
+		font-size: var(--tidy-category-font-size);
 		text-transform: uppercase;
 	}
 
 	.spell-group.ritual .spell-level-header {
-		background: #07547e;
+		background: var(--tidy-category-background);
 	}
 
 	.spell-group.cantrip .spell-level-header {
-		background: #740019;
+		background: var(--tidy-category-background);
 	}
 
 	.level-title,
@@ -506,6 +562,16 @@
 		padding: 0 0.55rem;
 	}
 
+	.level-title {
+		align-self: stretch;
+		border: 0;
+		background: transparent;
+		color: inherit;
+		cursor: pointer;
+		font: inherit;
+		text-transform: inherit;
+	}
+
 	.collapse-mark {
 		font-size: 1rem;
 		line-height: 1;
@@ -513,9 +579,13 @@
 
 	.level-count {
 		color: rgba(255, 255, 255, 0.75);
+		font-family: var(--tidy-font-body);
+		font-size: var(--tidy-font-size-sm);
 	}
 
 	.slot-summary {
+		font-family: var(--tidy-font-body);
+		font-size: var(--tidy-font-size-sm);
 		white-space: nowrap;
 		font-weight: 700;
 	}
@@ -528,6 +598,8 @@
 		display: grid;
 		grid-template-columns: 1.05fr 0.65fr 1.15fr 0.75fr 0.65fr;
 		align-self: stretch;
+		font-family: var(--tidy-font-body);
+		font-size: var(--tidy-font-size-sm);
 	}
 
 	.column-headings span {
@@ -657,7 +729,11 @@
 		}
 
 		.spell-search {
-			flex-basis: 100%;
+			flex-basis: calc(100% - 39px);
+		}
+
+		.spell-filters {
+			width: 100%;
 		}
 
 		.spell-level-header {
