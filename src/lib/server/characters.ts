@@ -12,6 +12,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 		localId: string;
 		name: string;
 		importedAt: string;
+		portraitVersion: number;
 		classesJson: string;
 		subclassesJson: string;
 		species: string | null;
@@ -26,6 +27,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 			SELECT
 				c.id AS localId,
 				c.name,
+				c.updated_at AS portraitVersion,
 				COALESCE(json_extract(c.content_json, '$.importedAt'), '') AS importedAt,
 				COALESCE((
 					SELECT json_group_array(json_object(
@@ -71,6 +73,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 			localId: row.localId,
 			name: row.name,
 			importedAt: row.importedAt,
+			portraitVersion: row.portraitVersion,
 			summary: {
 				classes,
 				subclasses,

@@ -94,7 +94,7 @@
 						<div class="portrait">
 							{getInitials(character.name)}
 							<img
-								src={`/characters/${encodeURIComponent(character.localId)}/portrait`}
+								src={`/characters/${encodeURIComponent(character.localId)}/portrait?v=${character.portraitVersion}`}
 								alt={`${character.name} portrait`}
 								on:error={(event) => event.currentTarget.remove()}
 							/>
