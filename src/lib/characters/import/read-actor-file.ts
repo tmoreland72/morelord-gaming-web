@@ -95,7 +95,7 @@ function validateAssets(assets: MorelordCharacterAssets | undefined, formatVersi
 	}
 
 	if (assets.portrait?.data !== undefined) {
-		validateImageDataUrl(assets.portrait.data, 'portrait');
+		discardInvalidImageData(assets.portrait, 'portrait');
 	}
 
 	if (assets.images !== undefined && !isRecord(assets.images)) {
@@ -108,11 +108,7 @@ function validateAssets(assets: MorelordCharacterAssets | undefined, formatVersi
 		}
 
 		if (asset.data !== undefined) {
-			if (typeof asset.data !== 'string') {
-				throw new Error(`Image asset ${assetId} contains invalid image data.`);
-			}
-
-			validateImageDataUrl(asset.data, `image asset ${assetId}`);
+			discardInvalidImageData(asset, `image asset ${assetId}`);
 		}
 	}
 
@@ -164,10 +160,11 @@ function resolveReferencedAsset(
 	return assets?.images?.[assetId];
 }
 
-function validateImageDataUrl(value: string, label: string): void {
-	if (!isSupportedImageDataUrl(value)) {
-		throw new Error(`The character export contains an invalid ${label} image.`);
-	}
+function discardInvalidImageData(asset: MorelordPortraitAsset, label: string): void {
+	if (typeof asset.data === 'string' && isSupportedImageDataUrl(asset.data)) return;
+
+	delete asset.data;
+	asset.error ||= `The embedded ${label} data was invalid and was skipped during import.`;
 }
 
 function isMorelordCharacterExport(value: unknown): value is MorelordCharacterExport {
