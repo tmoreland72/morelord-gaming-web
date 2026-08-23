@@ -115,6 +115,10 @@
 		return typeof value === 'string' ? value : undefined;
 	}
 
+	function asBoolean(value: unknown): boolean {
+		return value === true || value === 1 || value === 'true' || value === '1';
+	}
+
 	function getNestedValue(source: unknown, ...keys: string[]): unknown {
 		let current = source;
 
@@ -177,12 +181,17 @@
 	function getActivities(item: FoundryActorItem): UnknownRecord[] {
 		const activities = item.system?.activities;
 
+		if (Array.isArray(activities)) return activities.filter(isRecord);
 		return isRecord(activities) ? Object.values(activities).filter(isRecord) : [];
 	}
 
 	function hasActivation(item: FoundryActorItem, activation: string): boolean {
-		return getActivities(item).some(
-			(activity) => asString(getNestedValue(activity, 'activation', 'type')) === activation
+		const direct = asString(getNestedValue(item.system, 'activation', 'type'));
+		return (
+			direct === activation ||
+			getActivities(item).some(
+				(activity) => asString(getNestedValue(activity, 'activation', 'type')) === activation
+			)
 		);
 	}
 
@@ -209,8 +218,8 @@
 		if (filters.length === 0) return true;
 
 		return filters.some((filter) => {
-			if (filter === 'equipped') return item.system?.equipped === true;
-			if (filter === 'attuned') return item.system?.attuned === true;
+			if (filter === 'equipped') return asBoolean(item.system?.equipped);
+			if (filter === 'attuned') return asBoolean(item.system?.attuned);
 
 			const attunement = item.system?.attunement;
 			if (filter === 'optional-attunement') return attunement === 'optional' || attunement === 1;
@@ -233,7 +242,7 @@
 			return false;
 		}
 
-		if (onlyEquipped && item.system?.equipped !== true) {
+		if (onlyEquipped && !asBoolean(item.system?.equipped)) {
 			return false;
 		}
 

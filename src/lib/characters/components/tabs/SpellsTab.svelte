@@ -10,6 +10,7 @@
 		collapseAllDoubleIcon,
 		expandAllIcon,
 		expandIcon,
+		filterIcon,
 		nextIcon,
 		searchIcon,
 		spellSlotIcon
@@ -30,13 +31,35 @@
 	let searchText = '';
 	let preparedOnly = false;
 	let concentrationOnly = false;
+	let activationFilters: string[] = [];
+	let componentFilters: string[] = [];
+	let canCastOnly = false;
+	let schoolFilters: string[] = [];
+	let sourceFilters: string[] = [];
+	let filterMenuOpen = false;
 	let collapsedGroups: string[] = [];
 	let selectedItem: FoundryActorItem | null = null;
 
 	$: actor = character.actor;
 	$: allSpells = actor.items.filter((item) => item.type === 'spell').sort(sortSpells);
+	$: spellSources = actor.items
+		.filter((item) => item.type === 'class' || item.type === 'subclass')
+		.map((item) => item.name)
+		.filter((name, index, values) => values.indexOf(name) === index)
+		.sort((left, right) => left.localeCompare(right));
 	$: visibleSpells = allSpells.filter((spell) =>
-		matchesFilters(spell, searchText, preparedOnly, concentrationOnly)
+		matchesFilters(
+			spell,
+			searchText,
+			preparedOnly,
+			concentrationOnly,
+			activationFilters,
+			componentFilters,
+			canCastOnly,
+			schoolFilters,
+			sourceFilters,
+			spellSources
+		)
 	);
 	$: spellGroups = createSpellGroups(visibleSpells);
 	$: allGroupsCollapsed =
@@ -53,7 +76,25 @@
 	}
 
 	function asRecord(value: unknown): UnknownRecord | undefined {
-		return typeof value === 'object' && value !== null ? (value as UnknownRecord) : undefined;
+		return typeof value === 'object' && value !== null && !Array.isArray(value)
+			? (value as UnknownRecord)
+			: undefined;
+	}
+
+	function getActivities(item: FoundryActorItem): UnknownRecord[] {
+		const activities = item.system?.activities;
+		if (Array.isArray(activities))
+			return activities.map(asRecord).filter(Boolean) as UnknownRecord[];
+		const record = asRecord(activities);
+		return record ? (Object.values(record).map(asRecord).filter(Boolean) as UnknownRecord[]) : [];
+	}
+
+	function getActivationTypes(item: FoundryActorItem): string[] {
+		const direct = asRecord(item.system?.activation)?.type;
+		return [
+			direct,
+			...getActivities(item).map((activity) => asRecord(activity.activation)?.type)
+		].filter((value): value is string => typeof value === 'string' && value.length > 0);
 	}
 
 	function getSpellLevel(item: FoundryActorItem): number {
@@ -127,8 +168,7 @@
 	}
 
 	function getActivation(item: FoundryActorItem): string {
-		const activation = asRecord(item.system?.activation);
-		const type = activation?.type;
+		const type = getActivationTypes(item)[0];
 
 		const labels: Record<string, string> = {
 			action: 'A',
@@ -140,6 +180,40 @@
 		};
 
 		return typeof type === 'string' ? (labels[type] ?? type) : '—';
+	}
+
+	function toggleListFilter(filters: string[], value: string): string[] {
+		return filters.includes(value)
+			? filters.filter((filter) => filter !== value)
+			: [...filters, value];
+	}
+
+	function clearFilters(): void {
+		preparedOnly = false;
+		concentrationOnly = false;
+		activationFilters = [];
+		componentFilters = [];
+		canCastOnly = false;
+		schoolFilters = [];
+		sourceFilters = [];
+	}
+
+	function canCastSpell(item: FoundryActorItem): boolean {
+		const mode =
+			(asRecord(item.system?.preparation)?.mode as string | undefined) ??
+			(typeof item.system?.method === 'string' ? item.system.method : undefined);
+		return (
+			getSpellLevel(item) === 0 ||
+			isPrepared(item) ||
+			['always', 'atwill', 'innate', 'pact'].includes(mode ?? '')
+		);
+	}
+
+	function getSpellSource(item: FoundryActorItem, sources: string[]): string {
+		const sourceData =
+			`${JSON.stringify(item.system?.source ?? '')} ${JSON.stringify(item.flags ?? '')} ${item.system?.requirements ?? ''}`.toLowerCase();
+		const match = sources.find((source) => sourceData.includes(source.toLowerCase()));
+		return match ?? (sources.length === 1 ? sources[0] : '');
 	}
 
 	function formatDistance(value: unknown, units: unknown): string {
@@ -259,7 +333,13 @@
 		item: FoundryActorItem,
 		search: string,
 		onlyPrepared: boolean,
-		onlyConcentration: boolean
+		onlyConcentration: boolean,
+		activations: string[],
+		components: string[],
+		onlyCanCast: boolean,
+		schools: string[],
+		sources: string[],
+		availableSources: string[]
 	): boolean {
 		const query = search.trim().toLocaleLowerCase();
 
@@ -270,6 +350,36 @@
 
 		if (onlyPrepared && !isPrepared(item)) return false;
 		if (onlyConcentration && !isConcentration(item)) return false;
+
+		const activationTypes = getActivationTypes(item);
+		if (
+			activations.length > 0 &&
+			!activations.some((filter) =>
+				filter === 'other'
+					? activationTypes.some((type) => !['action', 'bonus', 'reaction'].includes(type))
+					: activationTypes.includes(filter)
+			)
+		)
+			return false;
+
+		const properties = getProperties(item);
+		const aliases: Record<string, string[]> = {
+			verbal: ['verbal', 'vocal'],
+			somatic: ['somatic'],
+			material: ['material'],
+			concentration: ['concentration'],
+			ritual: ['ritual']
+		};
+		if (
+			components.length > 0 &&
+			!components.some((filter) => aliases[filter].some((value) => properties.includes(value)))
+		)
+			return false;
+		if (onlyCanCast && !canCastSpell(item)) return false;
+		if (schools.length > 0 && !schools.includes(String(item.system?.school ?? '').toLowerCase()))
+			return false;
+		if (sources.length > 0 && !sources.includes(getSpellSource(item, availableSources)))
+			return false;
 
 		return true;
 	}
@@ -352,6 +462,105 @@
 			>
 				Concentration
 			</button>
+		</div>
+
+		<div class="filter-menu-container">
+			<button
+				type="button"
+				class="filter-button"
+				class:active={filterMenuOpen ||
+					activationFilters.length > 0 ||
+					componentFilters.length > 0 ||
+					canCastOnly ||
+					schoolFilters.length > 0 ||
+					sourceFilters.length > 0}
+				aria-label="Filter spells"
+				aria-expanded={filterMenuOpen}
+				on:click={() => (filterMenuOpen = !filterMenuOpen)}><TidyIcon icon={filterIcon} /></button
+			>
+
+			{#if filterMenuOpen}
+				<div class="filter-menu">
+					<fieldset>
+						<legend>Activation Cost</legend>
+						<div class="filter-options">
+							{#each [['action', 'Action'], ['bonus', 'Bonus Action'], ['reaction', 'Reaction'], ['other', 'Other']] as option (option[0])}
+								<button
+									type="button"
+									class:active={activationFilters.includes(option[0])}
+									on:click={() =>
+										(activationFilters = toggleListFilter(activationFilters, option[0]))}
+									>{option[1]}</button
+								>
+							{/each}
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Spell Components</legend>
+						<div class="filter-options">
+							{#each [['verbal', 'Verbal'], ['somatic', 'Somatic'], ['material', 'Material'], ['concentration', 'Concentration'], ['ritual', 'Ritual']] as option (option[0])}
+								<button
+									type="button"
+									class:active={componentFilters.includes(option[0]) ||
+										(option[0] === 'concentration' && concentrationOnly)}
+									on:click={() =>
+										option[0] === 'concentration'
+											? (concentrationOnly = !concentrationOnly)
+											: (componentFilters = toggleListFilter(componentFilters, option[0]))}
+									>{option[1]}</button
+								>
+							{/each}
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Spell Preparation</legend>
+						<div class="filter-options">
+							<button
+								type="button"
+								class:active={preparedOnly}
+								on:click={() => (preparedOnly = !preparedOnly)}>Prepared</button
+							>
+							<button
+								type="button"
+								class:active={canCastOnly}
+								on:click={() => (canCastOnly = !canCastOnly)}>Can Cast</button
+							>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Spell School</legend>
+						<div class="filter-options">
+							{#each [['abj', 'Abjuration'], ['con', 'Conjuration'], ['div', 'Divination'], ['enc', 'Enchantment'], ['evo', 'Evocation'], ['ill', 'Illusion'], ['nec', 'Necromancy'], ['psi', 'Psionic'], ['trs', 'Transmutation']] as option (option[0])}
+								<button
+									type="button"
+									class:active={schoolFilters.includes(option[0])}
+									on:click={() => (schoolFilters = toggleListFilter(schoolFilters, option[0]))}
+									>{option[1]}</button
+								>
+							{/each}
+						</div>
+					</fieldset>
+
+					{#if spellSources.length > 0}<fieldset>
+							<legend>Source Item</legend>
+							<div class="filter-options">
+								{#each spellSources as source (source)}
+									<button
+										type="button"
+										class:active={sourceFilters.includes(source)}
+										on:click={() => (sourceFilters = toggleListFilter(sourceFilters, source))}
+										>{source}</button
+									>
+								{/each}
+							</div>
+						</fieldset>{/if}
+
+					<button type="button" class="clear-filters" on:click={clearFilters}>× Clear All</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
@@ -516,6 +725,76 @@
 		font-size: var(--tidy-font-size-sm);
 		font-weight: 700;
 		cursor: pointer;
+	}
+
+	.filter-menu-container {
+		position: relative;
+	}
+
+	.filter-button {
+		width: 35px;
+		height: 35px;
+		border: 1px solid var(--tidy-border-strong);
+		border-radius: var(--tidy-radius-medium);
+		background: var(--tidy-surface-raised);
+		color: var(--tidy-font-white);
+		cursor: pointer;
+	}
+
+	.filter-button.active,
+	.filter-menu button.active {
+		border-color: #c43d49;
+		background: var(--tidy-dark-red);
+		color: var(--tidy-font-bright-white);
+	}
+
+	.filter-menu {
+		position: absolute;
+		z-index: 20;
+		top: calc(100% + 2px);
+		right: 0;
+		width: min(560px, calc(100vw - 3rem));
+		padding: 0.75rem;
+		border: 1px solid #555a62;
+		border-radius: var(--tidy-radius-small);
+		background: #24272d;
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+	}
+
+	.filter-menu fieldset {
+		margin: 0 0 0.75rem;
+		padding: 0;
+		border: 0;
+	}
+
+	.filter-menu legend {
+		margin-bottom: 0.35rem;
+		color: var(--tidy-font-grey);
+		font-size: var(--tidy-font-size-sm);
+		font-weight: 700;
+	}
+
+	.filter-options {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.3rem;
+	}
+
+	.filter-menu .filter-options button,
+	.filter-menu .clear-filters {
+		min-height: 28px;
+		padding: 0 0.7rem;
+		border: 1px solid var(--tidy-border-strong);
+		border-radius: var(--tidy-radius-small);
+		background: var(--tidy-surface-raised);
+		color: var(--tidy-font-white);
+		font-size: var(--tidy-font-size-sm);
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.filter-menu .clear-filters {
+		width: 100%;
 	}
 
 	.spell-filters button:hover {

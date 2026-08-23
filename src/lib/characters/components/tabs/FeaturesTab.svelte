@@ -8,9 +8,7 @@
 		expandAllIcon,
 		filterIcon,
 		nextIcon,
-		searchIcon,
-		settingsIcon,
-		sortIcon
+		searchIcon
 	} from '../../icons/tidy-icons';
 	import type { FoundryActorItem } from '../../models/foundry-actor';
 	import type { StoredCharacter } from '../../models/stored-character';
@@ -30,7 +28,8 @@
 	}
 
 	let searchText = '';
-	let actionFilter = 'all';
+	let featureFilters: string[] = [];
+	let filterMenuOpen = false;
 	let collapsedGroups = new Set<string>();
 	let selectedItem: FoundryActorItem | null = null;
 
@@ -43,7 +42,7 @@
 	);
 	$: features = actor.items.filter((item) => item.type === 'feat');
 	$: visibleFeatures = features.filter((feature) =>
-		matchesFilters(feature, searchText, actionFilter)
+		matchesFilters(feature, searchText, featureFilters)
 	);
 	$: groups = buildGroups(visibleFeatures);
 	$: allGroupsCollapsed =
@@ -183,17 +182,48 @@
 		return labels.length ? labels.join(', ') : '–';
 	}
 
-	function getActivity(item: FoundryActorItem): UnknownRecord | undefined {
+	function getActivities(item: FoundryActorItem): UnknownRecord[] {
 		const activities = item.system?.activities;
-		if (!isRecord(activities)) return undefined;
-		return Object.values(activities).find(isRecord);
+		if (Array.isArray(activities)) return activities.filter(isRecord);
+		return isRecord(activities) ? Object.values(activities).filter(isRecord) : [];
+	}
+
+	function getActivationTypes(item: FoundryActorItem): string[] {
+		const values = [
+			asString(getNestedValue(item.system, 'activation', 'type')),
+			...getActivities(item).map((activity) =>
+				asString(getNestedValue(activity, 'activation', 'type'))
+			)
+		];
+		return values.filter((value): value is string => Boolean(value));
 	}
 
 	function getActivationType(item: FoundryActorItem): string | undefined {
+		return getActivationTypes(item)[0];
+	}
+
+	function hasUsesRemaining(item: FoundryActorItem): boolean {
+		const max = asNumber(getNestedValue(item.system, 'uses', 'max'));
+		const remaining = asNumber(getNestedValue(item.system, 'uses', 'value'));
+		const spent = asNumber(getNestedValue(item.system, 'uses', 'spent')) ?? 0;
+		if (remaining !== undefined) return remaining > 0;
+		if (max !== undefined) return max > spent;
+
+		return getActivities(item).some((activity) => {
+			const activityMax = asNumber(getNestedValue(activity, 'uses', 'max'));
+			const activityRemaining = asNumber(getNestedValue(activity, 'uses', 'value'));
+			const activitySpent = asNumber(getNestedValue(activity, 'uses', 'spent')) ?? 0;
+			return activityRemaining !== undefined
+				? activityRemaining > 0
+				: activityMax !== undefined && activityMax > activitySpent;
+		});
+	}
+
+	function canUseFeature(item: FoundryActorItem): boolean {
+		const passiveTypes = ['passive', 'none', ''];
 		return (
-			asString(getNestedValue(item.system, 'activation', 'type')) ??
-			asString(getNestedValue(getActivity(item), 'activation', 'type')) ??
-			asString(getNestedValue(getActivity(item), 'type'))
+			getActivationTypes(item).some((type) => !passiveTypes.includes(type)) &&
+			hasUsesRemaining(item)
 		);
 	}
 
@@ -228,7 +258,7 @@
 		return '–';
 	}
 
-	function matchesFilters(item: FoundryActorItem, search: string, action: string): boolean {
+	function matchesFilters(item: FoundryActorItem, search: string, filters: string[]): boolean {
 		const query = search.trim().toLocaleLowerCase();
 		if (query) {
 			const sourceName = getSourceItem(item)?.name ?? '';
@@ -237,12 +267,20 @@
 			if (!haystack.includes(query)) return false;
 		}
 
-		if (action === 'all') return true;
-		return getActivationType(item) === action;
+		if (filters.length === 0) return true;
+		return filters.some((filter) =>
+			filter === 'can-use' ? canUseFeature(item) : getActivationTypes(item).includes(filter)
+		);
 	}
 
-	function setActionFilter(value: string): void {
-		actionFilter = actionFilter === value ? 'all' : value;
+	function toggleFeatureFilter(value: string): void {
+		featureFilters = featureFilters.includes(value)
+			? featureFilters.filter((filter) => filter !== value)
+			: [...featureFilters, value];
+	}
+
+	function clearFilters(): void {
+		featureFilters = [];
 	}
 
 	function toggleGroup(id: string): void {
@@ -306,36 +344,67 @@
 
 		<div class="toolbar-filters" aria-label="Feature filters">
 			<button
-				class:active={actionFilter === 'action'}
+				class:active={featureFilters.includes('action')}
 				type="button"
-				on:click={() => setActionFilter('action')}>Action</button
+				on:click={() => toggleFeatureFilter('action')}>Action</button
 			>
 			<button
-				class:active={actionFilter === 'bonus'}
+				class:active={featureFilters.includes('bonus')}
 				type="button"
-				on:click={() => setActionFilter('bonus')}>Bonus Action</button
+				on:click={() => toggleFeatureFilter('bonus')}>Bonus Action</button
 			>
 			<button
-				class:active={actionFilter === 'reaction'}
+				class:active={featureFilters.includes('reaction')}
 				type="button"
-				on:click={() => setActionFilter('reaction')}>Reaction</button
+				on:click={() => toggleFeatureFilter('reaction')}>Reaction</button
 			>
 			<button
-				class:active={actionFilter === 'special'}
+				class:active={featureFilters.includes('can-use')}
 				type="button"
-				on:click={() => setActionFilter('special')}>Can Use</button
+				on:click={() => toggleFeatureFilter('can-use')}>Can Use</button
 			>
 		</div>
 
-		<button class="toolbar-icon" type="button" title="Filter options" disabled
-			><TidyIcon icon={filterIcon} /></button
-		>
-		<button class="toolbar-icon" type="button" title="Sort options" disabled
-			><TidyIcon icon={sortIcon} /></button
-		>
-		<button class="toolbar-icon" type="button" title="Settings" disabled
-			><TidyIcon icon={settingsIcon} /></button
-		>
+		<div class="filter-menu-container">
+			<button
+				class="toolbar-icon"
+				class:active={filterMenuOpen || featureFilters.length > 0}
+				type="button"
+				aria-label="Filter options"
+				aria-expanded={filterMenuOpen}
+				on:click={() => (filterMenuOpen = !filterMenuOpen)}><TidyIcon icon={filterIcon} /></button
+			>
+
+			{#if filterMenuOpen}
+				<div class="filter-menu">
+					<fieldset>
+						<legend>Activation Cost</legend>
+						<div class="filter-options">
+							{#each [['action', 'Action'], ['bonus', 'Bonus Action'], ['reaction', 'Reaction']] as option (option[0])}
+								<button
+									type="button"
+									class:active={featureFilters.includes(option[0])}
+									on:click={() => toggleFeatureFilter(option[0])}>{option[1]}</button
+								>
+							{/each}
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend>Miscellaneous</legend>
+						<div class="filter-options">
+							<button
+								type="button"
+								class:active={featureFilters.includes('can-use')}
+								on:click={() => toggleFeatureFilter('can-use')}>Can Use</button
+							>
+						</div>
+					</fieldset>
+
+					<button type="button" class="clear-filters" on:click={clearFilters}>× Clear All</button>
+				</div>
+			{/if}
+		</div>
 	</div>
 
 	{#if groups.length === 0}
