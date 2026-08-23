@@ -91,7 +91,7 @@
 						aria-label={`Open ${character.name}`}
 						on:click={() => onOpen(character)}
 					>
-						<div class="portrait">
+						<div class:token-image={character.usesTokenImage} class="portrait">
 							{getInitials(character.name)}
 							<img
 								src={`/characters/${encodeURIComponent(character.localId)}/portrait?v=${character.portraitVersion}`}
@@ -280,6 +280,10 @@
 		height: 100%;
 		background: #17110d;
 		object-fit: cover;
+	}
+
+	.portrait.token-image {
+		border-color: transparent;
 	}
 
 	.character-details {

@@ -5,5 +5,6 @@ export interface CharacterListItem {
 	name: string;
 	importedAt: string;
 	portraitVersion: number;
+	usesTokenImage: boolean;
 	summary: CharacterSummary;
 }

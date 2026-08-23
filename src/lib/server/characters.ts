@@ -13,6 +13,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 		name: string;
 		importedAt: string;
 		portraitVersion: number;
+		usesTokenImage: number;
 		classesJson: string;
 		subclassesJson: string;
 		species: string | null;
@@ -28,6 +29,11 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 				c.id AS localId,
 				c.name,
 				c.updated_at AS portraitVersion,
+				CASE
+					WHEN json_extract(c.content_json, '$.portraitSource') = 'custom' THEN 0
+					WHEN json_type(c.content_json, '$.assets.references.actor.prototypeToken') = 'text' THEN 1
+					ELSE 0
+				END AS usesTokenImage,
 				COALESCE(json_extract(c.content_json, '$.importedAt'), '') AS importedAt,
 				COALESCE((
 					SELECT json_group_array(json_object(
@@ -74,6 +80,7 @@ export async function listCharacters(d1: D1Database, userId: string): Promise<Ch
 			name: row.name,
 			importedAt: row.importedAt,
 			portraitVersion: row.portraitVersion,
+			usesTokenImage: row.usesTokenImage === 1,
 			summary: {
 				classes,
 				subclasses,
