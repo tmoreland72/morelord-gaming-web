@@ -123,6 +123,12 @@
 	font-weight: 600;
 }
 
+.inventory-tab .filter-menu .filter-options button.active {
+	border-color: #c43d49;
+	background: var(--tidy-dark-red);
+	color: var(--tidy-font-bright-white);
+}
+
 .inventory-tab .filter-menu .clear-filters {
 	width: 100%;
 	min-height: 30px;

@@ -741,8 +741,7 @@
 		cursor: pointer;
 	}
 
-	.filter-button.active,
-	.filter-menu button.active {
+	.filter-button.active {
 		border-color: #c43d49;
 		background: var(--tidy-dark-red);
 		color: var(--tidy-font-bright-white);
@@ -791,6 +790,12 @@
 		font-size: var(--tidy-font-size-sm);
 		font-weight: 600;
 		cursor: pointer;
+	}
+
+	.filter-menu .filter-options button.active {
+		border-color: #c43d49;
+		background: var(--tidy-dark-red);
+		color: var(--tidy-font-bright-white);
 	}
 
 	.filter-menu .clear-filters {
