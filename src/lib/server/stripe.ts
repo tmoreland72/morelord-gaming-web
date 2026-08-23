@@ -2,7 +2,8 @@ import { env } from '$env/dynamic/private';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
-export type StripePlan = 'premium-monthly' | 'premium-annual' | 'champion-monthly' | 'champion-annual';
+export type StripePlan =
+	'premium-monthly' | 'premium-annual' | 'champion-monthly' | 'champion-annual';
 
 export type StripePrice = {
 	id: string;
@@ -32,6 +33,10 @@ const priceEnvironmentKeys: Record<StripePlan, string> = {
 	'champion-annual': 'STRIPE_PRICE_CHAMPION_ANNUAL'
 };
 
+const PRICE_CACHE_TTL_MS = 15 * 60 * 1000;
+let configuredPricesCache:
+	{ expiresAt: number; prices: Partial<Record<StripePlan, StripePrice>> } | undefined;
+
 function requireSecret(): string {
 	const secret = env.STRIPE_SECRET_KEY?.trim();
 	if (!secret) throw new Error('Stripe is not configured. Missing STRIPE_SECRET_KEY.');
@@ -59,7 +64,8 @@ export async function stripeRequest<T>(
 	});
 
 	const payload = (await response.json()) as T & { error?: { message?: string } };
-	if (!response.ok) throw new Error(payload.error?.message ?? `Stripe request failed (${response.status}).`);
+	if (!response.ok)
+		throw new Error(payload.error?.message ?? `Stripe request failed (${response.status}).`);
 	return payload;
 }
 
@@ -72,7 +78,9 @@ export function getPriceId(plan: StripePlan): string | null {
 }
 
 export function allStripePricesConfigured(): boolean {
-	return (Object.keys(priceEnvironmentKeys) as StripePlan[]).every((plan) => Boolean(getPriceId(plan)));
+	return (Object.keys(priceEnvironmentKeys) as StripePlan[]).every((plan) =>
+		Boolean(getPriceId(plan))
+	);
 }
 
 export function getPlanFromPriceId(priceId: string | null | undefined): StripePlan | null {
@@ -83,7 +91,9 @@ export function getPlanFromPriceId(priceId: string | null | undefined): StripePl
 	return null;
 }
 
-export async function retrieveEntitlementFeature(featureId: string): Promise<StripeEntitlementFeature> {
+export async function retrieveEntitlementFeature(
+	featureId: string
+): Promise<StripeEntitlementFeature> {
 	return stripeRequest<StripeEntitlementFeature>(
 		`/entitlements/features/${encodeURIComponent(featureId)}`
 	);
@@ -96,6 +106,9 @@ export async function retrievePrice(priceId: string): Promise<StripePrice> {
 }
 
 export async function getConfiguredPrices(): Promise<Partial<Record<StripePlan, StripePrice>>> {
+	if (configuredPricesCache && configuredPricesCache.expiresAt > Date.now()) {
+		return configuredPricesCache.prices;
+	}
 	const result: Partial<Record<StripePlan, StripePrice>> = {};
 	await Promise.all(
 		(Object.keys(priceEnvironmentKeys) as StripePlan[]).map(async (plan) => {
@@ -103,6 +116,7 @@ export async function getConfiguredPrices(): Promise<Partial<Record<StripePlan, 
 			if (id) result[plan] = await retrievePrice(id);
 		})
 	);
+	configuredPricesCache = { expiresAt: Date.now() + PRICE_CACHE_TTL_MS, prices: result };
 	return result;
 }
 
@@ -159,7 +173,9 @@ export async function createPortalSession(input: {
 	});
 }
 
-export async function listActiveEntitlements(customerId: string): Promise<StripeActiveEntitlement[]> {
+export async function listActiveEntitlements(
+	customerId: string
+): Promise<StripeActiveEntitlement[]> {
 	const collected: StripeActiveEntitlement[] = [];
 	let startingAfter: string | undefined;
 
@@ -188,7 +204,8 @@ function parseStripeSignature(header: string): { timestamp: string; signatures: 
 function timingSafeEqual(left: string, right: string): boolean {
 	if (left.length !== right.length) return false;
 	let mismatch = 0;
-	for (let index = 0; index < left.length; index++) mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+	for (let index = 0; index < left.length; index++)
+		mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
 	return mismatch === 0;
 }
 
@@ -197,7 +214,8 @@ export async function verifyStripeWebhook(rawBody: string, signatureHeader: stri
 	if (!webhookSecret) throw new Error('Missing STRIPE_WEBHOOK_SECRET.');
 	const { timestamp, signatures } = parseStripeSignature(signatureHeader);
 	const age = Math.abs(Date.now() / 1000 - Number(timestamp));
-	if (!Number.isFinite(age) || age > 300) throw new Error('Stripe webhook timestamp is outside the allowed tolerance.');
+	if (!Number.isFinite(age) || age > 300)
+		throw new Error('Stripe webhook timestamp is outside the allowed tolerance.');
 
 	const key = await crypto.subtle.importKey(
 		'raw',
@@ -206,9 +224,16 @@ export async function verifyStripeWebhook(rawBody: string, signatureHeader: stri
 		false,
 		['sign']
 	);
-	const digest = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(`${timestamp}.${rawBody}`));
-	const expected = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
-	if (!signatures.some((signature) => timingSafeEqual(signature, expected))) throw new Error('Invalid Stripe webhook signature.');
+	const digest = await crypto.subtle.sign(
+		'HMAC',
+		key,
+		new TextEncoder().encode(`${timestamp}.${rawBody}`)
+	);
+	const expected = Array.from(new Uint8Array(digest), (byte) =>
+		byte.toString(16).padStart(2, '0')
+	).join('');
+	if (!signatures.some((signature) => timingSafeEqual(signature, expected)))
+		throw new Error('Invalid Stripe webhook signature.');
 }
 
 export type StripeCoupon = {
@@ -308,7 +333,9 @@ function subscriptionPromotionCodeIds(subscription: StripeSubscriptionSummary): 
 	return ids;
 }
 
-async function listSubscriptionPromotionRedemptions(): Promise<Map<string, StripePromotionRedemption[]>> {
+async function listSubscriptionPromotionRedemptions(): Promise<
+	Map<string, StripePromotionRedemption[]>
+> {
 	const byPromotionCode = new Map<string, StripePromotionRedemption[]>();
 	let startingAfter: string | undefined;
 
@@ -328,16 +355,20 @@ async function listSubscriptionPromotionRedemptions(): Promise<Map<string, Strip
 		for (const subscription of page.data) {
 			const customer = typeof subscription.customer === 'string' ? null : subscription.customer;
 			const currentPeriodEnd =
-				subscription.items?.data?.[0]?.current_period_end ?? subscription.current_period_end ?? null;
+				subscription.items?.data?.[0]?.current_period_end ??
+				subscription.current_period_end ??
+				null;
 			const redemption: StripePromotionRedemption = {
 				subscriptionId: subscription.id,
 				status: subscription.status,
 				created: subscription.created,
 				currentPeriodEnd,
 				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || subscription.cancel_at),
-				customerId: customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : null),
-				customerName: customer && !customer.deleted ? customer.name ?? null : null,
-				customerEmail: customer && !customer.deleted ? customer.email ?? null : null
+				customerId:
+					customer?.id ??
+					(typeof subscription.customer === 'string' ? subscription.customer : null),
+				customerName: customer && !customer.deleted ? (customer.name ?? null) : null,
+				customerEmail: customer && !customer.deleted ? (customer.email ?? null) : null
 			};
 
 			for (const codeId of subscriptionPromotionCodeIds(subscription)) {
@@ -424,11 +455,12 @@ export async function listFriendsAndFamilyCodes(): Promise<StripePromotionCodeWi
 	return result
 		.map((code) => ({
 			...code,
-			redemptions: (redemptions.get(code.id) ?? []).sort((left, right) => right.created - left.created)
+			redemptions: (redemptions.get(code.id) ?? []).sort(
+				(left, right) => right.created - left.created
+			)
 		}))
 		.sort((left, right) => right.created - left.created);
 }
-
 
 export async function retrievePromotionCode(id: string): Promise<StripePromotionCode> {
 	return stripeRequest<StripePromotionCode>(`/promotion_codes/${encodeURIComponent(id)}`, {
@@ -441,7 +473,10 @@ export function promotionCodeCouponDeleted(code: StripePromotionCode): boolean {
 	return typeof coupon === 'object' && coupon.deleted === true;
 }
 
-export async function setPromotionCodeActive(id: string, active: boolean): Promise<StripePromotionCode> {
+export async function setPromotionCodeActive(
+	id: string,
+	active: boolean
+): Promise<StripePromotionCode> {
 	return stripeRequest<StripePromotionCode>(`/promotion_codes/${encodeURIComponent(id)}`, {
 		method: 'POST',
 		body: formEncode({ active: active ? 'true' : 'false' })
@@ -465,11 +500,14 @@ export type StripeAuditSubscription = {
 };
 
 type StripeAuditDiscount = {
-	promotion_code?: string | {
-		id: string;
-		code?: string;
-		promotion?: { coupon?: string | StripeCoupon | StripeDeletedCoupon };
-	} | null;
+	promotion_code?:
+		| string
+		| {
+				id: string;
+				code?: string;
+				promotion?: { coupon?: string | StripeCoupon | StripeDeletedCoupon };
+		  }
+		| null;
 };
 
 type StripeAuditRawSubscription = {
@@ -505,7 +543,8 @@ function expandedPromotion(subscription: StripeAuditRawSubscription): {
 	for (const discount of discounts) {
 		if (typeof discount === 'string' || !discount.promotion_code) continue;
 		const promotionCode = discount.promotion_code;
-		if (typeof promotionCode === 'string') return { code: null, id: promotionCode, couponDeleted: false };
+		if (typeof promotionCode === 'string')
+			return { code: null, id: promotionCode, couponDeleted: false };
 		const coupon = promotionCode.promotion?.coupon;
 		return {
 			code: promotionCode.code ?? null,
@@ -516,7 +555,6 @@ function expandedPromotion(subscription: StripeAuditRawSubscription): {
 	return { code: null, id: null, couponDeleted: false };
 }
 
-
 export type StripeSubscriptionBillingDetails = {
 	promotionCode: string | null;
 	isFriendsAndFamily: boolean;
@@ -525,7 +563,9 @@ export type StripeSubscriptionBillingDetails = {
 	currentPeriodEnd: number | null;
 };
 
-export async function getStripeSubscriptionBillingDetails(subscriptionId: string): Promise<StripeSubscriptionBillingDetails> {
+export async function getStripeSubscriptionBillingDetails(
+	subscriptionId: string
+): Promise<StripeSubscriptionBillingDetails> {
 	// Keep this retrieval deliberately shallow. Deep discount expansions can be
 	// rejected by Stripe and must never prevent the account page from seeing the
 	// subscription's cancellation state.
@@ -539,7 +579,8 @@ export async function getStripeSubscriptionBillingDetails(subscriptionId: string
 	const baseDetails = {
 		status: subscription.status,
 		cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || scheduledCancelAt),
-		currentPeriodEnd: scheduledCancelAt ?? item?.current_period_end ?? subscription.current_period_end ?? null
+		currentPeriodEnd:
+			scheduledCancelAt ?? item?.current_period_end ?? subscription.current_period_end ?? null
 	};
 	if (!promotion.id) return { promotionCode: null, isFriendsAndFamily: false, ...baseDetails };
 
@@ -583,12 +624,13 @@ export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubs
 			result.push({
 				id: subscription.id,
 				status: subscription.status,
-				customerId: customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : ''),
-				customerName: customer && !customer.deleted ? customer.name ?? null : null,
-				customerEmail: customer && !customer.deleted ? customer.email ?? null : null,
+				customerId:
+					customer?.id ?? (typeof subscription.customer === 'string' ? subscription.customer : ''),
+				customerName: customer && !customer.deleted ? (customer.name ?? null) : null,
+				customerEmail: customer && !customer.deleted ? (customer.email ?? null) : null,
 				priceId: item?.price?.id ?? null,
-				productId: typeof product === 'string' ? product : product?.id ?? null,
-				productName: typeof product === 'object' ? product.name ?? null : null,
+				productId: typeof product === 'string' ? product : (product?.id ?? null),
+				productName: typeof product === 'object' ? (product.name ?? null) : null,
 				currentPeriodEnd: item?.current_period_end ?? subscription.current_period_end ?? null,
 				cancelAtPeriodEnd: Boolean(subscription.cancel_at_period_end || subscription.cancel_at),
 				promotionCode: promotion.code,
@@ -600,15 +642,28 @@ export async function listStripeSubscriptionsForAudit(): Promise<StripeAuditSubs
 		startingAfter = page.has_more ? page.data.at(-1)?.id : undefined;
 	} while (startingAfter);
 
-	const promotionIds = [...new Set(result.map((subscription) => subscription.promotionCodeId).filter((id): id is string => Boolean(id)))];
+	const promotionIds = [
+		...new Set(
+			result
+				.map((subscription) => subscription.promotionCodeId)
+				.filter((id): id is string => Boolean(id))
+		)
+	];
 	if (promotionIds.length) {
 		const promotions = await Promise.all(
 			promotionIds.map(async (id) => {
-				try { return await retrievePromotionCode(id); }
-				catch { return null; }
+				try {
+					return await retrievePromotionCode(id);
+				} catch {
+					return null;
+				}
 			})
 		);
-		const byId = new Map(promotions.filter((code): code is StripePromotionCode => Boolean(code)).map((code) => [code.id, code]));
+		const byId = new Map(
+			promotions
+				.filter((code): code is StripePromotionCode => Boolean(code))
+				.map((code) => [code.id, code])
+		);
 		for (const subscription of result) {
 			if (!subscription.promotionCodeId) continue;
 			const code = byId.get(subscription.promotionCodeId);

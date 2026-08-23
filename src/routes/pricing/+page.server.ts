@@ -1,7 +1,16 @@
 import { env } from '$env/dynamic/private';
 import type { PageServerLoad } from './$types';
-import { allStripePricesConfigured, getConfiguredPrices, type StripePlan, type StripePrice } from '$lib/server/stripe';
-import { getBillingSummary, membershipLabel, membershipTierFromSubscription } from '$lib/server/billing';
+import {
+	allStripePricesConfigured,
+	getConfiguredPrices,
+	type StripePlan,
+	type StripePrice
+} from '$lib/server/stripe';
+import {
+	getBillingSummary,
+	membershipLabel,
+	membershipTierFromSubscription
+} from '$lib/server/billing';
 
 export const load: PageServerLoad = async ({ locals, url, platform }) => {
 	let prices: Partial<Record<StripePlan, StripePrice>> = {};
@@ -14,7 +23,10 @@ export const load: PageServerLoad = async ({ locals, url, platform }) => {
 		}
 	}
 
-	const billing = locals.user && platform?.env?.DB ? await getBillingSummary(platform.env.DB, locals.user.id) : null;
+	const billing =
+		locals.user && platform?.env?.DB
+			? await getBillingSummary(platform.env.DB, locals.user.id, { retrieveStripeDetails: false })
+			: null;
 	const membershipTier = membershipTierFromSubscription(billing?.subscription);
 
 	return {
@@ -22,8 +34,15 @@ export const load: PageServerLoad = async ({ locals, url, platform }) => {
 		membershipTier,
 		membershipLabel: membershipLabel(membershipTier),
 		subscriptionStatus: billing?.stripeDetails?.status ?? billing?.subscription?.status ?? null,
-		cancelAtPeriodEnd: billing?.stripeDetails?.cancelAtPeriodEnd ?? billing?.subscription?.cancelAtPeriodEnd ?? false,
-		billingReady: Boolean(env.STRIPE_SECRET_KEY?.trim() && env.STRIPE_WEBHOOK_SECRET?.trim() && allStripePricesConfigured()),
+		cancelAtPeriodEnd:
+			billing?.stripeDetails?.cancelAtPeriodEnd ??
+			billing?.subscription?.cancelAtPeriodEnd ??
+			false,
+		billingReady: Boolean(
+			env.STRIPE_SECRET_KEY?.trim() &&
+			env.STRIPE_WEBHOOK_SECRET?.trim() &&
+			allStripePricesConfigured()
+		),
 		prices,
 		priceError,
 		checkoutCancelled: url.searchParams.get('checkout') === 'cancelled'

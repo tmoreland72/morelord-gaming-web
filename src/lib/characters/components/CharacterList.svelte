@@ -1,17 +1,15 @@
 <svelte:options runes={false} />
 
 <script lang="ts">
-	import type { StoredCharacter } from '../models/stored-character';
-	import { createCharacterSummary } from '../characters/character-summary';
-	import { getActorPortraitSrc } from '../assets/image-resolver';
+	import type { CharacterListItem } from '../models/character-list-item';
 
-	export let characters: StoredCharacter[];
+	export let characters: CharacterListItem[];
 	export let loading: boolean;
 
-	export let onOpen: (character: StoredCharacter) => void;
+	export let onOpen: (character: CharacterListItem) => void;
 
-	export let onRemove: (character: StoredCharacter) => void;
-	export let onReplace: (character: StoredCharacter) => void;
+	export let onRemove: (character: CharacterListItem) => void;
+	export let onReplace: (character: CharacterListItem) => void;
 
 	export let onImport: () => void;
 
@@ -34,9 +32,8 @@
 			.join('');
 	}
 
-	function getCharacterDescription(character: StoredCharacter): string {
-		const summary = createCharacterSummary(character);
-
+	function getCharacterDescription(character: CharacterListItem): string {
+		const summary = character.summary;
 		const values = [
 			summary.species,
 			summary.background,
@@ -79,7 +76,7 @@
 	{:else}
 		<section class="character-grid">
 			{#each characters as character}
-				{@const summary = createCharacterSummary(character)}
+				{@const summary = character.summary}
 
 				<article class="character-card">
 					<button
@@ -88,13 +85,7 @@
 						aria-label={`Open ${character.name}`}
 						on:click={() => onOpen(character)}
 					>
-						<div class="portrait">
-							{#if getActorPortraitSrc(character)}
-								<img src={getActorPortraitSrc(character)} alt={`${character.name} portrait`} />
-							{:else}
-								{getInitials(character.name)}
-							{/if}
-						</div>
+						<div class="portrait">{getInitials(character.name)}</div>
 
 						<div class="character-details">
 							<h3>{character.name}</h3>
@@ -266,12 +257,6 @@
 		overflow: hidden;
 		font-size: 1.4rem;
 		font-weight: 700;
-	}
-
-	.portrait img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
 	}
 
 	.character-details {

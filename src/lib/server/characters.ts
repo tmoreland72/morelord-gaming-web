@@ -3,15 +3,89 @@ import { getDb } from '$lib/server/db';
 import { characters } from '$lib/server/db/schema';
 import type { ImportedActorFile } from '$lib/characters/import/read-actor-file';
 import type { StoredCharacter } from '$lib/characters/models/stored-character';
+import type { CharacterListItem } from '$lib/characters/models/character-list-item';
 
 const MAXIMUM_STORED_CHARACTER_BYTES = 1_900_000;
 
-export async function listCharacters(d1: D1Database, userId: string): Promise<StoredCharacter[]> {
-	const rows = await getDb(d1).query.characters.findMany({
-		where: eq(characters.userId, userId),
-		orderBy: (table, { asc }) => [asc(table.name)]
+export async function listCharacters(d1: D1Database, userId: string): Promise<CharacterListItem[]> {
+	type CharacterSummaryRow = {
+		localId: string;
+		name: string;
+		importedAt: string;
+		classesJson: string;
+		species: string | null;
+		background: string | null;
+		spellCount: number;
+		featureCount: number;
+		inventoryCount: number;
+	};
+	const result = await d1
+		.prepare(
+			`
+			SELECT
+				c.id AS localId,
+				c.name,
+				COALESCE(json_extract(c.content_json, '$.importedAt'), '') AS importedAt,
+				COALESCE((
+					SELECT json_group_array(json_object(
+						'name', json_extract(item.value, '$.name'),
+						'levels', COALESCE(json_extract(item.value, '$.system.levels'), 0)
+					))
+					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') = 'class'
+				), '[]') AS classesJson,
+				(
+					SELECT json_extract(item.value, '$.name')
+					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') IN ('race', 'species') LIMIT 1
+				) AS species,
+				(
+					SELECT json_extract(item.value, '$.name')
+					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') = 'background' LIMIT 1
+				) AS background,
+				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') = 'spell') AS spellCount,
+				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') IN ('feat', 'subclass')) AS featureCount,
+				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
+					WHERE json_extract(item.value, '$.type') IN ('weapon', 'equipment', 'consumable', 'tool', 'loot', 'container')) AS inventoryCount
+			FROM characters AS c
+			WHERE c.user_id = ?
+			ORDER BY c.name ASC
+		`
+		)
+		.bind(userId)
+		.all<CharacterSummaryRow>();
+
+	return result.results.map((row) => {
+		const classes = JSON.parse(row.classesJson) as CharacterListItem['summary']['classes'];
+		return {
+			localId: row.localId,
+			name: row.name,
+			importedAt: row.importedAt,
+			summary: {
+				classes,
+				totalLevel: classes.reduce((total, item) => total + item.levels, 0),
+				species: row.species ?? undefined,
+				background: row.background ?? undefined,
+				spellCount: row.spellCount,
+				featureCount: row.featureCount,
+				inventoryCount: row.inventoryCount
+			}
+		};
 	});
-	return rows.map((row) => JSON.parse(row.contentJson) as StoredCharacter);
+}
+
+export async function getCharacter(
+	d1: D1Database,
+	userId: string,
+	id: string
+): Promise<StoredCharacter | null> {
+	const row = await getDb(d1).query.characters.findFirst({
+		where: and(eq(characters.userId, userId), eq(characters.id, id))
+	});
+	return row ? (JSON.parse(row.contentJson) as StoredCharacter) : null;
 }
 
 export async function saveImportedCharacter(

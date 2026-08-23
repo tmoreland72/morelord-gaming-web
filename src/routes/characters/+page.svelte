@@ -4,6 +4,7 @@
 	import CharacterList from '$lib/characters/components/CharacterList.svelte';
 	import CharacterSheet from '$lib/characters/components/CharacterSheet.svelte';
 	import type { StoredCharacter } from '$lib/characters/models/stored-character';
+	import type { CharacterListItem } from '$lib/characters/models/character-list-item';
 	import '@fontsource/roboto-condensed/400.css';
 	import '@fontsource/roboto-condensed/500.css';
 	import '@fontsource/roboto-condensed/600.css';
@@ -26,13 +27,15 @@
 	let deleteIdInput: HTMLInputElement;
 	let deleteForm: HTMLFormElement;
 	let importing = $state(false);
+	let opening = $state(false);
+	let openError = $state<string | null>(null);
 	let actionMessageVisible = $state(true);
 
 	function openFilePicker() {
 		replacementIdInput.value = '';
 		fileInput.click();
 	}
-	function replaceCharacter(character: StoredCharacter) {
+	function replaceCharacter(character: CharacterListItem) {
 		replacementIdInput.value = character.localId;
 		fileInput.click();
 	}
@@ -42,14 +45,24 @@
 			importForm.requestSubmit();
 		}
 	}
-	function openCharacter(character: StoredCharacter) {
+	async function openCharacter(character: CharacterListItem) {
 		actionMessageVisible = false;
-		selectedCharacter = character;
+		opening = true;
+		openError = null;
+		try {
+			const response = await fetch(`/characters/${encodeURIComponent(character.localId)}`);
+			if (!response.ok) throw new Error('The character could not be loaded.');
+			selectedCharacter = (await response.json()) as StoredCharacter;
+		} catch (cause) {
+			openError = cause instanceof Error ? cause.message : 'The character could not be loaded.';
+		} finally {
+			opening = false;
+		}
 	}
 	function closeCharacter() {
 		selectedCharacter = null;
 	}
-	function removeCharacter(character: StoredCharacter) {
+	function removeCharacter(character: CharacterListItem) {
 		if (!confirm(`Remove ${character.name} from My Characters?`)) return;
 		deleteIdInput.value = character.localId;
 		actionMessageVisible = true;
@@ -96,6 +109,9 @@
 		>
 			{form.success}
 		</section>{/if}
+	{#if openError}<section class="manager-message error-message" role="alert">
+			{openError}
+		</section>{/if}
 	{#if selectedCharacter}
 		<div class="sheet-shell">
 			<button type="button" class="back-button" onclick={closeCharacter}
@@ -106,7 +122,7 @@
 	{:else}
 		<CharacterList
 			characters={data.characters}
-			loading={false}
+			loading={opening}
 			onOpen={openCharacter}
 			onRemove={removeCharacter}
 			onReplace={replaceCharacter}
