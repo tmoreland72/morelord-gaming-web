@@ -11,6 +11,18 @@ export interface ResolvedCharacterImage {
 }
 
 export function resolveActorPortrait(character: StoredCharacter): ResolvedCharacterImage {
+	if (character.portraitSource === 'custom' && character.portraitDataUrl) {
+		return {
+			src: character.portraitDataUrl,
+			path: character.portraitPath,
+			assetId: character.assets?.references?.actor?.portrait,
+			embedded: true
+		};
+	}
+
+	const token = resolvePrototypeToken(character);
+	if (token.src) return token;
+
 	if (character.portraitDataUrl) {
 		return {
 			src: character.portraitDataUrl,
