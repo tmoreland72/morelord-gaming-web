@@ -3,7 +3,6 @@ import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
 	faArrowDownWideShort,
 	faArrowRightFromBracket,
-	faArrowTurnDown,
 	faAnglesDown,
 	faAnglesUp,
 	faBolt,
@@ -155,8 +154,6 @@ export const resistanceIcon: TidyIcon = faShieldHalved;
 export const immunityIcon: TidyIcon = faShield;
 
 export const vulnerabilityIcon: TidyIcon = faHeartCrack;
-
-export const traitContinuationIcon: TidyIcon = faArrowTurnDown;
 
 /*
  * Inventory

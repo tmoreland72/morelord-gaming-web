@@ -27,7 +27,6 @@
 		specialTraitsIcon,
 		speedIcon,
 		toolsIcon,
-		traitContinuationIcon,
 		vulnerabilityIcon,
 		weaponsIcon
 	} from '../../icons/tidy-icons';
@@ -79,6 +78,9 @@
 
 	$: classes = actor.items
 		.filter((item) => item.type === 'class')
+		.sort((left, right) => left.name.localeCompare(right.name));
+	$: subclasses = actor.items
+		.filter((item) => item.type === 'subclass')
 		.sort((left, right) => left.name.localeCompare(right.name));
 
 	$: species = actor.items.find((item) => item.type === 'race' || item.type === 'species');
@@ -192,6 +194,17 @@
 
 	function getClassLevel(item: FoundryActorItem): number {
 		return asNumber(item.system?.levels) ?? 0;
+	}
+
+	function getSubclasses(classItem: FoundryActorItem): FoundryActorItem[] {
+		if (classes.length === 1) return subclasses;
+
+		const classIdentifier = asString(classItem.system?.identifier);
+		if (!classIdentifier) return [];
+
+		return subclasses.filter(
+			(subclass) => asString(subclass.system?.classIdentifier) === classIdentifier
+		);
 	}
 
 	function getSpeedLabel(): string {
@@ -552,6 +565,33 @@
 								</span>
 							</div>
 						</div>
+
+						{#each getSubclasses(classItem) as subclassItem}
+							<div class="trait-row subclass-row">
+								<span class="trait-label"></span>
+
+								<div class="trait-value">
+									<span class="continuation-arrow" aria-hidden="true">↳</span>
+									<button
+										type="button"
+										class="trait-item-link item-details-button"
+										disabled={!hasItemDetails(subclassItem)}
+										aria-label={`View details for ${subclassItem.name}`}
+										on:click={() => openItemDetails(subclassItem)}
+									>
+										<span class="item-icon">
+											{#if getItemImageSrc(character, subclassItem)}
+												<img src={getItemImageSrc(character, subclassItem)} alt="" />
+											{:else}
+												{subclassItem.name.charAt(0).toUpperCase()}
+											{/if}
+										</span>
+
+										<strong class="linked-value">{subclassItem.name}</strong>
+									</button>
+								</div>
+							</div>
+						{/each}
 					{/each}
 
 					<div class="trait-row">
@@ -588,7 +628,7 @@
 						<strong class="trait-label"> Creature Type </strong>
 
 						<div class="trait-value">
-							<span class="trait-arrow"><TidyIcon icon={traitContinuationIcon} /></span>
+							<span class="continuation-arrow" aria-hidden="true">↳</span>
 
 							<span>
 								{getCreatureType()}

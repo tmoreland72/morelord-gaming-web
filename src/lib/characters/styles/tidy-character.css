@@ -261,6 +261,11 @@
 	border-bottom: 1px solid #414449;
 }
 
+.character-tab .subclass-row {
+	min-height: 38px;
+	background: #17191d66;
+}
+
 .character-tab .trait-label {
 	display: flex;
 	align-items: center;
@@ -306,9 +311,13 @@
 	font-weight: 700;
 }
 
-.character-tab .trait-arrow {
+.character-tab .continuation-arrow {
+	display: inline-flex;
+	align-items: center;
 	color: var(--tidy-font-grey);
-	font-size: 1rem;
+	font-size: 1.15rem;
+	font-weight: 700;
+	line-height: 1;
 }
 
 .character-tab .trait-tags {
