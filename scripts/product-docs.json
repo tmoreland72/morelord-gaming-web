@@ -31,6 +31,18 @@
 			"assetsPath": null
 		},
 		{
+			"slug": "morelord-journeys",
+			"repository": "tmoreland72/morelord-journeys",
+			"branch": "main",
+			"docsPath": "docs",
+			"assetsPath": null,
+			"documents": [
+				{ "source": "README.md" },
+				{ "source": "gm-manual.md" },
+				{ "source": "player-guide.md" }
+			]
+		},
+		{
 			"slug": "morelord-marketplace",
 			"repository": "tmoreland72/morelord-marketplace",
 			"branch": "main",
