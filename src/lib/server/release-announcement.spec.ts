@@ -35,6 +35,17 @@ describe('Discord release announcements', () => {
 		expect(message.allowed_mentions).toEqual({ parse: [], roles: [] });
 	});
 
+	it('does not repeat the product and version when the release title already includes them', () => {
+		const message = buildDiscordReleaseMessage({
+			...release,
+			productName: 'Morelord Encounters',
+			version: '0.1.7',
+			title: 'Morelord Encounters 0.1.7'
+		});
+
+		expect(message.embeds[0].title).toBe('Morelord Encounters 0.1.7');
+	});
+
 	it('requests a response and returns the Discord message ID', async () => {
 		const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
 			new Response(JSON.stringify({ id: 'discord-message-id' }), {

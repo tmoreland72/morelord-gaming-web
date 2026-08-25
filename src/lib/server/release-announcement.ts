@@ -21,6 +21,17 @@ const categoryLabels = {
 	security: 'Security'
 } as const;
 
+function discordReleaseTitle(release: ReleaseAnnouncement): string {
+	const releaseLabel = `${release.productName} ${release.version}`;
+	const title = release.title.trim();
+	const beginsWithReleaseLabel = title
+		.toLocaleLowerCase()
+		.startsWith(releaseLabel.toLocaleLowerCase());
+	const remainder = title.slice(releaseLabel.length);
+	const alreadyQualified = beginsWithReleaseLabel && (!remainder || /^[\s—:|-]/u.test(remainder));
+	return (alreadyQualified ? title : `${releaseLabel} — ${title}`).slice(0, 256);
+}
+
 export function buildDiscordReleaseMessage(
 	release: ReleaseAnnouncement,
 	toolsRoleId?: string | null
@@ -44,7 +55,7 @@ export function buildDiscordReleaseMessage(
 		},
 		embeds: [
 			{
-				title: `${release.productName} ${release.version} — ${release.title}`.slice(0, 256),
+				title: discordReleaseTitle(release),
 				url: release.githubReleaseUrl || release.publicUrl,
 				description: release.summary?.slice(0, 4_096),
 				color: 0x7c3aed,
