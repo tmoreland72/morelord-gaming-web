@@ -39,6 +39,7 @@
 			"documents": [
 				{ "source": "README.md" },
 				{ "source": "gm-manual.md" },
+				{ "source": "gm-travel-rules-reference.md" },
 				{ "source": "player-guide.md" }
 			]
 		},
