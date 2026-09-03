@@ -3,19 +3,19 @@ title: Morelord Encounters Documentation
 description: Build varied, difficulty-aware D&D 5e encounters from installed Foundry compendiums.
 slug: morelord-encounters
 product: morelord-encounters
-version: 0.1.2
+version: 0.1.9
 foundry: 14
 order: 0
 ---
 
 # Morelord Encounters Documentation
 
-Morelord Encounters is a Game Master tool for building D&D 5e encounters from monster compendiums already installed in Foundry Virtual Tabletop. It verifies the adventuring party, calculates a difficulty target, respects Morelord content access, and generates several distinct encounter compositions for the GM to review.
+Morelord Encounters is a Game Master tool for building D&D 5e encounters from monster compendiums already installed in Foundry Virtual Tabletop. Champion GMs with the official Drakkenheim modules can also generate published Drakkenheim encounters with GM descriptions and draggable Actors. It verifies the adventuring party, calculates a difficulty target where applicable, respects Morelord content access, and generates encounter compositions for the GM to review.
 
-The final roster contains Actor links that can be opened for inspection or dragged directly onto the current scene.
+The final roster contains Actor links that can be opened for inspection or dragged directly onto the current scene. It also offers an optional encounter Stealth roll using the lowest creature modifier, with guidance for comparing the result against the party's passive Perception to determine surprise.
 
 ## Choose a guide
 
-- [Game Master Manual](/docs/morelord-encounters/gm-manual) — installation, account access, encounter setup, generation logic, creature previews, regeneration, and scene placement.
+- [Game Master Manual](/docs/morelord-encounters/gm-manual) — installation, account access, encounter setup, generation logic, Actor sheets, regeneration, and scene placement.
 
-These instructions describe Morelord Encounters 0.1.2 for Foundry Virtual Tabletop v14 and D&D 5e 5.3 or later.
+These instructions describe Morelord Encounters 0.1.9 for Foundry Virtual Tabletop v14 and D&D 5e 5.3 or later.

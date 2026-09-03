@@ -162,3 +162,4 @@ If needed, disconnect and reconnect the world to create a fresh account connecti
 | Manage the web account | Morelord Account window | **Open Account** |
 | Stop version reporting | Morelord Core module settings | Disable **Share Anonymous Usage Statistics** |
 | Remove the connection | Morelord Account window | **Disconnect** |
+
