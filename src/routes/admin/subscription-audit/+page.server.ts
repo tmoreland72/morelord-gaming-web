@@ -30,14 +30,7 @@ function normalizedPlan(priceId: string | null): string | null {
 	return getPlanFromPriceId(priceId);
 }
 
-function expectedEntitlements(plan: string | null, status: string): string[] {
-	if (!['active', 'trialing', 'past_due'].includes(status)) return [];
-	if (plan?.startsWith('champion')) return ['premium-modules', 'champion-access'];
-	if (plan?.startsWith('premium')) return ['premium-modules'];
-	return [];
-}
-
-function compare(local: LocalSubscription | null, stripe: StripeAuditSubscription | null, entitlementKeys: string[]): AuditIssue[] {
+function compare(local: LocalSubscription | null, stripe: StripeAuditSubscription | null): AuditIssue[] {
 	const issues: AuditIssue[] = [];
 	if (!local && stripe) {
 		issues.push({ severity: 'error', message: 'Subscription exists in Stripe but has no synchronized website record.' });
@@ -59,16 +52,8 @@ function compare(local: LocalSubscription | null, stripe: StripeAuditSubscriptio
 	const localEnd = local.currentPeriodEnd ? Math.floor(local.currentPeriodEnd / 1000) : null;
 	if (localEnd !== stripe.currentPeriodEnd) issues.push({ severity: 'warning', message: 'Current billing period end does not match Stripe.' });
 
-	const expected = expectedEntitlements(stripePlan, stripe.status);
-	for (const key of expected) {
-		if (!entitlementKeys.includes(key)) issues.push({ severity: 'error', message: `Required entitlement ${key} is missing.` });
-	}
-	if (!expected.includes('champion-access') && entitlementKeys.includes('champion-access')) {
-		issues.push({ severity: 'error', message: 'Champion entitlement is active for a non-Champion subscription.' });
-	}
-	if (expected.length === 0 && entitlementKeys.some((key) => key === 'premium-modules' || key === 'champion-access')) {
-		issues.push({ severity: 'error', message: 'Paid entitlements remain active for a subscription without paid access.' });
-	}
+	// Access comes from the subscription tier and product-feature mappings. Stripe
+	// entitlements are additional customer-level grants, not required per subscription.
 	if (stripe.promotionCouponDeleted) issues.push({ severity: 'warning', message: 'The applied promotion code references a deleted coupon.' });
 	return issues;
 }
@@ -109,7 +94,7 @@ export const load: PageServerLoad = async ({ platform }) => {
 		const stripe = stripeBySubscription.get(id) ?? null;
 		const customerId = stripe?.customerId || local?.stripeCustomerId || '';
 		const customerEntitlements = entitlements.filter((row) => row.stripeCustomerId === customerId);
-		const issues = compare(local, stripe, customerEntitlements.map((row) => row.lookupKey));
+		const issues = compare(local, stripe);
 		const severity: 'error' | 'warning' | 'healthy' = issues.some(
 			(issue) => issue.severity === 'error'
 		)
