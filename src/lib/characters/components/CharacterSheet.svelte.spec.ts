@@ -1,0 +1,125 @@
+import { page } from 'vitest/browser';
+import { expect, it, vi } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+import CharacterSheet from './CharacterSheet.svelte';
+import { readActorJson } from '../import/read-actor-file';
+import type { StoredCharacter } from '../models/stored-character';
+
+it('keeps imported artwork and descriptions, expands proficiencies, and downloads proxy-backed diagnostics', async () => {
+	const image =
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a1ZkAAAAASUVORK5CYII=';
+	const imported = readActorJson(
+		'test.morelord-character.json',
+		JSON.stringify({
+			format: 'morelord-character',
+			formatVersion: 3,
+			actor: {
+				name: 'Test Character',
+				type: 'character',
+				system: {
+					traits: {
+						armorProf: { value: ['lgt', 'med', 'shl'] },
+						weaponProf: { value: ['sim', 'mar'] }
+					},
+					details: { biography: { value: 'Private biography' } }
+				},
+				items: ['class', 'race', 'background', 'weapon', 'equipment', 'spell', 'feat'].map(
+					(type) => ({
+						_id: type,
+						type,
+						name: `Test ${type}`,
+						img: `modules/test/${type}.png`,
+						system: {
+							description: { value: type === 'equipment' ? '' : `<p>Description for ${type}</p>` },
+							levels: 2
+						}
+					})
+				),
+				effects: []
+			},
+			assets: {
+				images: { icon: { data: image, embedded: true } },
+				references: {
+					items: Object.fromEntries(
+						['class', 'race', 'background', 'weapon', 'equipment', 'spell', 'feat'].map((type) => [
+							type,
+							'icon'
+						])
+					)
+				}
+			}
+		})
+	);
+	// Like Svelte's deep state, these readable proxies cannot be structured-cloned.
+	imported.actor.system.details = new Proxy(imported.actor.system.details as object, {});
+	for (const item of imported.actor.items) item.system = new Proxy(item.system!, {});
+	const character: StoredCharacter = {
+		...imported,
+		localId: 'test',
+		name: imported.actor.name,
+		actorType: 'character',
+		sourceFileName: imported.fileName,
+		importedAt: '2026-09-14'
+	};
+	let reportBlob: Blob | undefined;
+	const createUrl = vi.spyOn(URL, 'createObjectURL').mockImplementation((blob) => {
+		reportBlob = blob as Blob;
+		return 'blob:diagnostic-test';
+	});
+	const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+	try {
+		render(CharacterSheet, { character, onPortraitChange: () => {} });
+		for (const label of ['Light', 'Medium', 'Shields', 'Simple', 'Martial']) {
+			await expect.element(page.getByRole('main').getByText(label, { exact: true })).toBeVisible();
+		}
+		for (const [tab, type] of [
+			['Character', 'class'],
+			['Character', 'race'],
+			['Character', 'background'],
+			['Inventory', 'weapon'],
+			['Inventory', 'equipment'],
+			['Spellbook', 'spell'],
+			['Features', 'feat']
+		]) {
+			await page.getByRole('button', { name: tab, exact: true }).click();
+			const button = page.getByRole('button', {
+				name: `View details for Test ${type}`,
+				exact: true
+			});
+			await expect.element(button).toBeEnabled();
+			await button.click();
+			await expect
+				.element(
+					page.getByText(
+						type === 'equipment'
+							? 'No description was included in the export.'
+							: `Description for ${type}`,
+						{ exact: true }
+					)
+				)
+				.toBeVisible();
+			const dialogImage = document.querySelector<HTMLImageElement>('.item-details-dialog img');
+			expect(dialogImage?.getAttribute('src')).toBe(image);
+			await page.getByRole('button', { name: 'Close details', exact: true }).click();
+		}
+		await page.getByRole('button', { name: 'Diagnostics', exact: true }).click();
+		await page.getByRole('button', { name: 'Download Report', exact: true }).click();
+		await expect
+			.element(page.getByText('Diagnostic report downloaded.', { exact: true }))
+			.toBeVisible();
+		const report = JSON.parse(await reportBlob!.text());
+		expect(report.actorSystem.details.biography).toBe('[content removed]');
+		expect(
+			report.representativeItems.every(
+				(item: { system: { description: string } }) =>
+					item.system.description === '[content removed]'
+			)
+		).toBe(true);
+		expect(imported.actor.items[0].system?.description).toEqual({
+			value: '<p>Description for class</p>'
+		});
+	} finally {
+		createUrl.mockRestore();
+		click.mockRestore();
+	}
+});

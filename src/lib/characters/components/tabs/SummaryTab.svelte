@@ -145,11 +145,17 @@
 		return [];
 	}
 
+	const proficiencyLabels: Record<string, Record<string, string>> = {
+		armorProf: { lgt: 'Light', med: 'Medium', hvy: 'Heavy', shl: 'Shields' },
+		weaponProf: { sim: 'Simple', mar: 'Martial' }
+	};
+
 	function getTraitValues(traitName: string): string[] {
+		const label = (value: string) => proficiencyLabels[traitName]?.[value] ?? formatLabel(value);
 		const trait = getNestedValue(actor.system, 'traits', traitName);
 
 		if (!isRecord(trait)) {
-			return getArrayOfStrings(trait).map(formatLabel);
+			return getArrayOfStrings(trait).map(label);
 		}
 
 		const values = getArrayOfStrings(trait.value);
@@ -160,9 +166,9 @@
 				.map((entry) => entry.trim())
 				.filter(Boolean) ?? [];
 
-		return [...values, ...custom]
-			.map(formatLabel)
-			.filter((value, index, collection) => collection.indexOf(value) === index);
+		return [...values.map(label), ...custom.map(formatLabel)].filter(
+			(value, index, collection) => collection.indexOf(value) === index
+		);
 	}
 
 	function getSizeLabel(): string {

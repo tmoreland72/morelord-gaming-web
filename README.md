@@ -276,3 +276,9 @@ Migration `0014_craftworks.sql` replaces the standalone Drakkenheim Harvesting c
 The canonical Character Export guide is `docs/README.md` in `tmoreland72/morelord-character-export`. `scripts/product-docs.json` registers that source, and both jobs in `.github/workflows/deploy.yml` check it out before `npm run docs:sync`. The shared documentation route serves it at `/docs/morelord-character-export`; do not add a static page at that path, which would shadow the imported guide.
 
 For local documentation refreshes, run `npm run docs:sync -- --source-root E:/Foundry14Dev-Data/Data/modules`. Commit the website documentation registration before the first Character Export documentation deployment, and push the module's versioned guide before that deployment runs. Subsequent standard Character Export releases request the existing `product-docs-updated` deployment event after publishing the website release record.
+
+### Character sheet regression checks
+
+My Characters displays the full armor and weapon proficiency labels, such as Light, Shields, and Simple. Inventory detail buttons also open items with empty descriptions, including standard weapons and armor, to show their exported properties; the dialog indicates when no description was exported. Item artwork is resolved from the export's shared image library, and item descriptions remain available through the sheet's detail buttons. Diagnostic copy/download sanitizes a JSON copy of the imported data so reactive browser state does not prevent reports from being generated or alter the character.
+
+Run `npx vitest run --project client src/lib/characters/components/CharacterSheet.svelte.spec.ts` to check imported artwork, descriptions, proficiency labels, and diagnostic generation. Existing image resolver and import tests run under the server test project.

@@ -488,16 +488,8 @@
 		return result;
 	}
 
-	function hasItemDetails(item: FoundryActorItem): boolean {
-		const description = getNestedValue(item.system, 'description', 'value');
-
-		return typeof description === 'string' && description.trim().length > 0;
-	}
-
 	function openItemDetails(item: FoundryActorItem): void {
-		if (hasItemDetails(item)) {
-			selectedItem = item;
-		}
+		selectedItem = item;
 	}
 
 	function formatSignedNumber(value: number): string {
@@ -720,7 +712,6 @@
 									<button
 										type="button"
 										class="item-identity item-details-button"
-										disabled={!hasItemDetails(item)}
 										aria-label={`View details for ${item.name}`}
 										on:click={() => openItemDetails(item)}
 									>

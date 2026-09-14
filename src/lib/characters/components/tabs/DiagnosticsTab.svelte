@@ -144,7 +144,7 @@
 			return {};
 		}
 
-		const sanitized = structuredClone(system) as Record<string, unknown>;
+		const sanitized = JSON.parse(JSON.stringify(system)) as Record<string, unknown>;
 
 		removeDescriptionContent(sanitized);
 
@@ -231,7 +231,7 @@
 			return details;
 		}
 
-		const sanitized = structuredClone(details);
+		const sanitized = JSON.parse(JSON.stringify(details));
 
 		removeDescriptionContent(sanitized);
 
@@ -242,10 +242,9 @@
 		copyStatus = '';
 		downloadStatus = '';
 
-		const report = createDiagnosticReport();
-		const text = formatJson(report);
-
 		try {
+			const report = createDiagnosticReport();
+			const text = formatJson(report);
 			await navigator.clipboard.writeText(text);
 
 			copyStatus = 'Diagnostic report copied to the clipboard.';
@@ -278,7 +277,7 @@
 			link.click();
 			link.remove();
 
-			URL.revokeObjectURL(url);
+			setTimeout(() => URL.revokeObjectURL(url), 1000);
 
 			downloadStatus = 'Diagnostic report downloaded.';
 		} catch (error) {
