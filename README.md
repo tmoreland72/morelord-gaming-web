@@ -271,6 +271,12 @@ Administrator diagnostics are available at `/admin/billing`, and the setup walkt
 
 Migration `0014_craftworks.sql` replaces the standalone Drakkenheim Harvesting catalog entry with Morelord Craftworks while preserving existing installation references. Standard includes Craftworks and its SRD 5.1/5.2 packs, Premium adds advanced crafting and core-rule source packs, and Champion unlocks specialized packs that require additional logic, beginning with Monsters of Drakkenheim.
 
+## Retired Campaign Manager prototype
+
+Campaign Manager was retired on September 13, 2026. Its website pages, API endpoints, Foundry bridge, import tooling, and dedicated dependencies have been removed. Character management and Character Export support remain available.
+
+Migrations 0018 through 0025 are retained as historical database migrations. Existing campaign tables and data are left intact; the website no longer exposes them. Do not reuse these migration numbers or drop existing tables as part of routine cleanup. The former planning documents are no longer active implementation plans.
+
 ## Character Export documentation
 
 The canonical Character Export guide is `docs/README.md` in `tmoreland72/morelord-character-export`. `scripts/product-docs.json` registers that source, and both jobs in `.github/workflows/deploy.yml` check it out before `npm run docs:sync`. The shared documentation route serves it at `/docs/morelord-character-export`; do not add a static page at that path, which would shadow the imported guide.
