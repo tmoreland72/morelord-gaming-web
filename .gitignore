@@ -28,5 +28,5 @@ test-results
 .dev.vars*
 !.dev.vars.example
 
-# Private local campaign sources and development artifacts
+# Private local sources and development artifacts
 /.local/
