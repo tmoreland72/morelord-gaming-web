@@ -46,6 +46,12 @@ jobs:
           repository: tmoreland72/morelord-core
           path: .product-docs/morelord-core
 
+      - name: Check out Morelord Character Export documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-character-export
+          path: .product-docs/morelord-character-export
+
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v4
         with:
@@ -129,6 +135,12 @@ jobs:
         with:
           repository: tmoreland72/morelord-core
           path: .product-docs/morelord-core
+
+      - name: Check out Morelord Character Export documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-character-export
+          path: .product-docs/morelord-character-export
 
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v4

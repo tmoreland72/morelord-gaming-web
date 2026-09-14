@@ -270,3 +270,9 @@ Administrator diagnostics are available at `/admin/billing`, and the setup walkt
 ## Morelord Craftworks
 
 Migration `0014_craftworks.sql` replaces the standalone Drakkenheim Harvesting catalog entry with Morelord Craftworks while preserving existing installation references. Standard includes Craftworks and its SRD 5.1/5.2 packs, Premium adds advanced crafting and core-rule source packs, and Champion unlocks specialized packs that require additional logic, beginning with Monsters of Drakkenheim.
+
+## Character Export documentation
+
+The canonical Character Export guide is `docs/README.md` in `tmoreland72/morelord-character-export`. `scripts/product-docs.json` registers that source, and both jobs in `.github/workflows/deploy.yml` check it out before `npm run docs:sync`. The shared documentation route serves it at `/docs/morelord-character-export`; do not add a static page at that path, which would shadow the imported guide.
+
+For local documentation refreshes, run `npm run docs:sync -- --source-root E:/Foundry14Dev-Data/Data/modules`. Commit the website documentation registration before the first Character Export documentation deployment, and push the module's versioned guide before that deployment runs. Subsequent standard Character Export releases request the existing `product-docs-updated` deployment event after publishing the website release record.

@@ -18,6 +18,13 @@
 			]
 		},
 		{
+			"slug": "morelord-character-export",
+			"repository": "tmoreland72/morelord-character-export",
+			"branch": "main",
+			"docsPath": "docs",
+			"assetsPath": null
+		},
+		{
 			"slug": "morelord-craftworks",
 			"repository": "tmoreland72/morelord-craftworks",
 			"branch": "main",
