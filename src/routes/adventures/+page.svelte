@@ -44,6 +44,10 @@
 <section class="adventure-stats" aria-label="Morelord Adventures at a glance">
 	<div class="shell adventure-stat-grid">
 		<div class="adventure-stat">
+			<strong>Top GM</strong>
+			<span>Awarded by StartPlaying.games</span>
+		</div>
+		<div class="adventure-stat">
 			<strong>5.0</strong>
 			<span>StartPlaying rating</span>
 		</div>
@@ -55,10 +59,6 @@
 			<strong>Foundry VTT</strong>
 			<span>Animated maps, lighting and sound</span>
 		</div>
-		<div class="adventure-stat">
-			<strong>Professional</strong>
-			<span>Prepared, punctual and organized</span>
-		</div>
 	</div>
 </section>
 
@@ -67,6 +67,9 @@
 		<div>
 			<div class="eyebrow dark-eyebrow">Meet your game master</div>
 			<h2>The “Techie DM” behind Morelord Adventures</h2>
+			<p class="adventure-copy">
+				StartPlaying.games has awarded Troy <strong>Top GM</strong> status.
+			</p>
 			<p class="adventure-copy">
 				Troy first discovered D&amp;D in 1982 and now combines decades of technology, teaching and
 				leadership experience with a love of collaborative storytelling. Before retiring, he spent
@@ -93,9 +96,10 @@
 				<strong>Troy</strong>
 				<span>Professional Game Master</span>
 				<ul>
+					<li>Top GM on StartPlaying.games</li>
 					<li>Military veteran and educator</li>
-					<li>D&amp;D 5e campaigns and one-shots</li>
-					<li>Foundry VTT, Discord and D&amp;D Beyond</li>
+					<li>D&amp;D campaigns and one-shots</li>
+					<li>Foundry VTT and Discord</li>
 				</ul>
 			</div>
 		</div>
