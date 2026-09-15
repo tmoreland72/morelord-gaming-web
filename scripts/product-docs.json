@@ -31,6 +31,14 @@
 			"docsPath": "docs"
 		},
 		{
+			"slug": "morelord-downtime",
+			"repository": "tmoreland72/morelord-downtime",
+			"branch": "main",
+			"docsPath": "docs",
+			"assetsPath": null,
+			"documents": [{ "source": "README.md" }]
+		},
+		{
 			"slug": "morelord-encounters",
 			"repository": "tmoreland72/morelord-encounters",
 			"branch": "main",

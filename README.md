@@ -282,3 +282,7 @@ For local documentation refreshes, run `npm run docs:sync -- --source-root E:/Fo
 My Characters displays the full armor and weapon proficiency labels, such as Light, Shields, and Simple. Inventory detail buttons also open items with empty descriptions, including standard weapons and armor, to show their exported properties; the dialog indicates when no description was exported. Item artwork is resolved from the export's shared image library, and item descriptions remain available through the sheet's detail buttons. Diagnostic copy/download sanitizes a JSON copy of the imported data so reactive browser state does not prevent reports from being generated or alter the character.
 
 Run `npx vitest run --project client src/lib/characters/components/CharacterSheet.svelte.spec.ts` to check imported artwork, descriptions, proficiency labels, and diagnostic generation. Existing image resolver and import tests run under the server test project.
+
+## Downtime documentation
+
+Downtime's canonical user guide is docs/README.md in tmoreland72/morelord-downtime. The docs registry explicitly imports that guide, excluding the internal architecture audit. Both deployment jobs check out its repository before documentation sync, and /docs links to /docs/morelord-downtime. Standard Downtime releases request the product-docs-updated deployment event to keep the guide current.

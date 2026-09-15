@@ -13,6 +13,15 @@
 		<p class="lead">
 			Installation, configuration and day-to-day instructions for each Morelord Tools product.
 		</p>
+		<article class="card docs-card">
+			<div class="eyebrow">Downtime and character goals</div>
+			<h2>Morelord Downtime</h2>
+			<p>
+				Prepare Sessions, allocate character time, and track Training, commissions, and item
+				sourcing.
+			</p>
+			<a class="text-link" href="/docs/morelord-downtime">View documentation <span>→</span></a>
+		</article>
 	</div>
 </section>
 
@@ -69,6 +78,15 @@
 				camp.
 			</p>
 			<a class="text-link" href="/docs/morelord-journeys">View documentation <span>→</span></a>
+		</article>
+		<article class="card docs-card">
+			<div class="eyebrow">Downtime and character goals</div>
+			<h2>Morelord Downtime</h2>
+			<p>
+				Prepare Sessions, allocate character time, and track Training, commissions, and item
+				sourcing.
+			</p>
+			<a class="text-link" href="/docs/morelord-downtime">View documentation <span>→</span></a>
 		</article>
 	</div>
 </section>

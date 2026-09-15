@@ -70,6 +70,12 @@ jobs:
           repository: tmoreland72/morelord-journeys
           path: .product-docs/morelord-journeys
 
+      - name: Check out Morelord Downtime documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-downtime
+          path: .product-docs/morelord-downtime
+
       - name: Synchronize product documentation
         run: npm run docs:sync
 
@@ -159,6 +165,12 @@ jobs:
         with:
           repository: tmoreland72/morelord-journeys
           path: .product-docs/morelord-journeys
+
+      - name: Check out Morelord Downtime documentation
+        uses: actions/checkout@v4
+        with:
+          repository: tmoreland72/morelord-downtime
+          path: .product-docs/morelord-downtime
 
       - name: Synchronize product documentation
         run: npm run docs:sync
