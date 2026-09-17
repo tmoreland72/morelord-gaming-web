@@ -2,7 +2,12 @@ import { env } from '$env/dynamic/private';
 import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { discordConnections, discordSettings, stripeCustomers } from '$lib/server/db/schema';
-import { getBillingSummary } from '$lib/server/billing';
+import {
+	getBillingSummary,
+	membershipLabel,
+	resolveMembershipTier,
+	type MembershipTier
+} from '$lib/server/billing';
 
 const DISCORD_API = 'https://discord.com/api/v10';
 const SETTINGS_ID = 'primary';
@@ -63,7 +68,10 @@ export function discordOAuthConfigured(): boolean {
 }
 
 export function discordRedirectUri(): string {
-	return (env.DISCORD_REDIRECT_URI || (env.ORIGIN ? `${env.ORIGIN.replace(/\/$/, '')}/api/discord/callback` : '')).trim();
+	return (
+		env.DISCORD_REDIRECT_URI ||
+		(env.ORIGIN ? `${env.ORIGIN.replace(/\/$/, '')}/api/discord/callback` : '')
+	).trim();
 }
 
 export function getDiscordAuthorizeUrl(state: string): string {
@@ -114,7 +122,11 @@ export async function fetchDiscordProfile(accessToken: string): Promise<DiscordP
 	return (await response.json()) as DiscordProfile;
 }
 
-export async function saveDiscordConnection(d1: D1Database, userId: string, profile: DiscordProfile) {
+export async function saveDiscordConnection(
+	d1: D1Database,
+	userId: string,
+	profile: DiscordProfile
+) {
 	const db = getDb(d1);
 	const existingDiscord = await db.query.discordConnections.findFirst({
 		where: eq(discordConnections.discordUserId, profile.id)
@@ -159,7 +171,9 @@ export async function getDiscordConnection(d1: D1Database, userId: string) {
 
 export async function getDiscordSettings(d1: D1Database): Promise<DiscordRuntimeSettings> {
 	const db = getDb(d1);
-	const row = await db.query.discordSettings.findFirst({ where: eq(discordSettings.id, SETTINGS_ID) });
+	const row = await db.query.discordSettings.findFirst({
+		where: eq(discordSettings.id, SETTINGS_ID)
+	});
 	return {
 		guildId: row?.guildId ?? env.DISCORD_GUILD_ID ?? null,
 		roleToolsId: row?.roleToolsId ?? env.DISCORD_ROLE_TOOLS ?? env.DISCORD_ROLE_COMMUNITY ?? null,
@@ -185,17 +199,18 @@ export async function saveDiscordSettings(d1: D1Database, values: DiscordRuntime
 export async function discordRoleSyncConfigured(d1: D1Database): Promise<boolean> {
 	if (!env.DISCORD_BOT_TOKEN) return false;
 	const settings = await getDiscordSettings(d1);
-	return Boolean(settings.guildId && settings.roleToolsId && settings.rolePremiumId && settings.roleChampionId);
+	return Boolean(
+		settings.guildId && settings.roleToolsId && settings.rolePremiumId && settings.roleChampionId
+	);
 }
 
-function desiredManagedRoles(plan: string | null | undefined, settings: DiscordRuntimeSettings): Set<string> {
+function desiredManagedRoles(tier: MembershipTier, settings: DiscordRuntimeSettings): Set<string> {
 	const roles = new Set<string>();
 	if (settings.roleToolsId) roles.add(settings.roleToolsId);
-	if (plan?.startsWith('premium') && settings.rolePremiumId) roles.add(settings.rolePremiumId);
-	if (plan?.startsWith('champion')) {
+	if (tier === 'premium' || tier === 'champion') {
 		if (settings.rolePremiumId) roles.add(settings.rolePremiumId);
-		if (settings.roleChampionId) roles.add(settings.roleChampionId);
 	}
+	if (tier === 'champion' && settings.roleChampionId) roles.add(settings.roleChampionId);
 	return roles;
 }
 
@@ -215,14 +230,26 @@ async function discordFetch(path: string, init: RequestInit = {}): Promise<Respo
 	});
 }
 
-async function setRole(guildId: string, discordUserId: string, roleId: string, add: boolean): Promise<void> {
-	const response = await discordFetch(`/guilds/${guildId}/members/${discordUserId}/roles/${roleId}`, {
-		method: add ? 'PUT' : 'DELETE',
-		headers: { 'X-Audit-Log-Reason': 'Morelord Tools membership synchronization' }
-	});
+async function setRole(
+	guildId: string,
+	discordUserId: string,
+	roleId: string,
+	add: boolean
+): Promise<void> {
+	const response = await discordFetch(
+		`/guilds/${guildId}/members/${discordUserId}/roles/${roleId}`,
+		{
+			method: add ? 'PUT' : 'DELETE',
+			headers: { 'X-Audit-Log-Reason': 'Morelord Tools membership synchronization' }
+		}
+	);
 	if (!response.ok && response.status !== 204) {
 		let detail = '';
-		try { detail = `: ${JSON.stringify(await response.json())}`; } catch { /* ignore */ }
+		try {
+			detail = `: ${JSON.stringify(await response.json())}`;
+		} catch {
+			/* ignore */
+		}
 		throw new Error(`Discord role update failed (${response.status})${detail}`);
 	}
 }
@@ -232,10 +259,17 @@ export async function syncDiscordRoles(d1: D1Database, userId: string) {
 	if (!connection) throw new Error('Connect Discord before synchronizing roles.');
 	const settings = await getDiscordSettings(d1);
 	if (!(await discordRoleSyncConfigured(d1))) {
-		return updateSyncStatus(d1, userId, 'not_configured', 'Discord is connected, but automatic Tools role synchronization is not fully configured yet.');
+		return updateSyncStatus(
+			d1,
+			userId,
+			'not_configured',
+			'Discord is connected, but automatic Tools role synchronization is not fully configured yet.'
+		);
 	}
 
-	const memberResponse = await discordFetch(`/guilds/${settings.guildId}/members/${connection.discordUserId}`);
+	const memberResponse = await discordFetch(
+		`/guilds/${settings.guildId}/members/${connection.discordUserId}`
+	);
 	if (memberResponse.status === 404) {
 		const inviteMessage = settings.inviteUrl
 			? `Join the Morelord Gaming Discord, then synchronize again: ${settings.inviteUrl}`
@@ -243,25 +277,31 @@ export async function syncDiscordRoles(d1: D1Database, userId: string) {
 		return updateSyncStatus(d1, userId, 'not_in_server', inviteMessage);
 	}
 	if (!memberResponse.ok) {
-		return updateSyncStatus(d1, userId, 'error', `Discord member lookup failed (${memberResponse.status}).`);
+		return updateSyncStatus(
+			d1,
+			userId,
+			'error',
+			`Discord member lookup failed (${memberResponse.status}).`
+		);
 	}
 
 	const member = (await memberResponse.json()) as { roles?: string[] };
 	const current = new Set(member.roles ?? []);
 	const billing = await getBillingSummary(d1, userId);
-	const desired = desiredManagedRoles(billing.subscription?.plan, settings);
+	const tier = resolveMembershipTier(
+		billing.subscription,
+		billing.entitlements.map((entitlement) => entitlement.lookupKey)
+	);
+	const desired = desiredManagedRoles(tier, settings);
 
 	for (const roleId of configuredManagedRoles(settings)) {
-		if (desired.has(roleId) && !current.has(roleId)) await setRole(settings.guildId!, connection.discordUserId, roleId, true);
-		if (!desired.has(roleId) && current.has(roleId)) await setRole(settings.guildId!, connection.discordUserId, roleId, false);
+		if (desired.has(roleId) && !current.has(roleId))
+			await setRole(settings.guildId!, connection.discordUserId, roleId, true);
+		if (!desired.has(roleId) && current.has(roleId))
+			await setRole(settings.guildId!, connection.discordUserId, roleId, false);
 	}
 
-	const label = billing.subscription?.plan?.startsWith('champion')
-		? 'Champion'
-		: billing.subscription?.plan?.startsWith('premium')
-			? 'Premium'
-			: 'Standard';
-	return updateSyncStatus(d1, userId, 'synced', `${label} Morelord Tools roles are synchronized.`);
+	return updateSyncStatus(d1, userId, 'synced', `${membershipLabel(tier)} roles are synchronized.`);
 }
 
 export async function syncDiscordRolesForStripeCustomer(d1: D1Database, stripeCustomerId: string) {
@@ -282,7 +322,11 @@ export async function disconnectDiscord(d1: D1Database, userId: string) {
 			const settings = await getDiscordSettings(d1);
 			if (settings.guildId) {
 				for (const roleId of configuredManagedRoles(settings)) {
-					try { await setRole(settings.guildId, connection.discordUserId, roleId, false); } catch (cause) { console.warn('Could not remove managed Discord role during disconnect.', cause); }
+					try {
+						await setRole(settings.guildId, connection.discordUserId, roleId, false);
+					} catch (cause) {
+						console.warn('Could not remove managed Discord role during disconnect.', cause);
+					}
 				}
 			}
 		} catch (cause) {
@@ -292,10 +336,17 @@ export async function disconnectDiscord(d1: D1Database, userId: string) {
 	await getDb(d1).delete(discordConnections).where(eq(discordConnections.userId, userId));
 }
 
-export async function checkDiscordConfiguration(d1: D1Database): Promise<DiscordConfigurationCheck> {
+export async function checkDiscordConfiguration(
+	d1: D1Database
+): Promise<DiscordConfigurationCheck> {
 	const settings = await getDiscordSettings(d1);
 	const result: DiscordConfigurationCheck = {
-		configured: Boolean(env.DISCORD_CLIENT_ID && env.DISCORD_CLIENT_SECRET && env.DISCORD_BOT_TOKEN && settings.guildId),
+		configured: Boolean(
+			env.DISCORD_CLIENT_ID &&
+			env.DISCORD_CLIENT_SECRET &&
+			env.DISCORD_BOT_TOKEN &&
+			settings.guildId
+		),
 		botReachable: false,
 		guildReachable: false,
 		botHasManageRoles: false,
@@ -329,7 +380,8 @@ export async function checkDiscordConfiguration(d1: D1Database): Promise<Discord
 		]);
 		if (!guildResponse.ok) throw new Error(`Guild lookup failed (${guildResponse.status}).`);
 		if (!rolesResponse.ok) throw new Error(`Guild role lookup failed (${rolesResponse.status}).`);
-		if (!memberResponse.ok) throw new Error(`Bot guild membership lookup failed (${memberResponse.status}).`);
+		if (!memberResponse.ok)
+			throw new Error(`Bot guild membership lookup failed (${memberResponse.status}).`);
 
 		const guild = (await guildResponse.json()) as { name?: string };
 		const roles = (await rolesResponse.json()) as DiscordGuildRole[];
@@ -339,12 +391,17 @@ export async function checkDiscordConfiguration(d1: D1Database): Promise<Discord
 		result.roles = roles.sort((a, b) => b.position - a.position);
 
 		const roleMap = new Map(roles.map((role) => [role.id, role]));
-		const botRoles = (member.roles ?? []).map((id) => roleMap.get(id)).filter((role): role is DiscordGuildRole => Boolean(role));
+		const botRoles = (member.roles ?? [])
+			.map((id) => roleMap.get(id))
+			.filter((role): role is DiscordGuildRole => Boolean(role));
 		const guildEveryone = roleMap.get(settings.guildId);
 		if (guildEveryone) botRoles.push(guildEveryone);
 		result.botHighestRolePosition = botRoles.reduce((max, role) => Math.max(max, role.position), 0);
-		const permissions = botRoles.reduce((value, role) => value | BigInt(role.permissions || '0'), 0n);
-		result.botHasManageRoles = Boolean((permissions & MANAGE_ROLES) || (permissions & ADMINISTRATOR));
+		const permissions = botRoles.reduce(
+			(value, role) => value | BigInt(role.permissions || '0'),
+			0n
+		);
+		result.botHasManageRoles = Boolean(permissions & MANAGE_ROLES || permissions & ADMINISTRATOR);
 
 		const selected: Array<['tools' | 'premium' | 'champion', string | null]> = [
 			['tools', settings.roleToolsId],
@@ -358,17 +415,29 @@ export async function checkDiscordConfiguration(d1: D1Database): Promise<Discord
 				roleId,
 				name: role?.name ?? null,
 				position: role?.position ?? null,
-				manageable: Boolean(role && result.botHasManageRoles && role.position < (result.botHighestRolePosition ?? 0) && !role.managed)
+				manageable: Boolean(
+					role &&
+					result.botHasManageRoles &&
+					role.position < (result.botHighestRolePosition ?? 0) &&
+					!role.managed
+				)
 			};
 		});
 		for (const role of result.managedRoles) {
 			if (!role.roleId) result.errors.push(`${role.key} role is not configured.`);
-			else if (!role.name) result.errors.push(`Configured ${role.key} role was not found in the server.`);
-			else if (!role.manageable) result.errors.push(`The bot role must be above ${role.name} and have Manage Roles permission.`);
+			else if (!role.name)
+				result.errors.push(`Configured ${role.key} role was not found in the server.`);
+			else if (!role.manageable)
+				result.errors.push(
+					`The bot role must be above ${role.name} and have Manage Roles permission.`
+				);
 		}
-		if (!result.botHasManageRoles) result.errors.push('The bot does not have Manage Roles permission.');
+		if (!result.botHasManageRoles)
+			result.errors.push('The bot does not have Manage Roles permission.');
 	} catch (cause) {
-		result.errors.push(cause instanceof Error ? cause.message : 'Discord configuration check failed.');
+		result.errors.push(
+			cause instanceof Error ? cause.message : 'Discord configuration check failed.'
+		);
 	}
 	return result;
 }

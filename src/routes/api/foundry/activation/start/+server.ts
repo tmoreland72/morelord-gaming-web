@@ -1,33 +1,50 @@
-import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-const corsHeaders = {
-	'access-control-allow-origin': '*',
-	'access-control-allow-headers': 'authorization, content-type',
-	'access-control-allow-methods': 'GET, POST, OPTIONS'
-};
+import { createActivationRequest, activationStartSchema } from '$lib/server/foundry';
+import { clientAddressKey, foundryCorsPreflight, jsonWithCors, requireD1 } from '$lib/server/http';
+import { consumeRateLimit } from '$lib/server/rate-limit';
+import { publicErrorMessage, publicErrorStatus } from '$lib/server/errors';
 
-export const OPTIONS: RequestHandler = async () => new Response(null, { status: 204, headers: corsHeaders });
-import { createActivationRequest } from '$lib/server/foundry';
+export const OPTIONS: RequestHandler = async () => foundryCorsPreflight();
 
-export const POST: RequestHandler = async ({ request, platform, url }) => {
-	if (!platform?.env?.DB) return json({ error: 'Database unavailable.' }, { status: 503, headers: corsHeaders });
+export const POST: RequestHandler = async (event) => {
+	const db = requireD1(event.platform);
+	if (!db) return jsonWithCors({ error: 'Database unavailable.' }, { status: 503 });
+
+	const allowed = await consumeRateLimit(
+		db,
+		clientAddressKey(event, 'foundry-activation'),
+		8,
+		15 * 60 * 1000
+	);
+	if (!allowed) {
+		return jsonWithCors(
+			{ error: 'Too many activation attempts. Wait a few minutes and try again.' },
+			{ status: 429 }
+		);
+	}
+
 	try {
-		const body = await request.json() as Record<string, unknown>;
-		const productSlug = typeof body.productSlug === 'string' ? body.productSlug : '';
-		if (!productSlug) return json({ error: 'productSlug is required.' }, { status: 400, headers: corsHeaders });
-		const activation = await createActivationRequest(platform.env.DB, {
-			productSlug,
-			installationLabel: typeof body.installationLabel === 'string' ? body.installationLabel : undefined,
-			worldId: typeof body.worldId === 'string' ? body.worldId : undefined,
-			worldName: typeof body.worldName === 'string' ? body.worldName : undefined,
-			foundryVersion: typeof body.foundryVersion === 'string' ? body.foundryVersion : undefined,
-			moduleVersion: typeof body.moduleVersion === 'string' ? body.moduleVersion : undefined
-		});
-		const verificationUrl = new URL('/account', url.origin);
+		let body: unknown;
+		try {
+			body = await event.request.json();
+		} catch {
+			return jsonWithCors({ error: 'productSlug is required.' }, { status: 400 });
+		}
+		const parsed = activationStartSchema.safeParse(body);
+		if (!parsed.success) {
+			return jsonWithCors({ error: 'productSlug is required.' }, { status: 400 });
+		}
+		const activation = await createActivationRequest(db, parsed.data);
+		const verificationUrl = new URL('/account', event.url.origin);
 		verificationUrl.searchParams.set('activation', activation.userCode);
 		verificationUrl.hash = 'foundry-activation';
-		return json({ ...activation, verificationUrl: verificationUrl.toString() }, { headers: corsHeaders });
+		return jsonWithCors({ ...activation, verificationUrl: verificationUrl.toString() });
 	} catch (error) {
-		return json({ error: error instanceof Error ? error.message : 'Activation could not be started.' }, { status: 400, headers: corsHeaders });
+		return jsonWithCors(
+			{
+				error: publicErrorMessage(error, 'Activation could not be started.')
+			},
+			{ status: publicErrorStatus(error, 400) }
+		);
 	}
 };

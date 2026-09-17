@@ -1,98 +1,75 @@
-import { and, eq } from 'drizzle-orm';
-import { getDb } from '$lib/server/db';
-import { characters } from '$lib/server/db/schema';
+import { and, asc, eq } from 'drizzle-orm';
+import { createCharacterSummary } from '$lib/characters/characters/character-summary';
+import type { CharacterListItem } from '$lib/characters/models/character-list-item';
 import type { ImportedActorFile } from '$lib/characters/import/read-actor-file';
 import type { StoredCharacter } from '$lib/characters/models/stored-character';
-import type { CharacterListItem } from '$lib/characters/models/character-list-item';
+import { getDb } from '$lib/server/db';
+import { characters } from '$lib/server/db/schema';
 
 const MAXIMUM_STORED_CHARACTER_BYTES = 1_900_000;
 
-export async function listCharacters(d1: D1Database, userId: string): Promise<CharacterListItem[]> {
-	type CharacterSummaryRow = {
-		localId: string;
-		name: string;
-		importedAt: string;
-		portraitVersion: number;
-		usesTokenImage: number;
-		classesJson: string;
-		subclassesJson: string;
-		species: string | null;
-		background: string | null;
-		spellCount: number;
-		featureCount: number;
-		inventoryCount: number;
-	};
-	const result = await d1
-		.prepare(
-			`
-			SELECT
-				c.id AS localId,
-				c.name,
-				c.updated_at AS portraitVersion,
-				CASE
-					WHEN json_extract(c.content_json, '$.portraitSource') = 'custom' THEN 0
-					WHEN json_type(c.content_json, '$.assets.references.actor.prototypeToken') = 'text' THEN 1
-					ELSE 0
-				END AS usesTokenImage,
-				COALESCE(json_extract(c.content_json, '$.importedAt'), '') AS importedAt,
-				COALESCE((
-					SELECT json_group_array(json_object(
-						'name', json_extract(item.value, '$.name'),
-						'levels', COALESCE(json_extract(item.value, '$.system.levels'), 0)
-					))
-					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') = 'class'
-				), '[]') AS classesJson,
-				COALESCE((
-					SELECT json_group_array(json_extract(item.value, '$.name'))
-					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') = 'subclass'
-				), '[]') AS subclassesJson,
-				(
-					SELECT json_extract(item.value, '$.name')
-					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') IN ('race', 'species') LIMIT 1
-				) AS species,
-				(
-					SELECT json_extract(item.value, '$.name')
-					FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') = 'background' LIMIT 1
-				) AS background,
-				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') = 'spell') AS spellCount,
-				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') IN ('feat', 'subclass')) AS featureCount,
-				(SELECT count(*) FROM json_each(json_extract(c.content_json, '$.actor.items')) AS item
-					WHERE json_extract(item.value, '$.type') IN ('weapon', 'equipment', 'consumable', 'tool', 'loot', 'container')) AS inventoryCount
-			FROM characters AS c
-			WHERE c.user_id = ?
-			ORDER BY c.name ASC
-		`
-		)
-		.bind(userId)
-		.all<CharacterSummaryRow>();
+function usesTokenImage(character: StoredCharacter): boolean {
+	return (
+		character.portraitSource !== 'custom' &&
+		typeof character.assets?.references?.actor?.prototypeToken === 'string'
+	);
+}
 
-	return result.results.map((row) => {
-		const classes = JSON.parse(row.classesJson) as CharacterListItem['summary']['classes'];
-		const subclasses = JSON.parse(row.subclassesJson) as CharacterListItem['summary']['subclasses'];
+function listFieldsFromCharacter(character: StoredCharacter) {
+	return {
+		summaryJson: JSON.stringify(createCharacterSummary(character)),
+		importedAt: character.importedAt,
+		usesTokenImage: usesTokenImage(character)
+	};
+}
+
+function listItemFromRow(row: {
+	id: string;
+	name: string;
+	contentJson: string;
+	summaryJson: string | null;
+	importedAt: string | null;
+	usesTokenImage: boolean;
+	updatedAt: Date;
+}): CharacterListItem {
+	if (row.summaryJson) {
 		return {
-			localId: row.localId,
+			localId: row.id,
 			name: row.name,
-			importedAt: row.importedAt,
-			portraitVersion: row.portraitVersion,
-			usesTokenImage: row.usesTokenImage === 1,
-			summary: {
-				classes,
-				subclasses,
-				totalLevel: classes.reduce((total, item) => total + item.levels, 0),
-				species: row.species ?? undefined,
-				background: row.background ?? undefined,
-				spellCount: row.spellCount,
-				featureCount: row.featureCount,
-				inventoryCount: row.inventoryCount
-			}
+			importedAt: row.importedAt ?? '',
+			portraitVersion: row.updatedAt.getTime(),
+			usesTokenImage: row.usesTokenImage,
+			summary: JSON.parse(row.summaryJson) as CharacterListItem['summary']
 		};
-	});
+	}
+
+	const stored = JSON.parse(row.contentJson) as StoredCharacter;
+	return {
+		localId: row.id,
+		name: row.name,
+		importedAt: stored.importedAt,
+		portraitVersion: row.updatedAt.getTime(),
+		usesTokenImage: usesTokenImage(stored),
+		summary: createCharacterSummary(stored)
+	};
+}
+
+export async function listCharacters(d1: D1Database, userId: string): Promise<CharacterListItem[]> {
+	const rows = await getDb(d1)
+		.select({
+			id: characters.id,
+			name: characters.name,
+			contentJson: characters.contentJson,
+			summaryJson: characters.summaryJson,
+			importedAt: characters.importedAt,
+			usesTokenImage: characters.usesTokenImage,
+			updatedAt: characters.updatedAt
+		})
+		.from(characters)
+		.where(eq(characters.userId, userId))
+		.orderBy(asc(characters.name));
+
+	return rows.map(listItemFromRow);
 }
 
 export async function getCharacter(
@@ -168,6 +145,7 @@ export async function saveImportedCharacter(
 	};
 	const now = new Date();
 	const contentJson = serializeCharacter(character);
+	const listFields = listFieldsFromCharacter(character);
 	await db
 		.insert(characters)
 		.values({
@@ -176,6 +154,7 @@ export async function saveImportedCharacter(
 			foundryActorId: character.foundryActorId,
 			name: character.name,
 			contentJson,
+			...listFields,
 			createdAt: now,
 			updatedAt: now
 		})
@@ -185,6 +164,7 @@ export async function saveImportedCharacter(
 				name: character.name,
 				foundryActorId: character.foundryActorId,
 				contentJson,
+				...listFields,
 				updatedAt: now
 			}
 		});
@@ -207,7 +187,11 @@ export async function updateCharacterPortrait(
 	const contentJson = serializeCharacter(updated);
 	await db
 		.update(characters)
-		.set({ contentJson, updatedAt: new Date() })
+		.set({
+			contentJson,
+			...listFieldsFromCharacter(updated),
+			updatedAt: new Date()
+		})
 		.where(and(eq(characters.id, id), eq(characters.userId, userId)));
 	return updated;
 }
@@ -221,7 +205,8 @@ export async function deleteCharacter(d1: D1Database, userId: string, id: string
 function omitPortraitData(
 	portrait: NonNullable<ImportedActorFile['portrait']>
 ): NonNullable<StoredCharacter['portraitAsset']> {
-	const { data: _data, ...metadata } = portrait;
+	const metadata = { ...portrait };
+	delete metadata.data;
 	return metadata;
 }
 

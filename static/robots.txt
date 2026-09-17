@@ -1,3 +1,7 @@
-# allow crawling everything by default
 User-agent: *
-Disallow:
+Disallow: /account
+Disallow: /admin
+Disallow: /login
+Disallow: /characters
+Disallow: /api/
+Allow: /api/health

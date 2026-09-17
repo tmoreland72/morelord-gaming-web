@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { timingSafeEqual } from '$lib/server/crypto';
 
 const STRIPE_API = 'https://api.stripe.com/v1';
 
@@ -199,14 +200,6 @@ function parseStripeSignature(header: string): { timestamp: string; signatures: 
 	const signatures = values.filter(([key]) => key === 'v1').map(([, value]) => value);
 	if (!timestamp || signatures.length === 0) throw new Error('Invalid Stripe-Signature header.');
 	return { timestamp, signatures };
-}
-
-function timingSafeEqual(left: string, right: string): boolean {
-	if (left.length !== right.length) return false;
-	let mismatch = 0;
-	for (let index = 0; index < left.length; index++)
-		mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
-	return mismatch === 0;
 }
 
 export async function verifyStripeWebhook(rawBody: string, signatureHeader: string): Promise<void> {
