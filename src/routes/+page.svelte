@@ -29,6 +29,28 @@
 	</div>
 </section>
 
+<section class="section" aria-labelledby="intro-heading">
+	<div class="shell">
+		<div class="section-heading">
+			<div>
+				<div class="eyebrow">Welcome to Morelord Gaming</div>
+				<h2 id="intro-heading">Meet Chuck the Goblin King</h2>
+			</div>
+		</div>
+		<iframe
+			class="intro-video"
+			width="560"
+			height="315"
+			src="https://www.youtube.com/embed/0d4kaqyP4OI?si=LaBvlBww9gwWFPUc&autoplay=0&loop=0"
+			title="Meet Chuck the Goblin King — Morelord Gaming introduction"
+			allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+			referrerpolicy="strict-origin-when-cross-origin"
+			loading="lazy"
+			allowfullscreen
+		></iframe>
+	</div>
+</section>
+
 <section class="division-section">
 	<div class="shell division-grid">
 		<article class="division-card adventure-card">
@@ -122,3 +144,17 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	.intro-video {
+		display: block;
+		width: min(100%, 960px);
+		height: auto;
+		aspect-ratio: 16 / 9;
+		margin-inline: auto;
+		border: 1px solid #d49b2c45;
+		border-radius: 12px;
+		background: #000;
+		box-shadow: 0 18px 45px #0007;
+	}
+</style>
