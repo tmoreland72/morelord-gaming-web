@@ -303,14 +303,24 @@ jobs:
             "${base_url}/api/health"
 
           echo
-          echo "Checking ${base_url}/api/system/auth-status"
+          echo "Checking ${base_url}/api/system/auth-status is not public"
 
-          curl \
-            --fail \
-            --silent \
-            --show-error \
-            --retry 5 \
-            --retry-delay 5 \
-            "${base_url}/api/system/auth-status"
+          auth_status="$(
+            curl \
+              --silent \
+              --show-error \
+              --retry 5 \
+              --retry-delay 5 \
+              --output /tmp/auth-status.json \
+              --write-out '%{http_code}' \
+              "${base_url}/api/system/auth-status"
+          )"
 
-          echo
+          if [ "${auth_status}" != "404" ]; then
+            echo "Expected 404 for anonymous /api/system/auth-status, got ${auth_status}"
+            cat /tmp/auth-status.json
+            echo
+            exit 1
+          fi
+
+          echo "Anonymous auth-status correctly returned 404"
