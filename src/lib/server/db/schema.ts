@@ -257,9 +257,42 @@ export const characters = sqliteTable(
 		foundryActorId: text('foundry_actor_id'),
 		name: text('name').notNull(),
 		contentJson: text('content_json').notNull(),
+		summaryJson: text('summary_json'),
+		importedAt: text('imported_at'),
+		usesTokenImage: integer('uses_token_image', { mode: 'boolean' }).notNull().default(false),
 		...timestamps
 	},
 	(table) => [
 		uniqueIndex('characters_user_foundry_actor_unique').on(table.userId, table.foundryActorId)
 	]
 );
+
+export const supportRequests = sqliteTable('support_requests', {
+	id: text('id').primaryKey(),
+	userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
+	name: text('name').notNull(),
+	email: text('email').notNull(),
+	category: text('category').notNull(),
+	product: text('product'),
+	subject: text('subject').notNull(),
+	message: text('message').notNull(),
+	status: text('status', { enum: ['open', 'in_progress', 'resolved'] })
+		.notNull()
+		.default('open'),
+	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull(),
+	updatedAt: integer('updated_at', { mode: 'timestamp_ms' }).notNull()
+});
+
+export const releaseAnnouncements = sqliteTable('release_announcements', {
+	releaseId: text('release_id')
+		.primaryKey()
+		.references(() => releases.id, { onDelete: 'cascade' }),
+	provider: text('provider').notNull(),
+	externalMessageId: text('external_message_id').notNull(),
+	announcedAt: integer('announced_at', { mode: 'timestamp_ms' }).notNull()
+});
+
+export const rateLimitEvents = sqliteTable('rate_limit_events', {
+	key: text('key').notNull(),
+	createdAt: integer('created_at', { mode: 'timestamp_ms' }).notNull()
+});

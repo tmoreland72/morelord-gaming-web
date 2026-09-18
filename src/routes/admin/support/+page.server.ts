@@ -1,30 +1,35 @@
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { eq } from 'drizzle-orm';
+import { getDb } from '$lib/server/db';
+import { supportRequests } from '$lib/server/db/schema';
 
 const statuses = ['open', 'in_progress', 'resolved'] as const;
-
-type SupportRow = {
-	id: string;
-	userId: string | null;
-	name: string;
-	email: string;
-	category: string;
-	product: string | null;
-	subject: string;
-	message: string;
-	status: string;
-	createdAt: number;
-	updatedAt: number;
-};
+const statusRank: Record<string, number> = { open: 0, in_progress: 1, resolved: 2 };
 
 export const load: PageServerLoad = async ({ platform }) => {
 	if (!platform?.env?.DB) error(503, 'D1 database binding is unavailable.');
-	const result = await platform.env.DB.prepare(`SELECT id, user_id AS userId, name, email, category, product,
-		subject, message, status, created_at AS createdAt, updated_at AS updatedAt
-		FROM support_requests ORDER BY CASE status WHEN 'open' THEN 0 WHEN 'in_progress' THEN 1 ELSE 2 END, created_at DESC
-		LIMIT 300`).all<SupportRow>();
+	const rows = await getDb(platform.env.DB).select().from(supportRequests).limit(300);
+	const requests = rows
+		.map((row) => ({
+			id: row.id,
+			userId: row.userId,
+			name: row.name,
+			email: row.email,
+			category: row.category,
+			product: row.product,
+			subject: row.subject,
+			message: row.message,
+			status: row.status,
+			createdAt: row.createdAt instanceof Date ? row.createdAt.getTime() : Number(row.createdAt),
+			updatedAt: row.updatedAt instanceof Date ? row.updatedAt.getTime() : Number(row.updatedAt)
+		}))
+		.sort(
+			(left, right) =>
+				(statusRank[left.status] ?? 9) - (statusRank[right.status] ?? 9) ||
+				right.createdAt - left.createdAt
+		);
 
-	const requests = result.results as SupportRow[];
 	return {
 		requests,
 		counts: {
@@ -41,11 +46,14 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const id = formData.get('id')?.toString() ?? '';
 		const status = formData.get('status')?.toString() ?? '';
-		if (!id || !statuses.includes(status as (typeof statuses)[number])) return fail(400, { message: 'Invalid contact message update.' });
+		if (!id || !statuses.includes(status as (typeof statuses)[number])) {
+			return fail(400, { message: 'Invalid contact message update.' });
+		}
 
-		await platform.env.DB.prepare('UPDATE support_requests SET status = ?, updated_at = ? WHERE id = ?')
-			.bind(status, Date.now(), id)
-			.run();
+		await getDb(platform.env.DB)
+			.update(supportRequests)
+			.set({ status: status as (typeof statuses)[number], updatedAt: new Date() })
+			.where(eq(supportRequests.id, id));
 		return { updated: id };
 	}
 };

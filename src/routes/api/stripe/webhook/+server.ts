@@ -1,7 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getDb } from '$lib/server/db';
-import { activeEntitlements, subscriptions, webhookEvents } from '$lib/server/db/schema';
+import { activeEntitlements } from '$lib/server/db/schema';
+import { upsertStripeSubscription } from '$lib/server/billing';
 import { eq } from 'drizzle-orm';
 import {
 	getPlanFromPriceId,
@@ -48,7 +49,9 @@ async function replaceEntitlements(
 		if (!entitlement.lookup_key) continue;
 
 		const featureId =
-			typeof entitlement.feature === 'string' ? entitlement.feature : entitlement.feature?.id ?? null;
+			typeof entitlement.feature === 'string'
+				? entitlement.feature
+				: (entitlement.feature?.id ?? null);
 		let displayName =
 			typeof entitlement.feature === 'object' && entitlement.feature?.name
 				? entitlement.feature.name
@@ -86,7 +89,10 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	try {
 		await verifyStripeWebhook(rawBody, signature);
 	} catch (cause) {
-		return json({ error: cause instanceof Error ? cause.message : 'Invalid webhook' }, { status: 400 });
+		return json(
+			{ error: cause instanceof Error ? cause.message : 'Invalid webhook' },
+			{ status: 400 }
+		);
 	}
 
 	let event: StripeEvent;
@@ -97,8 +103,13 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 	}
 
 	const db = getDb(platform.env.DB);
-	const seen = await db.query.webhookEvents.findFirst({ where: eq(webhookEvents.id, event.id) });
-	if (seen) return json({ received: true, duplicate: true });
+	const claimed = await platform.env.DB.prepare(
+		`INSERT OR IGNORE INTO webhook_events (id, provider, event_type, processed_at)
+		VALUES (?1, 'stripe', ?2, ?3)`
+	)
+		.bind(event.id, event.type, Date.now())
+		.run();
+	if (!(claimed.meta.changes ?? 0)) return json({ received: true, duplicate: true });
 
 	const object = event.data.object;
 	let discordSyncCustomerId: string | null = null;
@@ -111,31 +122,16 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 				const items = object.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
 				const priceId = items?.data?.[0]?.price?.id ?? null;
 				const plan = getPlanFromPriceId(priceId);
-				await db
-					.insert(subscriptions)
-					.values({
-						id: subscriptionId,
-						stripeSubscriptionId: subscriptionId,
-						stripeCustomerId: customerId,
-						status: stringValue(object.status) ?? 'unknown',
-						plan,
-						priceId,
-						currentPeriodEnd: currentPeriodEnd(object),
-						cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
-						isCurrent: event.type !== 'customer.subscription.deleted'
-					})
-					.onConflictDoUpdate({
-						target: subscriptions.stripeSubscriptionId,
-						set: {
-							status: stringValue(object.status) ?? 'unknown',
-							plan,
-							priceId,
-							currentPeriodEnd: currentPeriodEnd(object),
-							cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
-							isCurrent: event.type !== 'customer.subscription.deleted',
-							updatedAt: new Date()
-						}
-					});
+				await upsertStripeSubscription(platform.env.DB, {
+					subscriptionId,
+					customerId,
+					status: stringValue(object.status) ?? 'unknown',
+					plan,
+					priceId,
+					currentPeriodEnd: currentPeriodEnd(object),
+					cancelAtPeriodEnd: Boolean(object.cancel_at_period_end),
+					deleted: event.type === 'customer.subscription.deleted'
+				});
 			}
 		}
 
@@ -147,12 +143,14 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 				try {
 					entitlements = await listActiveEntitlements(customerId);
 				} catch (cause) {
-					console.warn('Could not retrieve the full Stripe entitlement list; using webhook summary.', cause);
+					console.warn(
+						'Could not retrieve the full Stripe entitlement list; using webhook summary.',
+						cause
+					);
 				}
 				await replaceEntitlements(db, customerId, entitlements);
 			}
 		}
-
 
 		if (discordSyncCustomerId) {
 			try {
@@ -162,10 +160,10 @@ export const POST: RequestHandler = async ({ request, platform }) => {
 			}
 		}
 
-		await db.insert(webhookEvents).values({ id: event.id, provider: 'stripe', eventType: event.type });
 		return json({ received: true });
 	} catch (cause) {
 		console.error(`Stripe webhook ${event.id} failed`, cause);
+		await platform.env.DB.prepare('DELETE FROM webhook_events WHERE id = ?1').bind(event.id).run();
 		return json({ error: 'Webhook processing failed' }, { status: 500 });
 	}
 };

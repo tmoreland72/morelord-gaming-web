@@ -8,8 +8,7 @@ const publicPages = [
 		path: '/pricing',
 		heading: 'Start free. Upgrade the whole toolkit when it earns its place at your table.'
 	},
-	{ path: '/releases', heading: 'Every Morelord Tools release in one place.' },
-	{ path: '/docs/release-automation', heading: 'Automated release publishing' }
+	{ path: '/releases', heading: 'Every Morelord Tools release in one place.' }
 ];
 
 for (const publicPage of publicPages) {
@@ -56,22 +55,17 @@ test('unknown tool returns a normal not-found response', async ({ request }) => 
 	expect(response.status()).toBe(404);
 });
 
-test('authentication setup documentation renders', async ({ page }) => {
-	const response = await page.goto('/docs/authentication');
-	expect(response?.ok()).toBeTruthy();
-	await expect(page.getByRole('heading', { level: 1, name: 'Authentication setup' })).toBeVisible();
+test('internal documentation is not public', async ({ page }) => {
+	await page.goto('/docs/authentication');
+	await expect(page).toHaveURL(/\/login/);
+	await page.goto('/docs/release-automation');
+	await expect(page).toHaveURL(/\/login/);
 });
 
-test('authentication status reports local readiness without exposing secrets', async ({
-	request
-}) => {
+test('authentication status is not public', async ({ request }) => {
 	const response = await request.get('/api/system/auth-status');
-	expect(response.status()).toBe(200);
-	const body = await response.json();
-	expect(body.database).toEqual({ available: true, healthy: true });
-	expect(body.providers).toEqual({ google: false, github: false });
-	expect(body.session.authenticated).toBe(false);
-	expect(JSON.stringify(body)).not.toContain('SECRET');
+	expect(response.status()).toBe(404);
+	expect(JSON.stringify(await response.json())).not.toContain('SECRET');
 });
 
 test('protected administration redirects anonymous visitors to login', async ({ page }) => {
