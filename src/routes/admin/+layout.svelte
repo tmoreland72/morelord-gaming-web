@@ -12,6 +12,7 @@
 		{ href: '/admin/discount-codes', label: 'Friends & Family' },
 		{ href: '/admin/discord', label: 'Discord' },
 		{ href: '/admin/installations', label: 'Installations' },
+		{ href: '/admin/telemetry', label: 'Usage and errors' },
 		{ href: '/admin/support', label: 'Contact' },
 		{ href: '/admin/test-account', label: 'Test account' },
 		{ href: '/admin/docs', label: 'Admin docs' }
