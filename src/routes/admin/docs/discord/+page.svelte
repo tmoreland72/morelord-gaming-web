@@ -13,6 +13,8 @@
 <p>Standard linked accounts receive Morelord Tools. Premium receives Morelord Tools plus Tools Premium. Champion receives all three. The integration never changes campaign, GM, moderator or other manually managed roles.</p>
 <h2>6. Synchronization</h2>
 <p>A role sync runs immediately after Discord linking and after Stripe subscription updates. Users can manually synchronize from Account. Administrators can synchronize one member or all linked members from Admin → Discord.</p>
+<h2>Discord sign-in</h2>
+<p>The same client ID and secret support website sign-in. Also register <code>https://morelordgaming.com/api/auth/callback/discord</code> and <code>http://localhost:5173/api/auth/callback/discord</code>. Sign-in requires a verified email. The existing <code>/api/discord/callback</code> remains the separate subscriber role-linking callback.</p>
 <h2>7. Disconnecting</h2>
 <p>Disconnecting Discord removes the three website-managed roles before deleting the website connection. Other Discord roles are left unchanged.</p>
 </div></section>

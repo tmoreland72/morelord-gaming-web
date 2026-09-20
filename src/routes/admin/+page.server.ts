@@ -21,7 +21,10 @@ async function count(db: D1Database, table: string): Promise<number> {
 		'support_requests'
 	]);
 	if (!allowed.has(table)) throw new Error('Unsupported diagnostics table.');
-	const row = await db.prepare(`SELECT COUNT(*) AS total FROM ${table}`).first<{ total: number }>();
+	const filter = table === 'subscriptions'
+		? ' WHERE is_current = 1'
+		: table === 'foundry_installations' ? ' WHERE revoked_at IS NULL' : '';
+	const row = await db.prepare(`SELECT COUNT(*) AS total FROM ${table}${filter}`).first<{ total: number }>();
 	return Number(row?.total ?? 0);
 }
 
@@ -88,7 +91,6 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		configuration: {
 			authSecret: configured(env.BETTER_AUTH_SECRET),
 			googleOAuth: configured(env.GOOGLE_CLIENT_ID) && configured(env.GOOGLE_CLIENT_SECRET),
-			githubOAuth: configured(env.GITHUB_CLIENT_ID) && configured(env.GITHUB_CLIENT_SECRET),
 			stripe: configured(env.STRIPE_SECRET_KEY) && configured(env.STRIPE_WEBHOOK_SECRET),
 			stripePrices:
 				configured(env.STRIPE_PRICE_PREMIUM_MONTHLY) &&

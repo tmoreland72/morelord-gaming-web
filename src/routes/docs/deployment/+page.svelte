@@ -37,7 +37,7 @@ GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
 RELEASE_PUBLISH_TOKEN</code></pre>
 			<p>
-				GitHub credentials, Stripe values and Discord values may be added when those integrations
+				Stripe values and Discord values may be added when those integrations
 				are enabled. Never commit production secrets to <code>wrangler.jsonc</code> or an environment
 				file.
 			</p>

@@ -224,16 +224,18 @@ When `POST /api/releases` receives a release that has not been announced, it pos
 
 ## Authentication setup
 
-Google and GitHub sign-in are implemented through Better Auth. Google is intended to be the primary provider; GitHub is optional.
+Google and Discord sign-in are implemented through Better Auth. Google is intended to be the primary provider; Discord is optional.
 
 1. Copy `.env.example` to `.env`.
 2. Run `npm run auth:secret` and place the result in `BETTER_AUTH_SECRET`.
 3. Create OAuth applications with these local callback URLs:
    - Google: `http://localhost:5173/api/auth/callback/google`
-   - GitHub: `http://localhost:5173/api/auth/callback/github`
+   - Discord: `http://localhost:5173/api/auth/callback/discord`
 4. Add your sign-in email to `ADMIN_EMAILS`.
 5. Run `npm run db:migrate:local` and `npm run dev`.
 6. Inspect `/api/system/auth-status`, then test `/login`, `/account`, and `/admin`.
+
+Set `DISCORD_CLIENT_ID` and `DISCORD_CLIENT_SECRET` for Discord sign-in. Register `https://morelordgaming.com/api/auth/callback/discord` for production alongside the existing `/api/discord/callback` used for subscriber role linking. `DISCORD_REDIRECT_URI` only configures role linking. Sign-in requires a verified Discord email; a bot token is only needed for role management.
 
 Full instructions are available at `/docs/authentication`.
 

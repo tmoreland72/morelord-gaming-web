@@ -18,7 +18,7 @@
 		<article class="card docs-card">
 			<div class="eyebrow">Identity</div>
 			<h2>Authentication</h2>
-			<p>Configure Better Auth, Google Cloud OAuth, optional GitHub OAuth and administrator access.</p>
+			<p>Configure Better Auth, Google Cloud OAuth, optional Discord OAuth and administrator access.</p>
 			<a class="text-link" href="/admin/docs/authentication">Open guide <span>→</span></a>
 		</article>
 

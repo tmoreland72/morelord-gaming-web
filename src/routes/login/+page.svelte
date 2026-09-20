@@ -7,7 +7,7 @@
 	<title>Sign in | Morelord Gaming</title>
 	<meta
 		name="description"
-		content="Sign in to your Morelord Gaming account with Google or GitHub."
+		content="Sign in to your Morelord Gaming account with Google or Discord."
 	/>
 </svelte:head>
 
@@ -42,20 +42,20 @@
 					<button class="button full-button" disabled>Google sign-in not configured</button>
 				{/if}
 
-				{#if data.providers.github}
+				{#if data.providers.discord}
 					<form method="post" action="?/signInSocial">
-						<input type="hidden" name="provider" value="github" />
+						<input type="hidden" name="provider" value="discord" />
 						<input type="hidden" name="returnTo" value={data.returnTo} />
-						<button class="button secondary full-button" type="submit">Continue with GitHub</button>
+						<button class="button secondary full-button" type="submit">Continue with Discord</button>
 					</form>
 				{:else}
-					<button class="button secondary full-button" disabled>GitHub sign-in not configured</button>
+					<button class="button secondary full-button" disabled>Discord sign-in not configured</button>
 				{/if}
 			</div>
 
 			<small>
-				Discord is connected separately after sign-in so it can be used for subscriber role
-				synchronization.
+				Use a Discord account with a verified email. To synchronize subscriber roles, connect
+				Discord from your account after signing in.
 			</small>
 		</div>
 	</div>

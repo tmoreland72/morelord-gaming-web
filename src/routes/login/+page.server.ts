@@ -24,12 +24,12 @@ export const actions: Actions = {
 		const returnTo = safeReturnTo(formData.get('returnTo')?.toString() ?? null);
 		const providers = configuredAuthProviders();
 
-		if (!provider || (provider !== 'github' && provider !== 'google')) {
+		if (!provider || (provider !== 'discord' && provider !== 'google')) {
 			return fail(400, { message: 'Unsupported sign-in provider.' });
 		}
 
 		if (!providers[provider]) {
-			return fail(503, { message: `${provider === 'google' ? 'Google' : 'GitHub'} sign-in is not configured.` });
+			return fail(503, { message: `${provider === 'google' ? 'Google' : 'Discord'} sign-in is not configured.` });
 		}
 
 		const result = await event.locals.auth.api.signInSocial({

@@ -2,7 +2,7 @@
 	<title>Authentication setup | Morelord Gaming</title>
 	<meta
 		name="description"
-		content="Configure Google and GitHub OAuth for the Morelord Gaming SvelteKit website."
+		content="Configure Google and Discord OAuth for the Morelord Gaming SvelteKit website."
 	/>
 	<meta name="robots" content="noindex,nofollow" />
 </svelte:head>
@@ -12,7 +12,7 @@
 		<div class="eyebrow">Website administration</div>
 		<h1>Authentication setup</h1>
 		<p class="lead">
-			Configure Google as the primary sign-in method and GitHub as an optional second provider.
+			Configure Google as the primary sign-in method and Discord as an optional second provider.
 		</p>
 	</div>
 </section>
@@ -26,8 +26,8 @@
 BETTER_AUTH_SECRET=&lt;at-least-32-random-characters&gt;
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
 ADMIN_EMAILS=your-email@example.com</code></pre>
 			<p>
 				Generate a strong local secret with
@@ -51,17 +51,18 @@ ADMIN_EMAILS=your-email@example.com</code></pre>
 		</article>
 
 		<article class="card docs-card">
-			<h2>3. Configure GitHub OAuth</h2>
+			<h2>3. Configure Discord OAuth</h2>
 			<ol>
-				<li>Create a GitHub OAuth App.</li>
-				<li>Use <code>http://localhost:5173</code> as its homepage URL.</li>
-				<li>Set its authorization callback URL to the value below.</li>
+				<li>Create or select an application in the Discord Developer Portal.</li>
+				<li>Open OAuth2 and add the sign-in redirect URLs.</li>
+				<li>Add the local callback below and the production callback on your HTTPS domain.</li>
 				<li>Copy the client ID and generated client secret into <code>.env</code>.</li>
 			</ol>
-			<pre><code>http://localhost:5173/api/auth/callback/github</code></pre>
+			<pre><code>http://localhost:5173/api/auth/callback/discord</code></pre>
 			<p>
-				GitHub OAuth Apps support only one callback URL, so create a separate production OAuth App
-				when the production domain is ready.
+				For production, add <code>https://morelordgaming.com/api/auth/callback/discord</code>.
+				Keep <code>/api/discord/callback</code> registered separately for subscriber role linking.
+				Sign-in requires a verified Discord email and does not require a bot token.
 			</p>
 		</article>
 
@@ -70,11 +71,10 @@ ADMIN_EMAILS=your-email@example.com</code></pre>
 			<pre><code>npm run db:migrate:local
 npm run dev</code></pre>
 			<ol>
-				<li>Open <code>http://localhost:5173/api/system/auth-status</code>.</li>
-				<li>Confirm the intended provider is shown as configured.</li>
 				<li>Open <code>http://localhost:5173/login</code> and sign in.</li>
 				<li>Confirm that you return to <code>/account</code>.</li>
 				<li>Open <code>/admin</code> using an email listed in <code>ADMIN_EMAILS</code>.</li>
+				<li>While signed in as an administrator, inspect <code>/api/system/auth-status</code> to confirm the provider configuration.</li>
 				<li>Sign out and confirm that protected administration pages redirect or reject access.</li>
 			</ol>
 		</article>
@@ -85,8 +85,8 @@ npm run dev</code></pre>
 			<pre><code>npx wrangler secret put BETTER_AUTH_SECRET
 npx wrangler secret put GOOGLE_CLIENT_ID
 npx wrangler secret put GOOGLE_CLIENT_SECRET
-npx wrangler secret put GITHUB_CLIENT_ID
-npx wrangler secret put GITHUB_CLIENT_SECRET
+npx wrangler secret put DISCORD_CLIENT_ID
+npx wrangler secret put DISCORD_CLIENT_SECRET
 npx wrangler secret put ADMIN_EMAILS</code></pre>
 			<p>
 				Set the non-secret production origin as a Worker variable after the final domain is known.

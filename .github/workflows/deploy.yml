@@ -248,9 +248,9 @@ jobs:
         run: |
           set -euo pipefail
           if [ -n "$DISCORD_CLIENT_ID" ] || [ -n "$DISCORD_CLIENT_SECRET" ] || [ -n "$DISCORD_BOT_TOKEN" ]; then
-            required=(DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET DISCORD_BOT_TOKEN)
+            required=(DISCORD_CLIENT_ID DISCORD_CLIENT_SECRET)
             for name in "${required[@]}"; do
-              if [ -z "${!name:-}" ]; then echo "Discord account linking is partially configured; missing $name"; exit 1; fi
+              if [ -z "${!name:-}" ]; then echo "Discord OAuth is partially configured; missing $name"; exit 1; fi
             done
           fi
           jq -n \

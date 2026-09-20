@@ -6,10 +6,9 @@
 	const integrations = $derived([
 		{ name: 'Authentication secret', ready: data.configuration.authSecret, detail: 'Signs sessions and authentication state.' },
 		{ name: 'Google OAuth', ready: data.configuration.googleOAuth, detail: 'Customer sign-in through Google.' },
-		{ name: 'GitHub OAuth', ready: data.configuration.githubOAuth, detail: 'Customer sign-in through GitHub.' },
 		{ name: 'Stripe API and webhook', ready: data.configuration.stripe, detail: 'Checkout, billing portal and subscription events.' },
 		{ name: 'Stripe prices', ready: data.configuration.stripePrices, detail: 'Monthly and annual Premium and Champion prices.' },
-		{ name: 'Discord OAuth', ready: data.configuration.discordOAuth, detail: 'Connects a customer’s Discord identity.' },
+		{ name: 'Discord OAuth', ready: data.configuration.discordOAuth, detail: 'Customer sign-in and Discord account linking.' },
 		{ name: 'Discord role sync', ready: data.configuration.discordRoles, detail: 'Bot and managed subscription roles.' },
 		{ name: 'Release publishing', ready: data.configuration.releasePublishing, detail: 'Secures automated product release updates.' },
 		{ name: 'Administrator access', ready: data.configuration.adminAccess, detail: 'Restricts this dashboard by email address.' }
