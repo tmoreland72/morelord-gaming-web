@@ -78,10 +78,13 @@
 
 		<div class="grid-2">
 			<article class="card">
-				<span class="tag">OAuth callback</span><h3>Website account linking</h3>
-				<p>Add this exact Redirect URI to the Discord Developer Portal:</p>
+				<span class="tag">OAuth callbacks</span><h3>Sign-in and account linking</h3>
+				<p>Add both exact URLs under OAuth2 → Redirects in the Discord Developer Portal, then save changes.</p>
+				<p><strong>Website sign-in</strong> (identify and email scopes)</p>
+				<code class="code-line">{data.configuration.signInRedirectUri}</code>
+				<p><strong>Subscriber role linking</strong> (identify scope)</p>
 				<code class="code-line">{data.configuration.redirectUri ?? 'Configure ORIGIN first'}</code>
-				<p>The website requests only the <code>identify</code> OAuth scope.</p>
+				<p>The two callbacks serve separate flows. Keep both registered.</p>
 			</article>
 			<article class="card">
 				<span class="tag">Discord bot</span><h3>Role synchronization</h3>

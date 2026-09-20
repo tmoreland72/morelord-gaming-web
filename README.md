@@ -224,7 +224,9 @@ When `POST /api/releases` receives a release that has not been announced, it pos
 
 ## Authentication setup
 
-Google and Discord sign-in are implemented through Better Auth. Google is intended to be the primary provider; Discord is optional.
+Administrators can use `/admin/test-account` to reset the designated signup-test account, `graypesowrathe@gmail.com`. The reset requires typing that email and removes the Morelord user, sessions, login methods, characters, Foundry installations and activation history, and signed-in contact messages. It leaves the Google account and its provider consent unchanged. The email has ordinary customer privileges. Reset is blocked for administrator accounts, accounts with a Stripe customer record, and accounts with a Discord role connection (disconnect Discord from Account first). Use a separate browser profile to sign up again after resetting. No production account is reset automatically by deploying this feature.
+
+Google and Discord sign-in are implemented through Better Auth. Google and Discord are equally supported sign-in options.
 
 1. Copy `.env.example` to `.env`.
 2. Run `npm run auth:secret` and place the result in `BETTER_AUTH_SECRET`.

@@ -33,7 +33,7 @@
 			<h3>Support & Legal</h3>
 			<a href="/support">Contact us</a>
 			<a href="/privacy">Privacy Policy</a>
-			<a href="/terms">Terms & Conditions</a>
+			<a href="/terms">Terms of Service</a>
 		</div>
 	</div>
 	<div class="shell copyright">

@@ -11,7 +11,7 @@
 		<div class="eyebrow">Website administration</div>
 		<h1>Authentication setup</h1>
 		<p class="lead">
-			Configure Google as the primary sign-in method and Discord as an optional second provider.
+			Configure Google and Discord as equally supported sign-in options.
 		</p>
 	</div>
 </section>

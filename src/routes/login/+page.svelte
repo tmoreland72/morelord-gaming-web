@@ -46,10 +46,10 @@
 					<form method="post" action="?/signInSocial">
 						<input type="hidden" name="provider" value="discord" />
 						<input type="hidden" name="returnTo" value={data.returnTo} />
-						<button class="button secondary full-button" type="submit">Continue with Discord</button>
+						<button class="button full-button" type="submit">Continue with Discord</button>
 					</form>
 				{:else}
-					<button class="button secondary full-button" disabled>Discord sign-in not configured</button>
+					<button class="button full-button" disabled>Discord sign-in not configured</button>
 				{/if}
 			</div>
 

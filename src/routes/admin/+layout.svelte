@@ -13,6 +13,7 @@
 		{ href: '/admin/discord', label: 'Discord' },
 		{ href: '/admin/installations', label: 'Installations' },
 		{ href: '/admin/support', label: 'Contact' },
+		{ href: '/admin/test-account', label: 'Test account' },
 		{ href: '/admin/docs', label: 'Admin docs' }
 	];
 

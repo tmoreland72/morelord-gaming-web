@@ -55,6 +55,7 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 		check,
 		connections: connections.results as ConnectionRow[],
 		configuration: {
+			signInRedirectUri: `${url.origin}/api/auth/callback/discord`,
 			clientId: Boolean(env.DISCORD_CLIENT_ID?.trim()),
 			clientSecret: Boolean(env.DISCORD_CLIENT_SECRET?.trim()),
 			botToken: Boolean(env.DISCORD_BOT_TOKEN?.trim()),
