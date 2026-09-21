@@ -4,7 +4,7 @@ description: Browse materials and recipes, manage crafting projects, and partici
 slug: morelord-craftworks/player
 product: morelord-craftworks
 audience: player
-version: 0.3.5
+version: 0.4.13
 foundry: 14
 ---
 
@@ -12,7 +12,7 @@ foundry: 14
 
 Morelord Craftworks lets you browse your campaign's materials and recipes, plan crafting projects, work from personal or shared inventories, and take part in Harvest and Gather sessions started by your Game Master.
 
-This manual applies to Morelord Craftworks 0.3.5.
+This manual applies to Morelord Craftworks 0.4.9.
 
 ## Contents
 
@@ -39,7 +39,7 @@ Materials are normal dnd5e loot Items. Their Craftworks identity includes inform
 2. Select the **Morelord Craftworks** control.
 3. Choose **Materials**, **Recipes**, or **Craft** from the dashboard.
 
-Harvest and Gather windows open automatically when the GM starts a session in which your character can participate.
+Harvest and Gather windows open automatically when the GM starts a session in which your character can participate. Use **Documentation** at the top of the dashboard for the current in-Foundry guide.
 
 ![The Craftworks dashboard gives players direct access to Materials, Recipes, and Craft.](/docs-assets/morelord-craftworks/assets/craftworks-dashboard.png)
 
@@ -65,7 +65,7 @@ Use links between Materials and Recipes to move from an ingredient to recipes th
 
 ## Browse and learn recipes
 
-Open **Recipes** to search available projects. Recipe cards can show the output, total crafting duration, required materials, tools, checks, normal and no-tool DCs, and whether your selected inventory currently satisfies each requirement.
+Open **Recipes** to search available projects. Recipe cards can show the output, total crafting duration, required materials, tools, checks, recipe DCs, and whether your selected inventory currently satisfies each requirement.
 
 ### Known and Unknown recipes
 
@@ -76,9 +76,9 @@ Recipe rarity describes the public recipe or output rarity. It remains visible f
 
 ### Find recipes you can make
 
-The Recipes browser can filter by Content Pack, category, recipe rarity, ingredient rarity, ingredient material tag, knowledge, and inventory craftability. Enable **Only Show Craftable Recipes** to compare requirements with the current **Using Actor Inventory**.
+The Recipes browser can filter by Content Pack, category, recipe rarity, ingredient rarity, ingredient material tag, knowledge, and inventory craftability. Enable **Only Show Craftable Recipes** to compare requirements with the current **Ingredient Inventory**.
 
-Changing a query or facet updates the prospective count and hides stale results until you run Search again where the interface requests it.
+Changing the search text or a facet updates the matching catalog and result count.
 
 ![The Recipes browser shows recipe knowledge, requirements, filters, and crafting status.](/docs-assets/morelord-craftworks/assets/recipes-browser-overview.png)
 
@@ -92,10 +92,10 @@ Open **Craft** to see recipes you marked for crafting and any active jobs. The w
 
 ### Choose the crafter and inventory
 
-- **Using Crafter Actor** is the character doing the work. This actor supplies tool possession, tool proficiency, and check data.
-- **Using Actor Inventory** supplies the ingredients and receives the finished output for that job.
+- **Crafter** is the character doing the work. This actor supplies tool possession, tool proficiency, and check data.
+- **Combined Ingredient Inventory** automatically includes that character and every Group they belong to. Materials can come from both inventories in one recipe.
 
-These can be different. For example, your character can make the checks while the party's Group actor supplies shared materials. Changing inventory does not create a separate progress record; progress belongs to the crafter and recipe.
+You do not need to switch inventories to use party materials. Other characters’ inventories are excluded. Progress belongs to the crafter and recipe; the GM retains separate inventory controls.
 
 ### Read requirement status
 
@@ -107,7 +107,7 @@ Each ingredient row shows the amount available and required. Green counts satisf
 - alternative ingredients
 - several units that must come from one matching material
 
-Tool information is shown separately. Craftworks uses the crafter's actual tool possession and proficiency to select the normal DC or the higher no-tool DC.
+Craftworks rolls the listed artisan tool at the recipe DC. Missing the tool in your crafter’s inventory or its proficiency imposes disadvantage, without changing the DC. Drakkenheim recipes require a Workshop matching or exceeding the item’s rarity, regardless of tool settings. Bring the required materials and choose Craft Item; there is no crafting roll or time requirement, including for an older saved crafting project.
 
 ### Make progress
 
@@ -115,9 +115,11 @@ Each crafting attempt represents two hours of work. A successful attempt adds pr
 
 Progress persists between attempts. Recipe cards display the total duration, and the active job records successful progress and total time spent.
 
-When the job completes, the output is delivered to the selected inventory actor. Foundry Item outputs use their live name and image and can be opened from their linked reference.
+The GM configures facility requirements by artisan tool. Recipes display the required facility and minimum rarity, derived from the item being crafted. Higher-rarity facilities also qualify: a Rare forge can craft an Uncommon item. A project pauses while that environment is unavailable and resumes when the requirement is met. Crafting projects can also appear in Morelord Downtime and open directly into a focused Craftworks recipe view.
 
-If you cancel an active job, Craftworks returns materials consumed when that job began.
+When the job completes, choose the destination in the completion window. Foundry Item outputs use their live name and image and can be opened from their linked reference.
+
+If you cancel an active job, Craftworks returns materials consumed when that job began to their original inventories.
 
 Actual crafting execution requires the appropriate premium access. Standard users can still browse, evaluate requirements, mark goals, and review the Craft window.
 
@@ -136,15 +138,15 @@ Harvest begins when the GM selects defeated creatures and starts a synchronized 
 
 Each creature uses its own Harvest DC. A success reveals claimable components; a failure consumes your character's attempt for that creature. Previously attempted or resolved creatures are not rolled again.
 
-The GM may choose **Skip Skill Checks** for your character. In that case, you proceed directly to the available choices.
+The GM chooses the characters included in the Harvest and may enable the session-wide **Skip Skill Checks** option. When enabled, every included character proceeds directly to the available choices. If you control multiple included characters, Craftworks opens an independently titled Harvest window for each one; their checks and claims remain separate.
 
 ![The player Harvest window presents the available skill choices and each unresolved creature.](/docs-assets/morelord-craftworks/assets/harvest-player-ready.png)
 
 ### Claim a component
 
-Select one of the highlighted components after a success. If your natural d20 was 20 and the world setting permits it, you can receive a second claim.
+Select one of the highlighted components after a success. If your natural d20 was 20 and the world setting permits it, you can receive a second claim. Claimed creatures remain expanded to keep the window from shifting during a large Harvest; you can still collapse a creature manually.
 
-A claim is a reservation, not an immediate inventory award. All participants see it in the shared **Claimed Components** list, and another player cannot take the same reserved component. Materials connected to one of your marked recipes may display **Needed for Crafting**.
+A claim is a reservation, not an immediate inventory award. All participants see it in the shared **Claimed Components** list, and another player cannot take the same reserved component. Materials connected to one of your marked recipes may display **Needed for Crafting**. Marked recipe names in Harvest show this component’s inventory quantity / required quantity (for example, **2/4**). Long recipe names end with an ellipsis while the quantity remains visible; hover over the pill for the full name. Inventory combines the harvesting character’s personal items with their party Group inventories; other characters’ inventories and unawarded claims are excluded. Repeated required ingredients are added together. For alternative recipe paths, the count uses the lowest quantity along a path that uses this component.
 
 The GM must select **Finalize Harvest** before reserved items enter their resolved inventories. If the GM resets or cancels the session, unfinalized claims are discarded.
 
@@ -163,6 +165,8 @@ Gather is an individual opportunity tied to the current scene and its terrain.
 3. Choose an allowed Gathering skill.
 4. Make the configured dnd5e roll, or decline the opportunity.
 5. On a success, Craftworks awards an appropriate material from the active terrain content.
+
+The GM selects participating characters using the same party-priority picker as Harvest. If you own multiple included characters, each receives an independently titled Gather window and a separate scene-tracked attempt.
 
 An attempt is tracked for your character on that scene, so closing and reopening the application does not provide another roll. Your GM can reset the scene's Gather state when a new opportunity is appropriate.
 
@@ -222,11 +226,11 @@ Unknown recipes intentionally conceal ingredients. You can mark one as a goal, b
 
 ### Craft says an ingredient is missing
 
-Confirm the correct **Using Actor Inventory** is selected. A visually similar Item may not match the required canonical material, rarity, category, stage, tags, quantity, or same-material rule.
+Check the **Combined Ingredient Inventory** list and confirm your character belongs to the expected Group actor. A visually similar Item may not match the required canonical material, rarity, category, stage, tags, quantity, or same-material rule.
 
-### The no-tool DC is being used
+### The tool check has disadvantage
 
-The **Using Crafter Actor** must possess the required tool and have the necessary proficiency. Items stored only in the selected inventory actor do not replace the crafter's own tool context.
+The **Crafter** must possess the required tool and have the necessary proficiency. Items stored only in the selected inventory actor do not replace the crafter's own tool context.
 
 ### My Harvest claim is not in inventory
 
@@ -239,3 +243,7 @@ Gather opportunities are tracked per character and scene. The GM must reset the 
 ## Getting help
 
 Ask your GM first about enabled content, recipe knowledge, shared storage, and acquisition settings. Reproducible module problems can be reported at [Morelord Craftworks Issues](https://github.com/tmoreland72/morelord-craftworks/issues).
+
+## Delerium Search
+
+When the GM starts a supported Drakkenheim search, selected connected characters can roll Arcana, Investigation, or Survival. Follow the search window to roll or decline. The GM finalizes the search and awards compendium delerium to a character or party Group using Recipient.

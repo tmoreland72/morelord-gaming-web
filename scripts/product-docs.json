@@ -14,6 +14,14 @@
 					"slug": "morelord-core",
 					"audience": "game-master",
 					"foundry": 13
+				},
+				{
+					"source": "TELEMETRY.md",
+					"title": "Morelord Core: Usage and Error Reporting",
+					"description": "Reporting consent, privacy, event coverage, and troubleshooting.",
+					"slug": "morelord-core/telemetry",
+					"audience": "game-master",
+					"foundry": 14
 				}
 			]
 		},
@@ -36,14 +44,34 @@
 			"branch": "main",
 			"docsPath": "docs",
 			"assetsPath": null,
-			"documents": [{ "source": "README.md" }]
+			"documents": [
+				{
+					"source": "README.md"
+				}
+			]
 		},
 		{
 			"slug": "morelord-encounters",
 			"repository": "tmoreland72/morelord-encounters",
 			"branch": "main",
 			"docsPath": "docs",
-			"assetsPath": null
+			"assetsPath": null,
+			"documents": [
+				{
+					"source": "README.md"
+				},
+				{
+					"source": "gm-manual.md"
+				},
+				{
+					"source": "encounter-stories-design.md",
+					"title": "Morelord Encounter Stories",
+					"description": "Encounter Story journals, authoring, and optional integrations.",
+					"slug": "morelord-encounters/stories",
+					"audience": "game-master",
+					"foundry": 14
+				}
+			]
 		},
 		{
 			"slug": "morelord-journeys",
@@ -52,10 +80,18 @@
 			"docsPath": "docs",
 			"assetsPath": null,
 			"documents": [
-				{ "source": "README.md" },
-				{ "source": "gm-manual.md" },
-				{ "source": "gm-travel-rules-reference.md" },
-				{ "source": "player-guide.md" }
+				{
+					"source": "README.md"
+				},
+				{
+					"source": "gm-manual.md"
+				},
+				{
+					"source": "gm-travel-rules-reference.md"
+				},
+				{
+					"source": "player-guide.md"
+				}
 			]
 		},
 		{

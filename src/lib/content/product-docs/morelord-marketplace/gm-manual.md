@@ -4,7 +4,7 @@ description: Install, configure, and operate Morelord Marketplace, including pre
 slug: morelord-marketplace/gm
 product: morelord-marketplace
 audience: game-master
-version: 0.6.0
+version: 0.9.8
 foundry: 14
 ---
 
@@ -12,7 +12,7 @@ foundry: 14
 
 Morelord Marketplace gives a Foundry VTT world a global catalog for buying and selling dnd5e items. With Tools Premium or Tools Champion access, it also provides GM transaction approvals and Shop Manager for configurable scene vendors.
 
-This manual applies to Morelord Marketplace 0.6.0, Foundry VTT v14, and the dnd5e system.
+This manual applies to Morelord Marketplace 0.9.6, Foundry VTT v14, and the dnd5e system.
 
 ## Contents
 
@@ -35,7 +35,7 @@ This manual applies to Morelord Marketplace 0.6.0, Foundry VTT v14, and the dnd5
 | Browse the global catalog | Yes | Yes |
 | Buy and sell in the global Marketplace | Yes | Yes |
 | Configure allowed item compendiums | Yes | Yes |
-| Configure the default sell rate | Yes | Yes |
+| Configure the default buy and sell rates | Yes | Yes |
 | Post transaction cards to chat | Yes | Yes |
 | Require GM approval for global purchases and sales | No | Yes |
 | Create and manage scene shops | No | Yes |
@@ -49,8 +49,8 @@ The global Marketplace remains usable if premium access expires. Saved premium s
 
 - Foundry Virtual Tabletop v14
 - The dnd5e game system
-- Morelord Core v0.1.0 or later
-- Morelord Marketplace v0.6.0 or later
+- Morelord Core 0.3.7 or later
+- Morelord Marketplace v0.9.6 or later
 
 ### Install with the manifest
 
@@ -67,7 +67,7 @@ The global Marketplace remains usable if premium access expires. Saved premium s
 
 ## Configure the global Marketplace
 
-Open **Game Settings → Configure Settings → Module Settings → Morelord Marketplace**.
+Open **Game Settings → Configure Settings → Module Settings → Morelord Marketplace → Configure Marketplace**.
 
 ![Morelord Marketplace world settings in Foundry VTT](/docs-assets/morelord-marketplace/assets/marketplace-configuration.png)
 
@@ -77,6 +77,7 @@ Open **Game Settings → Configure Settings → Module Settings → Morelord Mar
 
 | Setting | Default | Effect |
 | --- | --- | --- |
+| **Default Buy Rate** | `1` | Multiplier of list price for global purchases, at least `1`. Enter `1.5` for 150%. Applies to catalog prices, checkout, and approvals; shops retain their own pricing. |
 | **Default Sell Rate** | `1` | Fraction of an item's list price paid for global sales. Enter `0.5` for 50% or `1` for 100%. Shops can override this value. |
 | **Enable Global Marketplace Selling** | On | Enables selling in the global Marketplace. It does not affect shop-specific selling. |
 | **Enable Global Marketplace Buying** | On | Enables direct global purchases. If off, players can still browse the catalog as a reference. It does not affect shop-specific buying. |
@@ -86,20 +87,9 @@ Open **Game Settings → Configure Settings → Module Settings → Morelord Mar
 
 GM-initiated global transactions do not wait for approval. Shop cart purchases are processed through the shop checkout workflow rather than the global approval settings.
 
-### Choose allowed compendiums
+### Choose catalog sources
 
-![The Morelord Marketplace compendium configuration and premium access panel](/docs-assets/morelord-marketplace/assets/compendium-selection.png)
-
-*Configure Marketplace shows the current premium-access state and the Item compendiums available to Marketplace catalogs and shops.*
-
-1. In the module settings, select **Configure Marketplace**.
-2. Review the available Item compendiums.
-3. Use **Select All**, **Select None**, or choose individual packs.
-4. Select **Save**.
-
-Only items from enabled compendiums can appear in the global catalog or supply normal shops. On first use, Marketplace automatically selects Item packs whose names include “item” or “equipment” if no selection already exists.
-
-Changing the enabled compendiums clears the catalog cache and refreshes open Marketplace windows.
+Marketplace uses the D&D5e system's **Configure Sources** selection. Enable or disable Item compendiums there; Marketplace does not maintain a separate source list.
 
 ## Open and test the Marketplace
 
@@ -263,11 +253,11 @@ Within a shop, **Shopping As** controls which character receives purchased items
 
 ![Shop Manager product, inventory, random-stock, and restocking controls](/docs-assets/morelord-marketplace/assets/shop-manager-products-stock.png)
 
-*Inventory mode, random-listing counts, duplicate selection, restock rule, and replacement behavior define how a vendor's limited stock is generated.*
+*Inventory mode, rarity draw counts, and duplicate selection control limited-stock generation. Older screenshots may show the removed Restocking section.*
 
 ### Random inventory
 
-Enable **Generate limited stock randomly**, then choose how many distinct listings to select at each rarity. Those counts choose product listings, not units. Each selected listing receives a random quantity:
+Enable **Generate limited stock randomly**, then choose how many item draws to make at each rarity. Without duplicates, this is the maximum number of distinct listings; fewer are selected if the eligible pool is smaller. Those counts choose product listings, not units. Each selected listing receives a random quantity:
 
 | Rarity | Units per selected listing |
 | --- | ---: |
@@ -279,14 +269,9 @@ Enable **Generate limited stock randomly**, then choose how many distinct listin
 
 When **Allow duplicate random items** is enabled, the same listing may be selected more than once, increasing its resulting stock.
 
-### Restock behavior
+### Manual restocking
 
-- **Replace** discards current limited-stock counts and uses the newly generated stock.
-- **Top Up** retains existing stock and applies newly generated quantities for selected listings.
-
-Select **Restock Now** to perform a manual restock. Restocking advances the shop revision, so anyone with an older open shop must refresh it before completing a transaction.
-
-Restock rules such as daily or weekly schedules are stored for automation hooks and future world-time integration. In version 0.6.0, they do not run automatically; use **Restock Now**.
+Select **Restock Now** to regenerate limited stock. The shop-definition Restocking section has been removed. New shops replace generated stock; existing saved replacement/top-up metadata remains intact. Manually overridden inventory is preserved. Restocking advances the shop revision, so an older open shop must be refreshed before another purchase.
 
 ### Carts, reservations, and stale shops
 
@@ -369,3 +354,23 @@ Marketplace lists supported sellable item types with a positive price. Items fla
 ## Support
 
 Report reproducible problems at [Morelord Marketplace Issues](https://github.com/tmoreland72/morelord-marketplace/issues). Include the Marketplace version, Foundry version, dnd5e version, relevant console error, and steps to reproduce the problem.
+
+## Current catalog and shop controls
+
+Global Buy and Sell both use carts. Adding items only prepares a transaction; Purchase or Sell Cart submits it. When global GM approval is enabled, the complete cart is one request and current prices, funds, availability, and quantities are revalidated before commitment. Buy results are paginated at 50 items per page while filters cover the entire catalog.
+
+Shop Manager can associate a shop with a shared Core Location. Normal stock can inherit its capability tier or use the shop's maximum normal rarity override. Manually included inventory may exceed that limit; its Manual badge identifies stock whose remaining quantity is preserved during restocking.
+
+Eligible wishlist items receive a 1.25x selection weight during random restocking. They are not guaranteed picks, whether duplicate selection is enabled or disabled. The rarity counts still control the number of draws, and the documented unit ranges apply to selected listings.
+
+Use the shared Manage Locations action to edit Core Locations. Shopping As and Paying As remain separate choices, now with Core character portraits. Page and tab scroll positions are retained while browsing and updating carts.
+
+## D&D 5e rarity compatibility
+
+Catalogs and shops accept legacy rarity fields and v6 rarity collections. Items with multiple rarities use the lowest listed rarity for classification and shop limits, matching the system single-rarity Item getter. An empty rarity collection is mundane; nonmagical items retain their existing Common catalog grouping.
+
+## Global rate override and shop defaults
+
+The GM’s **Temporarily ignore buy and sell rates (both ×1)** toggle applies list prices to global purchases and sales for everyone. Switch it off to resume the unchanged configured rates. It persists across reloads, leaves shop pricing alone, and clears global carts when changed. New shops copy the configured buy/sell rates; their values remain editable.
+
+Prefab choices show one entry per normalized shop name, keeping the variant with the most available matches. Previously saved prefab IDs remain resolvable. SRD items copied into other packs still honor their canonical D&D5e source exclusions.

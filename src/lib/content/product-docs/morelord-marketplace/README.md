@@ -2,10 +2,12 @@
 title: Morelord Marketplace Documentation
 slug: morelord-marketplace
 product: morelord-marketplace
-version: 0.6.0
+version: 0.9.8
 ---
 
 # Morelord Marketplace Documentation
+
+## Overview
 
 Morelord Marketplace is a shopping and selling system for Foundry Virtual Tabletop and the dnd5e game system. It gives players a searchable global item catalog, direct character purchases and sales, automatic currency handling, and detailed filters for item type, category, weapon class, weapon range, weapon properties, weapon masteries, rarity, source, attunement, price, and affordability.
 
@@ -13,7 +15,11 @@ Game Masters control which Item compendiums supply the catalog, whether global b
 
 The global Marketplace provides a broad world catalog, while scene shops create individual vendors with their own inventory and trading rules. Purchased items are added directly to the chosen character, payment can come from an owned character or shared Group actor, and completed sales deposit currency automatically.
 
-## Marketplace demo
+## See Marketplace in action
+
+<p class="docs-video-intro">
+	Take a guided tour of the Marketplace setup, catalog, and Game Master workflow.
+</p>
 
 <div class="docs-video">
 	<iframe
@@ -32,4 +38,7 @@ Choose the guide that matches your role:
 - [Game Master Manual](/docs/morelord-marketplace/gm) — installation, world configuration, premium access, approvals, and Shop Manager.
 - [Player Manual](/docs/morelord-marketplace/player) — selecting a character, browsing, buying, selling, and using scene shops.
 
-These manuals describe Morelord Marketplace 0.6.0 for Foundry Virtual Tabletop v14 and the dnd5e game system.
+These manuals describe Morelord Marketplace 0.9.6 for Foundry Virtual Tabletop v14 and the dnd5e game system.
+
+
+These manuals cover Marketplace 0.9.6 with Morelord Core 0.3.7 or later. Buy and Sell use carts; shops support shared Locations, capability limits, and weighted random stock.

@@ -290,3 +290,7 @@ Run `npx vitest run --project client src/lib/characters/components/CharacterShee
 ## Downtime documentation
 
 Downtime's canonical user guide is docs/README.md in tmoreland72/morelord-downtime. The docs registry explicitly imports that guide, excluding the internal architecture audit. Both deployment jobs check out its repository before documentation sync, and /docs links to /docs/morelord-downtime. Standard Downtime releases request the product-docs-updated deployment event to keep the guide current.
+
+## Release documentation registration
+
+Core's reporting guide and Encounters' story notes are registered explicitly in `scripts/product-docs.json`, alongside their user guides. Keep linked Markdown documents in that registry so release-triggered documentation builds can resolve their website routes.

@@ -2,10 +2,12 @@
 title: Morelord Craftworks Documentation
 slug: morelord-craftworks
 product: morelord-craftworks
-version: 0.3.5
+version: 0.4.13
 ---
 
 # Morelord Craftworks Documentation
+
+## Overview
 
 Morelord Craftworks brings harvesting, gathering, encounter loot, treasure hoards, materials, recipes, and crafting workflows into Foundry Virtual Tabletop. Players can browse a campaign's material and recipe catalogs, plan projects, and take part in GM-started acquisition sessions. Game Masters can configure content packs, tune acquisition rules, generate treasure, and create potions, spell scrolls, and spellbooks.
 
@@ -17,9 +19,27 @@ Craftworks can also support exceptional add-on content packs that go beyond the 
 
 ![Morelord Craftworks dashboard](/docs-assets/morelord-craftworks/assets/craftworks-dashboard.png)
 
+## See Craftworks in action
+
+<p class="docs-video-intro">
+	Take a guided tour of harvesting, materials, recipes, and crafting workflows.
+</p>
+
+<div class="docs-video">
+	<iframe
+		src="https://www.youtube-nocookie.com/embed/XFebMhTQEA8"
+		title="Morelord Craftworks demo"
+		loading="lazy"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+		allowfullscreen
+	></iframe>
+</div>
+
 ## Choose a manual
 
 - [Game Master Manual](/docs/morelord-craftworks/gm) — installation, world configuration, content synchronization, Harvest, Gather, Loot, Hoard, generators, exceptional content packs, and troubleshooting.
 - [Player Manual](/docs/morelord-craftworks/player) — browsing materials and recipes, planning and completing crafting projects, Harvest, Gather, shared party storage, and optional Drakkenheim content.
 
-These manuals describe Morelord Craftworks 0.3.5 for Foundry Virtual Tabletop v14 and dnd5e 5.3 or later.
+These manuals describe Morelord Craftworks 0.4.9 for Foundry Virtual Tabletop v14 and dnd5e 5.3 or later. The in-Foundry **Documentation** button on the Craftworks dashboard opens the current product guide through Morelord Core.
+
+Page sections use Morelord Core bordered, shaded surfaces with shared padding, section headings, and spacing, matching Downtime. Older screenshots illustrate the workflows but may show the previous panel styling or omit the new add/remove controls. Refer to the manual text for current controls.
