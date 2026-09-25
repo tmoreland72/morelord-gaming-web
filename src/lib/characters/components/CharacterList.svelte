@@ -57,7 +57,7 @@
 		<div>
 			<h2>Your Characters</h2>
 
-			<p>Characters imported from Foundry are private to your Morelord Gaming account.</p>
+			<p>Characters are private until you make them public. Open a character to manage sharing.</p>
 		</div>
 	</div>
 

@@ -25,7 +25,7 @@
 	} from '../icons/tidy-icons';
 
 	export let character: StoredCharacter;
-	export let onPortraitChange: (file: File) => void;
+	export let onPortraitChange: ((file: File) => void) | undefined = undefined;
 
 	type TabId = 'character' | 'inventory' | 'spellbook' | 'features' | 'biography' | 'diagnostics';
 

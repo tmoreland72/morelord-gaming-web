@@ -31,9 +31,15 @@ test('home page and footer link to the configured Discord server', async ({ page
 	await page.goto('/');
 
 	const discordInviteUrl = 'https://discord.gg/B5YKQf579E';
-	await expect(
-		page.getByRole('main').getByRole('link', { name: 'Join our Discord' })
-	).toHaveAttribute('href', discordInviteUrl);
+	const hero = page.getByRole('region', { name: 'Morelord Gaming', exact: true });
+	await expect(hero.getByRole('link', { name: 'Join Our Discord', exact: true })).toHaveAttribute(
+		'href',
+		discordInviteUrl
+	);
+	await expect(hero.getByRole('link', { name: 'Watch Our Videos' })).toHaveAttribute(
+		'href',
+		'https://www.youtube.com/@MorelordGaming'
+	);
 	await expect(
 		page.getByRole('contentinfo').getByRole('link', { name: 'Join our Discord' })
 	).toHaveAttribute('href', discordInviteUrl);

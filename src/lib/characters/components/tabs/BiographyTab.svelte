@@ -3,6 +3,7 @@
 <script lang="ts">
 	import type { FoundryActor } from '../../models/foundry-actor';
 	import { getPathValue } from '../../characters/actor-values';
+	import { sanitizeCharacterHtml } from '../../characters/sanitize-character-html';
 
 	export let actor: FoundryActor;
 
@@ -21,7 +22,7 @@
 			const value = getPathValue(actor, path);
 
 			if (typeof value === 'string' && value.trim().length > 0) {
-				return value;
+				return sanitizeCharacterHtml(value);
 			}
 		}
 

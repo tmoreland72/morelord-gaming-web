@@ -7,6 +7,7 @@
 	import type { FoundryActorItem } from '../models/foundry-actor';
 	import type { StoredCharacter } from '../models/stored-character';
 	import { getItemImageSrc } from '../assets/image-resolver';
+	import { sanitizeCharacterHtml } from '../characters/sanitize-character-html';
 
 	export let character: StoredCharacter;
 	export let item: FoundryActorItem | null = null;
@@ -55,20 +56,7 @@
 			.replace(/&Reference\[([^\]]+)\]/g, '<span class="detail-inline-pill">$1</span>')
 			.replace(/<section[^>]*class="[^"]*secret[^"]*"[^>]*>[\s\S]*?<\/section>/gi, '');
 
-		if (typeof DOMParser === 'undefined') return transformed;
-
-		const document = new DOMParser().parseFromString(transformed, 'text/html');
-		document
-			.querySelectorAll('script, style, iframe, object, embed, form, input, button')
-			.forEach((node) => node.remove());
-		document.querySelectorAll('*').forEach((element) => {
-			for (const attribute of [...element.attributes]) {
-				if (attribute.name.startsWith('on') || attribute.name === 'style') {
-					element.removeAttribute(attribute.name);
-				}
-			}
-		});
-		return document.body.innerHTML;
+		return sanitizeCharacterHtml(transformed);
 	}
 
 	function getSourceLabel(value: FoundryActorItem): string {

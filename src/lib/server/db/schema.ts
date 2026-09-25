@@ -255,6 +255,7 @@ export const characters = sqliteTable(
 			.notNull()
 			.references(() => user.id, { onDelete: 'cascade' }),
 		foundryActorId: text('foundry_actor_id'),
+		isPublic: integer('is_public', { mode: 'boolean' }).notNull().default(false),
 		name: text('name').notNull(),
 		contentJson: text('content_json').notNull(),
 		summaryJson: text('summary_json'),

@@ -1,4 +1,4 @@
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, eq, or } from 'drizzle-orm';
 import { createCharacterSummary } from '$lib/characters/characters/character-summary';
 import type { CharacterListItem } from '$lib/characters/models/character-list-item';
 import type { ImportedActorFile } from '$lib/characters/import/read-actor-file';
@@ -200,6 +200,59 @@ export async function deleteCharacter(d1: D1Database, userId: string, id: string
 	await getDb(d1)
 		.delete(characters)
 		.where(and(eq(characters.id, id), eq(characters.userId, userId)));
+}
+
+export async function getSharedCharacter(d1: D1Database, id: string, userId?: string) {
+	const row = await getDb(d1).query.characters.findFirst({
+		where: and(
+			eq(characters.id, id),
+			or(eq(characters.isPublic, true), userId ? eq(characters.userId, userId) : undefined)
+		)
+	});
+	return row
+		? {
+				character: JSON.parse(row.contentJson) as StoredCharacter,
+				isPublic: row.isPublic,
+				isOwner: row.userId === userId
+			}
+		: null;
+}
+
+export async function setCharacterPublic(
+	d1: D1Database,
+	userId: string,
+	id: string,
+	isPublic: boolean
+) {
+	const rows = await getDb(d1)
+		.update(characters)
+		.set({ isPublic, updatedAt: new Date() })
+		.where(and(eq(characters.id, id), eq(characters.userId, userId)))
+		.returning({ id: characters.id });
+	return rows.length > 0;
+}
+
+export async function importPublicCharacter(d1: D1Database, userId: string, id: string) {
+	const shared = await getSharedCharacter(d1, id);
+	if (!shared) return null;
+	const character: StoredCharacter = {
+		...shared.character,
+		localId: crypto.randomUUID(),
+		foundryActorId: undefined,
+		importedAt: new Date().toISOString()
+	};
+	// Shared copies are independent of the owner's Foundry import/upsert identity.
+	await getDb(d1)
+		.insert(characters)
+		.values({
+			id: character.localId,
+			userId,
+			name: character.name,
+			contentJson: serializeCharacter(character),
+			...listFieldsFromCharacter(character),
+			isPublic: false
+		});
+	return character;
 }
 
 function omitPortraitData(

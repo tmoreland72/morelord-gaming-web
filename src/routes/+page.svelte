@@ -24,6 +24,18 @@
 			<div class="actions">
 				<a class="button" href="/tools">Explore Morelord Tools</a>
 				<a class="button secondary" href="/adventures">Join an Adventure</a>
+				<a
+					class="button secondary"
+					href="https://www.youtube.com/@MorelordGaming"
+					target="_blank"
+					rel="external noreferrer">Watch Our Videos</a
+				>
+				<a
+					class="button secondary"
+					href={data.discordInviteUrl}
+					target="_blank"
+					rel="external noreferrer">Join Our Discord</a
+				>
 			</div>
 		</div>
 	</div>
@@ -146,6 +158,24 @@
 </section>
 
 <style>
+	.hero-copy {
+		max-width: none;
+	}
+	.hero-copy h1,
+	.hero-copy .lead {
+		max-width: 720px;
+	}
+	.hero-copy .actions {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		padding-block: 0.25rem 1rem;
+	}
+	.hero-copy .actions .button {
+		flex: 0 0 auto;
+		width: auto;
+		white-space: nowrap;
+	}
+
 	.intro-video {
 		display: block;
 		width: min(100%, 960px);

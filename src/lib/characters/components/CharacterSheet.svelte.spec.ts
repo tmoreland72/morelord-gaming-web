@@ -5,6 +5,38 @@ import CharacterSheet from './CharacterSheet.svelte';
 import { readActorJson } from '../import/read-actor-file';
 import type { StoredCharacter } from '../models/stored-character';
 
+it('shows a read-only sheet without portrait editing when shared', async () => {
+	render(CharacterSheet, {
+		character: {
+			localId: 'shared',
+			name: 'Shared Hero',
+			actorType: 'character',
+			sourceFileName: 'hero.json',
+			importedAt: '2026-09-25',
+			actor: {
+				name: 'Shared Hero',
+				type: 'character',
+				system: {
+					details: {
+						biography: {
+							value:
+								'<p>Safe biography</p><img src="x" onerror="alert(1)"><a href="javascript:alert(1)">Unsafe link</a><script>alert(1)</script>'
+						}
+					}
+				},
+				items: [],
+				effects: []
+			}
+		}
+	});
+	await expect.element(page.getByRole('button', { name: 'Shared Hero portrait' })).toBeDisabled();
+	await expect.element(page.getByRole('button', { name: 'Inventory', exact: true })).toBeEnabled();
+	await page.getByRole('button', { name: 'Biography', exact: true }).click();
+	await expect.element(page.getByText('Safe biography', { exact: true })).toBeVisible();
+	const biography = document.querySelector('.biography-content')!;
+	expect(biography.querySelector('script, [onerror], [href^="javascript:"]')).toBeNull();
+});
+
 it('keeps imported artwork and descriptions, expands proficiencies, and downloads proxy-backed diagnostics', async () => {
 	const image =
 		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a1ZkAAAAASUVORK5CYII=';

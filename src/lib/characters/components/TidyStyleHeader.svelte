@@ -19,7 +19,7 @@
 	import { savingThrowMarkerIcon } from '../icons/tidy-icons';
 
 	export let character: StoredCharacter;
-	export let onPortraitSelect: (file: File) => void;
+	export let onPortraitSelect: ((file: File) => void) | undefined = undefined;
 
 	let portraitInput: HTMLInputElement;
 
@@ -133,7 +133,7 @@
 		const file = input.files?.[0];
 
 		if (file) {
-			onPortraitSelect(file);
+			onPortraitSelect?.(file);
 		}
 
 		input.value = '';
@@ -311,8 +311,11 @@
 				<button
 					type="button"
 					class="portrait-frame"
-					aria-label={`Change portrait for ${character.name}`}
-					title="Change portrait"
+					aria-label={onPortraitSelect
+						? `Change portrait for ${character.name}`
+						: `${character.name} portrait`}
+					title={onPortraitSelect ? 'Change portrait' : undefined}
+					disabled={!onPortraitSelect}
 					on:click={openPortraitPicker}
 				>
 					{#if portraitSource}
@@ -323,7 +326,7 @@
 						</span>
 					{/if}
 
-					<span class="portrait-overlay"> Change portrait </span>
+					{#if onPortraitSelect}<span class="portrait-overlay"> Change portrait </span>{/if}
 				</button>
 
 				<div class="health-bar">
@@ -529,6 +532,10 @@
 		background: linear-gradient(135deg, #343238, #111216);
 		color: inherit;
 		cursor: pointer;
+	}
+
+	.portrait-frame:disabled {
+		cursor: default;
 	}
 
 	.portrait-frame img {

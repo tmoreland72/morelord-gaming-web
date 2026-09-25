@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 	import { invalidateAll } from '$app/navigation';
 	import CharacterList from '$lib/characters/components/CharacterList.svelte';
 	import CharacterSheet from '$lib/characters/components/CharacterSheet.svelte';
@@ -117,6 +118,11 @@
 			<button type="button" class="back-button" onclick={closeCharacter}
 				>← Back to Characters</button
 			>
+			<a
+				class="back-button"
+				href={resolve('/characters/shared/[id]', { id: selectedCharacter.localId })}
+				>Sharing &amp; public link</a
+			>
 			<CharacterSheet character={selectedCharacter} onPortraitChange={changePortrait} />
 		</div>
 	{:else}
@@ -204,6 +210,8 @@
 		margin-inline: auto;
 	}
 	.back-button {
+		display: inline-block;
+		text-decoration: none;
 		margin: 0 0 0.75rem;
 		padding: 0.65rem 0.9rem;
 		border: 1px solid #dba53577;
