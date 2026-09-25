@@ -325,6 +325,7 @@
 }
 
 .character-tab .trait-tag {
+	gap: 0.3rem;
 	display: inline-flex;
 	min-height: 27px;
 	align-items: center;

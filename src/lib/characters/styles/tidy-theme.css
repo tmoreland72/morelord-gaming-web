@@ -138,3 +138,21 @@
 	font-weight: 600;
 	line-height: 1;
 }
+.weapon-mastery {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+	width: 1em;
+	height: 1em;
+	border-radius: 50%;
+	background: var(--tidy-proficient);
+	color: var(--tidy-surface-raised);
+	font-size: 0.9rem;
+	line-height: 1;
+}
+
+.inventory-tab .weapon-mastery {
+	margin-left: auto;
+	background: #df8090;
+}

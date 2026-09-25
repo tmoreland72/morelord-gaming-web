@@ -10,6 +10,7 @@
 	import { deriveCharacterValues, formatSignedNumber } from '../../characters/derived-character';
 
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
+	import { getWeaponMasteries, weaponLabel } from '../../characters/weapon-mastery';
 	import TidyIcon from '../TidyIcon.svelte';
 	import type { TidyIcon as TidyIconDefinition } from '../../icons/tidy-icons';
 	import {
@@ -37,6 +38,7 @@
 	let selectedItem: FoundryActorItem | null = null;
 
 	$: actor = character.actor;
+	$: masteredWeapons = getWeaponMasteries(actor).map(weaponLabel);
 
 	type UnknownRecord = Record<string, unknown>;
 
@@ -89,7 +91,7 @@
 
 	$: tools = getTools(actor);
 
-	$: traitRows = createTraitRows();
+	$: traitRows = createTraitRows(masteredWeapons);
 
 	function isRecord(value: unknown): value is UnknownRecord {
 		return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -151,7 +153,9 @@
 	};
 
 	function getTraitValues(traitName: string): string[] {
-		const label = (value: string) => proficiencyLabels[traitName]?.[value] ?? formatLabel(value);
+		const label = (value: string) =>
+			proficiencyLabels[traitName]?.[value] ??
+			(traitName === 'weaponProf' ? weaponLabel(value) : formatLabel(value));
 		const trait = getNestedValue(actor.system, 'traits', traitName);
 
 		if (!isRecord(trait)) {
@@ -221,7 +225,7 @@
 		return `Speed ${derived.speed} ${derived.speedUnits}`;
 	}
 
-	function createTraitRows(): TraitRow[] {
+	function createTraitRows(masteredWeapons: string[]): TraitRow[] {
 		return [
 			{
 				label: 'Size',
@@ -265,7 +269,9 @@
 			{
 				label: 'Weapons',
 				icon: weaponsIcon,
-				values: getTraitValues('weaponProf')
+				values: [...new Set([...getTraitValues('weaponProf'), ...masteredWeapons])].sort((a, b) =>
+					a.localeCompare(b)
+				)
 			},
 			{
 				label: 'Languages',
@@ -421,7 +427,7 @@
 			</header>
 
 			<div class="skill-list">
-				{#each derived.skills as skill}
+				{#each derived.skills as skill (skill)}
 					<div class="skill-row">
 						<span
 							class:trained={skill.proficiency > 0}
@@ -466,7 +472,7 @@
 				<div class="empty-row">No tool proficiencies</div>
 			{:else}
 				<div class="tool-list">
-					{#each tools as tool}
+					{#each tools as tool (tool)}
 						<div class="tool-row">
 							<span class:expert={tool.proficiency >= 2} class="proficiency-marker trained">
 								<TidyIcon icon={getProficiencyIcon(tool.proficiency)} />
@@ -512,7 +518,7 @@
 				</header>
 
 				<div class="save-grid">
-					{#each derived.savingThrows as save}
+					{#each derived.savingThrows as save (save)}
 						<div class="save-row">
 							<span class:trained={save.proficient} class="proficiency-marker">
 								<TidyIcon icon={save.proficient ? proficientIcon : notProficientIcon} />
@@ -540,7 +546,7 @@
 				</header>
 
 				<div class="trait-list">
-					{#each classes as classItem}
+					{#each classes as classItem (classItem)}
 						<div class="trait-row">
 							<strong class="trait-label"> Class </strong>
 
@@ -572,7 +578,7 @@
 							</div>
 						</div>
 
-						{#each getSubclasses(classItem) as subclassItem}
+						{#each getSubclasses(classItem) as subclassItem (subclassItem)}
 							<div class="trait-row subclass-row">
 								<span class="trait-label"></span>
 
@@ -672,7 +678,7 @@
 						</div>
 					</div>
 
-					{#each traitRows as row}
+					{#each traitRows as row (row.label)}
 						<div class="trait-row">
 							<strong class="trait-label">
 								<span class="trait-label-icon">
@@ -686,12 +692,19 @@
 								{#if row.values.length === 0}
 									<span class="muted"> None </span>
 								{:else}
-									{#each row.values as value}
+									{#each row.values as value, index (index)}
 										<span
 											class="trait-tag"
 											class:resistance={row.tone === 'resistance'}
 											class:vulnerability={row.tone === 'vulnerability'}
 										>
+											{#if row.label === 'Weapons' && masteredWeapons.includes(value)}
+												<span
+													class="weapon-mastery"
+													title="Weapon Mastery"
+													aria-label="Weapon Mastery">★</span
+												>
+											{/if}
 											{value}
 										</span>
 									{/each}

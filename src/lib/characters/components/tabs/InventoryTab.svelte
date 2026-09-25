@@ -8,6 +8,7 @@
 	import { getItemImageSrc } from '../../assets/image-resolver';
 
 	import ItemDetailsDialog from '../ItemDetailsDialog.svelte';
+	import { getWeaponMasteries, hasWeaponMastery } from '../../characters/weapon-mastery';
 	import TidyIcon from '../TidyIcon.svelte';
 	import {
 		attunementIcon,
@@ -23,6 +24,7 @@
 	export let character: StoredCharacter;
 
 	$: actor = character.actor;
+	$: masteries = getWeaponMasteries(actor);
 
 	type UnknownRecord = Record<string, unknown>;
 
@@ -651,7 +653,7 @@
 		<div class="empty-state">No matching items were found.</div>
 	{:else}
 		<div class="group-list">
-			{#each groups as group}
+			{#each groups as group (group.id)}
 				<section
 					class:weapon-group={group.id === 'weapon'}
 					class:container-group={group.id === 'container'}
@@ -703,7 +705,7 @@
 
 					{#if !collapsedGroups.includes(group.id)}
 						<div class="item-list">
-							{#each group.items as item}
+							{#each group.items as item (item)}
 								{@const price = getPriceParts(item)}
 
 								{@const weight = getWeightParts(item)}
@@ -724,6 +726,13 @@
 										<strong>
 											{item.name}
 										</strong>
+										{#if hasWeaponMastery(item, masteries)}
+											<span
+												class="weapon-mastery"
+												title="Weapon Mastery"
+												aria-label="Weapon Mastery">★</span
+											>
+										{/if}
 									</button>
 
 									{#if group.id === 'weapon'}
@@ -792,7 +801,7 @@
 		<div class="attunement-box"><TidyIcon icon={attunementIcon} /> 0 / 3 Attuned</div>
 
 		<div class="currency-grid">
-			{#each [['pp', 'PP'], ['gp', 'GP'], ['ep', 'EP'], ['sp', 'SP'], ['cp', 'CP']] as denomination}
+			{#each [['pp', 'PP'], ['gp', 'GP'], ['ep', 'EP'], ['sp', 'SP'], ['cp', 'CP']] as denomination (denomination[0])}
 				<div class="currency-box">
 					<span>
 						{currency[denomination[0]]}

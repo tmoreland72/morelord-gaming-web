@@ -5,6 +5,74 @@ import CharacterSheet from './CharacterSheet.svelte';
 import { readActorJson } from '../import/read-actor-file';
 import type { StoredCharacter } from '../models/stored-character';
 
+it('marks selected weapon masteries in character traits and all matching inventory copies', async () => {
+	render(CharacterSheet, {
+		character: {
+			localId: 'masteries',
+			name: 'Fighter',
+			actorType: 'character',
+			sourceFileName: 'fighter.json',
+			importedAt: '2026-09-25',
+			actor: {
+				name: 'Fighter',
+				type: 'character',
+				effects: [],
+				system: {
+					traits: {
+						weaponProf: {
+							value: ['sim', 'mar', 'spear'],
+							mastery: { value: ['handaxe', 'javelin', 'lighthammer', 'spear'] }
+						}
+					}
+				},
+				items: [
+					{
+						name: 'Spear',
+						type: 'weapon',
+						system: { type: { baseItem: 'spear' }, mastery: 'sap' }
+					},
+					{
+						name: 'Enchanted Spear',
+						type: 'weapon',
+						system: { type: { baseItem: 'spear' }, mastery: 'sap' }
+					},
+					{
+						name: 'Greatsword',
+						type: 'weapon',
+						system: { type: { baseItem: 'greatsword' }, mastery: 'graze' }
+					},
+					{ name: 'Unspecified Weapon', type: 'weapon', system: {} }
+				]
+			}
+		}
+	});
+	await page.getByRole('button', { name: 'Character', exact: true }).click();
+	const tags = [...document.querySelectorAll('.trait-tag')];
+	for (const name of ['Handaxe', 'Javelin', 'Light Hammer', 'Spear']) {
+		const matches = tags.filter((tag) => tag.textContent?.includes(name));
+		expect(matches).toHaveLength(1);
+		expect(matches[0].querySelector('[aria-label="Weapon Mastery"]')).not.toBeNull();
+	}
+	for (const name of ['Simple', 'Martial']) {
+		expect(
+			tags.find((tag) => tag.textContent?.includes(name))?.querySelector('.weapon-mastery')
+		).toBeNull();
+	}
+	await page.getByRole('button', { name: 'Inventory', exact: true }).click();
+	await expect
+		.element(page.getByRole('button', { name: 'View details for Spear', exact: true }))
+		.toBeVisible();
+	const rows = [...document.querySelectorAll('.inventory-tab .item-row')];
+	for (const name of ['Spear', 'Enchanted Spear']) {
+		expect(
+			rows
+				.find((row) => row.querySelector('strong')?.textContent?.trim() === name)
+				?.querySelector('.weapon-mastery')
+		).not.toBeNull();
+	}
+	expect(document.querySelectorAll('.inventory-tab .weapon-mastery')).toHaveLength(2);
+});
+
 it('shows a read-only sheet without portrait editing when shared', async () => {
 	render(CharacterSheet, {
 		character: {
