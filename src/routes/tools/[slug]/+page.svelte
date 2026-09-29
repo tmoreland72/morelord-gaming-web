@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { githubRepoUrl } from '$lib/github';
 
 	let { data }: { data: PageData } = $props();
 	let copied = $state(false);
@@ -61,7 +62,7 @@
 				<div class="install-links">
 					<a class="text-link" href={documentationUrl}>Installation and usage guide <span>→</span></a>
 					{#if data.product.githubRepository}
-						<a class="text-link" href={`https://github.com/${data.product.githubRepository}`} target="_blank" rel="noreferrer">GitHub repository <span>↗</span></a>
+						<a class="text-link" href={githubRepoUrl(data.product.githubRepository)} target="_blank" rel="noreferrer">GitHub repository <span>↗</span></a>
 					{/if}
 					{#if latestRelease?.githubReleaseUrl}
 						<a class="text-link" href={latestRelease.githubReleaseUrl} target="_blank" rel="noreferrer">Release notes <span>↗</span></a>
