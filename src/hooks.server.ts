@@ -1,6 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 import { building } from '$app/environment';
 import { createAuth } from '$lib/server/auth';
+import { recordVisit, visitRecordFor } from '$lib/server/visit-log';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -17,5 +18,31 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.locals.user = session.user;
 	}
 
-	return svelteKitHandler({ event, resolve, auth, building });
+	const response = await svelteKitHandler({ event, resolve, auth, building });
+
+	// Privacy-light daily aggregate visit logging. Runs after the response via waitUntil
+	// so it can never slow down or break the page.
+	try {
+		const visit = visitRecordFor({
+			method: event.request.method,
+			url: event.url,
+			routeId: event.route.id,
+			isDataRequest: event.isDataRequest,
+			userAgent: event.request.headers.get('user-agent'),
+			status: response.status,
+			contentType: response.headers.get('content-type')
+		});
+		if (visit) {
+			const write = recordVisit(event.platform.env.DB, visit);
+			if (event.platform.ctx?.waitUntil) {
+				event.platform.ctx.waitUntil(write);
+			} else {
+				void write;
+			}
+		}
+	} catch {
+		// Never let visit logging affect the response.
+	}
+
+	return response;
 };
