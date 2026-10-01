@@ -2,9 +2,19 @@
  * Privacy-light visit logging: increments a per-day aggregate counter in D1.
  * No IPs, user agents, cookies or user ids are stored - only daily counts per
  * path and UTM combination.
+ *
+ * Visits are only counted when a real browser loads the page and sends a
+ * beacon to POST /api/visit (see the root +layout.svelte). Plain server-side
+ * GETs (crawlers, scanners, uptime checks) are never counted.
  */
 
 export const VISIT_TIME_ZONE = 'America/Chicago';
+
+/** Only beacons from the production site are counted. */
+export const VISIT_ALLOWED_ORIGIN = 'https://morelordgaming.com';
+
+/** Upper bound for a beacon body; real payloads are well under 1 KB. */
+export const VISIT_BEACON_MAX_BODY_LENGTH = 2048;
 
 const UTM_MAX_LENGTH = 64;
 const PATH_MAX_LENGTH = 200;
@@ -45,14 +55,20 @@ export function shiftDay(day: string, deltaDays: number): string {
 	return new Date(base + deltaDays * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
-export function cleanUtmValue(value: string | null | undefined): string {
-	if (!value) return '';
+function stripControlChars(value: string): string {
 	// eslint-disable-next-line no-control-regex
-	return value.replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, UTM_MAX_LENGTH);
+	return value.replace(/[\u0000-\u001f\u007f]/g, '');
 }
 
+export function cleanUtmValue(value: unknown): string {
+	if (typeof value !== 'string' || !value) return '';
+	return stripControlChars(value).trim().slice(0, UTM_MAX_LENGTH);
+}
+
+/** Path only: no query string, no hash, no trailing slash (except for "/"). */
 export function normalizeVisitPath(pathname: string): string {
-	let path = pathname || '/';
+	let path = stripControlChars(pathname || '').trim();
+	path = path.split(/[?#]/, 1)[0] || '/';
 	if (path.length > 1) path = path.replace(/\/+$/, '') || '/';
 	return path.slice(0, PATH_MAX_LENGTH);
 }
@@ -70,6 +86,31 @@ export function isTrackablePath(pathname: string): boolean {
 	return true;
 }
 
+/**
+ * True when the request comes from an allowed origin. The Origin header decides
+ * when present; otherwise the Referer's origin is used. Missing both = rejected.
+ */
+export function isAllowedVisitSource(
+	origin: string | null | undefined,
+	referer: string | null | undefined,
+	allowedOrigins: readonly string[] = [VISIT_ALLOWED_ORIGIN]
+): boolean {
+	if (origin) return allowedOrigins.includes(origin);
+	if (referer) {
+		try {
+			return allowedOrigins.includes(new URL(referer).origin);
+		} catch {
+			return false;
+		}
+	}
+	return false;
+}
+
+export function isJsonContentType(contentType: string | null | undefined): boolean {
+	if (!contentType) return false;
+	return contentType.split(';', 1)[0].trim().toLowerCase() === 'application/json';
+}
+
 export interface VisitRecord {
 	day: string;
 	path: string;
@@ -78,35 +119,50 @@ export interface VisitRecord {
 	utmCampaign: string;
 }
 
-interface VisitCandidate {
-	method: string;
-	url: URL;
-	routeId: string | null;
-	isDataRequest?: boolean;
-	userAgent: string | null;
-	status: number;
+/** Turns a beacon body into the aggregate row to increment, or null when it should not be counted. */
+export function beaconVisitRecord(payload: unknown, now: Date = new Date()): VisitRecord | null {
+	if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return null;
+	const body = payload as Record<string, unknown>;
+	if (body.webdriver === true || body.webdriver === 'true') return null;
+	if (typeof body.path !== 'string') return null;
+
+	const path = normalizeVisitPath(body.path);
+	if (!path.startsWith('/') || path.startsWith('//')) return null;
+	if (!isTrackablePath(path)) return null;
+
+	return {
+		day: visitDay(now),
+		path,
+		utmSource: cleanUtmValue(body.utm_source),
+		utmMedium: cleanUtmValue(body.utm_medium),
+		utmCampaign: cleanUtmValue(body.utm_campaign)
+	};
+}
+
+export interface VisitBeaconRequest {
 	contentType: string | null;
+	origin: string | null;
+	referer: string | null;
+	userAgent: string | null;
+	body: string;
+	allowedOrigins?: readonly string[];
 	now?: Date;
 }
 
-/** Returns the aggregate row to increment, or null when the request should not be counted. */
-export function visitRecordFor(candidate: VisitCandidate): VisitRecord | null {
-	if (candidate.method !== 'GET') return null;
-	if (candidate.status !== 200) return null;
-	if (candidate.isDataRequest) return null;
-	if (!candidate.routeId) return null;
-	if (!candidate.contentType || !candidate.contentType.toLowerCase().includes('text/html')) return null;
-	if (!isTrackablePath(candidate.url.pathname)) return null;
-	if (isLikelyBot(candidate.userAgent)) return null;
+/** Full filter for POST /api/visit: returns the row to increment, or null to silently drop. */
+export function evaluateVisitBeacon(request: VisitBeaconRequest): VisitRecord | null {
+	if (!isJsonContentType(request.contentType)) return null;
+	if (!isAllowedVisitSource(request.origin, request.referer, request.allowedOrigins)) return null;
+	if (isLikelyBot(request.userAgent)) return null;
+	if (!request.body || request.body.length > VISIT_BEACON_MAX_BODY_LENGTH) return null;
 
-	const params = candidate.url.searchParams;
-	return {
-		day: visitDay(candidate.now),
-		path: normalizeVisitPath(candidate.url.pathname),
-		utmSource: cleanUtmValue(params.get('utm_source')),
-		utmMedium: cleanUtmValue(params.get('utm_medium')),
-		utmCampaign: cleanUtmValue(params.get('utm_campaign'))
-	};
+	let payload: unknown;
+	try {
+		payload = JSON.parse(request.body);
+	} catch {
+		return null;
+	}
+	return beaconVisitRecord(payload, request.now);
 }
 
 export async function recordVisit(db: D1Database, visit: VisitRecord): Promise<void> {

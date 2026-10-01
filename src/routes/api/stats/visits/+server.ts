@@ -142,7 +142,7 @@ export const GET: RequestHandler = async ({ url, platform }) => {
 					pinnedCommentVisits: daily.reduce((sum, entry) => sum + entry.pinnedComment.visits, 0)
 				},
 				notes:
-					'Aggregate daily counts of full page loads by humans (bots filtered). Empty UTM values mean the parameter was absent.',
+					'Aggregate daily counts of browser-confirmed page loads (counted by a beacon sent from a visible browser tab after load; bots, headless/automated browsers and other origins are filtered). Empty UTM values mean the parameter was absent.',
 				daily
 			},
 			{ headers: responseHeaders }
