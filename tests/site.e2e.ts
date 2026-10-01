@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 const publicPages = [
 	{ path: '/', heading: 'Better adventures at the table and better tools behind the screen.' },
 	{ path: '/adventures', heading: 'Professionally run adventures. Memorable stories.' },
-	{ path: '/tools', heading: 'Practical Foundry modules with a generous free edition.' },
+	{ path: '/tools', heading: 'Practical Foundry modules for your table.' },
 	{
 		path: '/pricing',
 		heading: 'Start free. Upgrade the whole toolkit when it earns its place at your table.'

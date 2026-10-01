@@ -59,12 +59,12 @@ export function readActorJson(fileName: string, text: string): ImportedActorFile
 
 function readMorelordExport(fileName: string, data: MorelordCharacterExport): ImportedActorFile {
 	if (!Number.isInteger(data.formatVersion) || data.formatVersion < 1) {
-		throw new Error('The Morelord character export has an invalid format version.');
+		throw new Error('The Morelord Character Export file has an invalid format version.');
 	}
 
 	if (data.formatVersion > MAXIMUM_SUPPORTED_FORMAT_VERSION) {
 		throw new Error(
-			`This character uses Morelord export format ${data.formatVersion}, which is newer than this app supports.`
+			`This character uses Morelord Character Export format ${data.formatVersion}, which is newer than this app supports.`
 		);
 	}
 

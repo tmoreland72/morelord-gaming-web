@@ -4,18 +4,25 @@ description: Install, configure, and operate Morelord Marketplace, including pre
 slug: morelord-marketplace/gm
 product: morelord-marketplace
 audience: game-master
-version: 0.9.8
+version: 0.10.1
 foundry: 14
 ---
 
 # Morelord Marketplace Game Master Manual
 
+This guide covers Morelord Marketplace 0.10.1, Foundry VTT v14, dnd5e, and Morelord Core 0.4.0 or later. The global tabs run **Sell → Transfer → Buy → Wishlist**. Sell eligible inventory items at rates set by the GM; wishlists save desired items without reserving stock.
+
+## Inventory transfers
+
+The **Transfer** tab lets players move physical inventory quantities or whole stacks to another eligible character or Group, including inventories they cannot edit. An active, non-ignored GM client must be connected to apply transfers automatically through Core. Transfers require no approval or premium access, do not change currency, and post a transaction chat card. Containers include all their contents and nested containers, with containment preserved at the recipient. The player selects the sending inventory in **Shopping As**, adds one item or a whole stack to the cart, adjusts quantities, selects **Recipient**, and chooses **Transfer Items**. The sender must own the source inventory; recipient edit permission is not required. Transfer the whole container stack to include its contents. Overlapping individual and container selections move each item only once. Individual contents can be sent separately. If inventory rollback is incomplete, review both actors before retrying.
+
 Morelord Marketplace gives a Foundry VTT world a global catalog for buying and selling dnd5e items. With Tools Premium or Tools Champion access, it also provides GM transaction approvals and Shop Manager for configurable scene vendors.
 
-This manual applies to Morelord Marketplace 0.9.6, Foundry VTT v14, and the dnd5e system.
+This manual applies to Morelord Marketplace 0.10.1, Foundry VTT v14, and the dnd5e system.
 
 ## Contents
 
+- [Inventory transfers](#inventory-transfers)
 - [Feature access](#feature-access)
 - [Install and activate](#install-and-activate)
 - [Configure the global Marketplace](#configure-the-global-marketplace)
@@ -34,6 +41,8 @@ This manual applies to Morelord Marketplace 0.9.6, Foundry VTT v14, and the dnd5
 | --- | :---: | :---: |
 | Browse the global catalog | Yes | Yes |
 | Buy and sell in the global Marketplace | Yes | Yes |
+| Transfer inventory items with a connected GM | Yes | Yes |
+| Save shopper wishlists | Yes | Yes |
 | Configure allowed item compendiums | Yes | Yes |
 | Configure the default buy and sell rates | Yes | Yes |
 | Post transaction cards to chat | Yes | Yes |
@@ -49,8 +58,8 @@ The global Marketplace remains usable if premium access expires. Saved premium s
 
 - Foundry Virtual Tabletop v14
 - The dnd5e game system
-- Morelord Core 0.3.7 or later
-- Morelord Marketplace v0.9.6 or later
+- Morelord Core 0.4.0 or later
+- Morelord Marketplace v0.10.1
 
 ### Install with the manifest
 
@@ -95,7 +104,7 @@ Marketplace uses the D&D5e system's **Configure Sources** selection. Enable or d
 
 ![The global Morelord Marketplace open for a selected character](/docs-assets/morelord-marketplace/assets/global-marketplace-overview.png)
 
-*The global Marketplace shows the active character, available coin, Buy and Sell tabs, and—when available—the GM-only Manage Shops control.*
+*The global Marketplace shows the active character, available coin, Sell, Transfer, Buy, and Wishlist tabs, and—when available—the GM-only Manage Shops control. The screenshot predates the Transfer tab.*
 
 1. Open a scene and select **Token Controls**.
 2. Select the **Morelord Marketplace** store icon.
@@ -140,7 +149,7 @@ Premium access is managed through Morelord Core.
 
 1. Open **Configure Marketplace**.
 2. In the premium-access panel, select **Connect Account** or **Manage Account**.
-3. Complete the Morelord account connection through Morelord Core.
+3. Complete the Morelord Gaming account connection through Morelord Core.
 4. Return to Marketplace settings and select **Refresh Access** if necessary.
 
 The panel reports the current tier and the most recent access check. Marketplace can continue using cached access during a temporary website outage. Disconnecting an account or losing entitlement locks the premium controls without deleting existing shop data.
@@ -217,7 +226,7 @@ Choose any combination of:
 - Loot
 - Containers
 
-Then select permitted rarities: Common, Uncommon, Rare, Very Rare, Legendary, or Artifact. Product and rarity settings affect the shop's catalog, random stock, and the items it accepts from players.
+Then select permitted rarities: Common, Uncommon, Rare, Very Rare, Legendary, or Artifact. Product and rarity settings affect the shop's catalog and random stock. Item Options control accepted player sales unless a specific purchase list is configured.
 
 ### Inventory modes
 
@@ -359,7 +368,7 @@ Report reproducible problems at [Morelord Marketplace Issues](https://github.com
 
 Global Buy and Sell both use carts. Adding items only prepares a transaction; Purchase or Sell Cart submits it. When global GM approval is enabled, the complete cart is one request and current prices, funds, availability, and quantities are revalidated before commitment. Buy results are paginated at 50 items per page while filters cover the entire catalog.
 
-Shop Manager can associate a shop with a shared Core Location. Normal stock can inherit its capability tier or use the shop's maximum normal rarity override. Manually included inventory may exceed that limit; its Manual badge identifies stock whose remaining quantity is preserved during restocking.
+Shop Manager can associate a shop with a shared Core Location. Normal stock can inherit its capability tier or use the shop's maximum normal rarity override. Manually included inventory may exceed that limit; its Manual badge identifies manually managed stock. Normal restocking preserves remaining quantity; manual-only shops restore configured quantities.
 
 Eligible wishlist items receive a 1.25x selection weight during random restocking. They are not guaranteed picks, whether duplicate selection is enabled or disabled. The rarity counts still control the number of draws, and the documented unit ranges apply to selected listings.
 
@@ -374,3 +383,19 @@ Catalogs and shops accept legacy rarity fields and v6 rarity collections. Items 
 The GM’s **Temporarily ignore buy and sell rates (both ×1)** toggle applies list prices to global purchases and sales for everyone. Switch it off to resume the unchanged configured rates. It persists across reloads, leaves shop pricing alone, and clears global carts when changed. New shops copy the configured buy/sell rates; their values remain editable.
 
 Prefab choices show one entry per normalized shop name, keeping the variant with the most available matches. Previously saved prefab IDs remain resolvable. SRD items copied into other packs still honor their canonical D&D5e source exclusions.
+
+## Manually configured shop items
+
+**Player can sell** enables selling to the vendor. Under **Items the shop will buy**, use **Add Item** to search enabled Item compendiums. Once this list contains an item, it is exclusive: the Sell tab shows only matching owned items, and checkout checks the current list again. Removing the last entry restores the shop's normal Item Options filtering. This list is independent of inventory offered for sale.
+
+Items match their compendium origin (including renamed copies). Items without a recorded origin match by name and item type; copies from a different compendium origin require their own entry. Usual supported-type, positive-price, unsellable-flag, and reputation restrictions still apply.
+
+**Only sell manually added items** is off by default. Enable it to offer only manually added inventory in any inventory mode. **Restock Now** restores those listings to their configured quantities and never selects additional products. Adding a listing or adjusting its quantity sets that restock quantity; purchases reduce remaining stock without changing the target. Sold-out manual listings remain visible to the GM. Existing manual listings without a saved target use their remaining quantity, or one if sold out, on their first manual-only restock.
+
+Turning off **Generate limited stock randomly** only stops random stock generation. It does not remove existing generated stock or restrict Unlimited/Hybrid catalogs to manually added items, and it does not replenish manual stock.
+
+**Common** includes both mundane items (no rarity) and common magic items. It is not a mundane-only filter. Enable **Exclude magical items** under Products to reject the D&D5e Magical (`mgc`) property regardless of rarity. This also filters manually added and prefab listings, restock candidates, and checkout. The option defaults to off and does not alter the purchase list or player-selling rules. It depends on items having their Magical property correctly set.
+
+The purchase list and Current Inventory use the same Core section headings, count badges, Add Item actions, and item rows. Both show item artwork, a document link, available source details, and removal controls; inventory also has stock quantity controls.
+
+Unpriced source items receive a rarity-based base price: Common 100 gp, Uncommon 400 gp, Rare 4,000 gp, Very Rare 40,000 gp, and Legendary 200,000 gp. Blank/mundane rarity uses Common; artifacts and unknown rarities need an explicit price. Positive source prices and GM custom prices take priority. Normal buy/sell rates apply, and compendium data is unchanged.

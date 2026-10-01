@@ -43,9 +43,9 @@ Morelord Core does not remove existing world data if premium access expires.
 4. Open **Game Settings → Manage Modules**.
 5. Enable **Morelord Core**, then save the module configuration.
 
-The account connection applies to the current world. Repeat the connection process in each world that should use your Morelord access.
+The account connection applies to the current world. Repeat the connection process in each world that should use your Morelord Gaming access.
 
-## Connect a Morelord Account
+## Connect a Morelord Gaming Account
 
 1. Open **Game Settings → Configure Settings → Module Settings → Morelord Core**.
 2. Select **Connect or Manage Account**.
@@ -74,13 +74,13 @@ The window also provides three actions:
 
 - **Refresh Access:** Checks Morelord Gaming for current membership and feature access.
 - **Open Account:** Opens your Morelord Gaming account page in a browser.
-- **Disconnect:** Removes the Morelord account connection and locally cached access information from this world.
+- **Disconnect:** Removes the Morelord Gaming account connection and locally cached access information from this world.
 
 ## Refresh Access
 
 Morelord Core checks access automatically when a connected GM loads the world. Use **Refresh Access** when:
 
-- You changed your Morelord membership.
+- You changed your Morelord Gaming membership.
 - You connected or updated a supported Morelord Tools product.
 - A premium feature does not reflect a recent account change.
 - You want to confirm the most recent validation time.

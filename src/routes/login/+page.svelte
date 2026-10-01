@@ -14,8 +14,8 @@
 <section class="page-hero account-hero login-hero">
 	<div class="shell login-layout">
 		<div>
-			<div class="eyebrow">Morelord account</div>
-			<h1>One account for every Morelord Tool.</h1>
+			<div class="eyebrow">Morelord Gaming account</div>
+			<h1>One account for every Morelord Tools module.</h1>
 			<p class="lead">
 				Sign in to manage subscriptions, connect Foundry installations, synchronize Discord
 				benefits and view your product access.

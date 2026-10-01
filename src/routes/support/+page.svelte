@@ -1,8 +1,12 @@
 <script lang="ts">
 	type FieldName = 'name' | 'email' | 'subject' | 'message';
-	type ContactForm = { success?: boolean; message?: string; values?: Partial<Record<FieldName, string>> } | null;
+	type ContactForm = {
+		success?: boolean;
+		message?: string;
+		values?: Partial<Record<FieldName, string>>;
+	} | null;
 
-	let { form }: { form: ContactForm } = $props();
+	let { form, data }: { form: ContactForm; data: import('./$types').PageData } = $props();
 
 	function prior(field: FieldName): string {
 		return form?.values?.[field] ?? '';
@@ -28,7 +32,7 @@
 			<div class="section-heading support-heading">
 				<div>
 					<div class="eyebrow">Get in touch</div>
-					<h2>Send a message</h2>
+					<h2>Billing, account, and general inquiries</h2>
 				</div>
 			</div>
 
@@ -42,19 +46,42 @@
 					{#if form?.message}<p class="form-error form-span-2">{form.message}</p>{/if}
 					<label>
 						<span>Name *</span>
-						<input name="name" autocomplete="name" required maxlength="120" placeholder="Your name" value={prior('name')} />
+						<input
+							name="name"
+							autocomplete="name"
+							required
+							maxlength="120"
+							placeholder="Your name"
+							value={prior('name')}
+						/>
 					</label>
 					<label>
 						<span>Email *</span>
-						<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com" value={prior('email')} />
+						<input
+							name="email"
+							type="email"
+							autocomplete="email"
+							required
+							maxlength="254"
+							placeholder="you@example.com"
+							value={prior('email')}
+						/>
 					</label>
 					<label class="form-span-2">
 						<span>Subject *</span>
-						<input name="subject" required maxlength="180" placeholder="What would you like to contact us about?" value={prior('subject')} />
+						<input
+							name="subject"
+							required
+							maxlength="180"
+							placeholder="What would you like to contact us about?"
+							value={prior('subject')}
+						/>
 					</label>
 					<label class="form-span-2">
 						<span>Message *</span>
-						<textarea name="message" required rows="9" maxlength="5000" placeholder="Your message">{prior('message')}</textarea>
+						<textarea name="message" required rows="9" maxlength="5000" placeholder="Your message"
+							>{prior('message')}</textarea
+						>
 					</label>
 					<label class="support-honeypot" aria-hidden="true">
 						<span>Website</span><input name="website" tabindex="-1" autocomplete="off" />
@@ -69,8 +96,17 @@
 		<aside class="card support-aside">
 			<div class="eyebrow">Need product help?</div>
 			<h2>Use the Morelord Gaming Discord</h2>
-			<p>For help with Morelord Gaming products, Foundry modules, setup questions, bug reports, or community support, please use the Morelord Gaming Discord.</p>
-			<p>This contact form is intended for general inquiries rather than technical support.</p>
+			<p>
+				For help with Morelord Gaming products, Foundry modules, setup questions, bug reports, or
+				community support, please use the Morelord Gaming Discord.
+			</p>
+			<a class="button" href={data.discordInviteUrl} target="_blank" rel="external noreferrer"
+				>Get product help in Discord</a
+			>
+			<p>
+				Use the contact form for billing, account, or general inquiries. Champion membership
+				includes priority support.
+			</p>
 		</aside>
 	</div>
 </section>

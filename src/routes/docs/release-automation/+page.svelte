@@ -26,7 +26,7 @@
 				<li>Build and validate the Foundry module.</li>
 				<li>Create the GitHub release and upload the module ZIP.</li>
 				<li>Update the Foundry package release.</li>
-				<li>Submit the same structured metadata to the Morelord website.</li>
+				<li>Submit the same structured metadata to the Morelord Gaming website.</li>
 				<li>The product page and public release feed update immediately.</li>
 			</ol>
 		</article>

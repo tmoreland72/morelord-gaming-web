@@ -22,8 +22,13 @@
 				shaped by years of real-world game-master experience.
 			</p>
 			<div class="actions">
-				<a class="button" href="/tools">Explore Morelord Tools</a>
-				<a class="button secondary" href="/adventures">Join an Adventure</a>
+				<a class="button" href="/tools">Browse Foundry Tools</a>
+				<a
+					class="button secondary"
+					href="https://startplaying.games/gm/morelord-gaming"
+					target="_blank"
+					rel="external noreferrer">Play with Morelord Gaming</a
+				>
 				<a
 					class="button secondary"
 					href="https://www.youtube.com/@MorelordGaming"
@@ -83,8 +88,8 @@
 				<span class="tag">Morelord Tools</span>
 				<h2>Foundry modules built at the table</h2>
 				<p>
-					Useful standard features remain free. A Tools membership unlocks advanced automation,
-					premium support and early access.
+					Every module except Downtime includes a useful free edition. Downtime requires Premium or
+					Champion. Membership unlocks advanced features according to your tier.
 				</p>
 				<a class="text-link" href="/tools">Browse Foundry Tools <span>→</span></a>
 			</div>
@@ -114,16 +119,17 @@
 				<div class="feature-icon">⚔</div>
 				<h3>Free by default</h3>
 				<p>
-					Every supported module includes a genuinely useful standard edition with no subscription
-					required.
+					Every module except Downtime includes a useful free edition. Downtime requires Premium or
+					Champion.
 				</p>
 			</div>
 			<div class="card icon-card">
 				<div class="feature-icon">♛</div>
-				<h3>One premium membership</h3>
+				<h3>One GM membership</h3>
 				<p>
-					A single Tools Premium subscription unlocks advanced features across participating
-					Morelord modules.
+					Only GMs need membership. One membership covers all modules and unlimited worlds, with
+					features determined by your tier. Players need a Morelord Gaming account only to use My
+					Characters through Character Export.
 				</p>
 			</div>
 			<div class="card icon-card">
@@ -141,7 +147,7 @@
 <section class="section callout-section">
 	<div class="shell callout">
 		<div>
-			<div class="eyebrow">The Morelord community</div>
+			<div class="eyebrow">The Morelord Gaming community</div>
 			<h2>Play, build and improve together.</h2>
 			<p>
 				Campaign players and Foundry users share one community while keeping Adventures and Tools

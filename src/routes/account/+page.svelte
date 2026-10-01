@@ -52,13 +52,13 @@
 </script>
 
 <svelte:head>
-	<title>Morelord Account</title>
+	<title>Morelord Gaming Account</title>
 </svelte:head>
 
 {#if data.user}
 	<section class="page-hero account-hero compact-hero">
 		<div class="shell">
-			<div class="eyebrow">Morelord account</div>
+			<div class="eyebrow">Morelord Gaming account</div>
 			<h1>Welcome, {data.user.name}.</h1>
 			<p class="lead">Manage your membership, Foundry installations and connected community services.</p>
 		</div>
@@ -160,14 +160,14 @@
 				{:else}
 					<article class="card activation-card">
 						<h3>Connect your Discord account</h3>
-						<p>The website requests only your basic Discord identity. A Morelord bot handles role updates inside the server.</p>
+						<p>The website requests only your basic Discord identity. A Morelord Gaming bot handles role updates inside the server.</p>
 						{#if data.discordOAuthConfigured}<a class="button" href="/api/discord/connect">Connect Discord</a>{:else}<button class="button" type="button" disabled>Discord setup pending</button><small>Add the Discord application credentials before enabling account linking.</small>{/if}
 					</article>
 				{/if}
 			</section>
 
 			<section class="account-section" id="foundry-activation">
-				<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Foundry creates a temporary code, opens this page and waits for your approval. You never enter your Morelord password inside Foundry.</p></div>
+				<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Foundry creates a temporary code, opens this page and waits for your approval. You never enter your Morelord Gaming password inside Foundry.</p></div>
 				<div class="activation-grid">
 					{#if form?.activationSuccess}
 						<article class="card activation-card activation-complete">
@@ -199,10 +199,10 @@
 				<div class="section-heading"><div><div class="eyebrow">Authorized devices</div><h2>Foundry installations</h2></div><p>Revoke an installation you no longer recognize or use. Revocation does not delete any world or module data.</p></div>
 				{#if data.installations.length}
 					<div class="installation-list">{#each data.installations as installation}<article class="card installation-row"><div><span class="tag">{installation.productName}</span><h3>{installation.label}</h3><p>{installation.worldName ? `World: ${installation.worldName}` : 'No world name supplied'}{installation.foundryVersion ? ` · Foundry ${installation.foundryVersion}` : ''}{installation.moduleVersion ? ` · Module ${installation.moduleVersion}` : ''}</p><small>Connected {new Date(installation.createdAt).toLocaleDateString()}{installation.lastValidatedAt ? ` · Last checked ${new Date(installation.lastValidatedAt).toLocaleString()}` : ' · Not yet validated'}</small></div><form method="POST" action="?/revokeInstallation" use:enhance><input type="hidden" name="installationId" value={installation.id} /><button class="button secondary danger-button" type="submit">Revoke</button></form></article>{/each}</div>
-				{:else}<article class="card empty-state"><h3>No Foundry installations connected</h3><p>Your connected worlds and hosted servers will appear here after you activate a Morelord module.</p></article>{/if}
+				{:else}<article class="card empty-state"><h3>No Foundry installations connected</h3><p>Your connected worlds and hosted servers will appear here after you activate a Morelord Gaming module.</p></article>{/if}
 			</section>
 		</div>
 	</section>
 {:else}
-	<section class="page-hero account-hero"><div class="shell account-layout"><div><div class="eyebrow">Morelord account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">One account connects your Tools membership, Foundry installations, Discord benefits and billing.</p><div class="actions"><a class="button" href={`/login?returnTo=${encodeURIComponent(data.accountReturnTo)}`}>Sign in or create an account</a></div></div><div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and Discord sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div></div></section>
+	<section class="page-hero account-hero"><div class="shell account-layout"><div><div class="eyebrow">Morelord Gaming account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">One account connects your Tools membership, Foundry installations, Discord benefits and billing.</p><div class="actions"><a class="button" href={`/login?returnTo=${encodeURIComponent(data.accountReturnTo)}`}>Sign in or create an account</a></div></div><div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and Discord sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div></div></section>
 {/if}

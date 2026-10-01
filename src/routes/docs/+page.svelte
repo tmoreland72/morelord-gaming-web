@@ -21,7 +21,7 @@
 		<article class="card docs-card">
 			<div class="eyebrow">Shared services</div>
 			<h2>Morelord Core</h2>
-			<p>Connect your Morelord account, refresh access and troubleshoot module entitlements.</p>
+			<p>Connect your Morelord Gaming account, refresh access and troubleshoot module entitlements.</p>
 			<a class="text-link" href="/docs/morelord-core">View documentation <span>→</span></a>
 		</article>
 

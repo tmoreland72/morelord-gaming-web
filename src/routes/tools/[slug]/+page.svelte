@@ -73,7 +73,7 @@
 				<div class="eyebrow">Requirements</div>
 				<h2>{data.product.slug === 'morelord-core' ? 'Shared account service' : 'Morelord Core'}</h2>
 				{#if data.product.slug === 'morelord-core'}
-					<p>Install Core once per Foundry installation. It connects supported Morelord modules to your membership and shared entitlements.</p>
+					<p>Install Core once per Foundry installation. It connects supported Morelord Gaming modules to your membership and shared entitlements.</p>
 				{:else}
 					<p>This product uses Morelord Core for account connection and premium-feature access. Install and enable Core before configuring this module.</p>
 					<a class="text-link" href="/tools/morelord-core">Get Morelord Core <span>→</span></a>

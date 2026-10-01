@@ -392,7 +392,7 @@ The standard Craftworks experience does not depend on Drakkenheim. **Monsters of
 The enhanced experience requires:
 
 - the **Monsters of Drakkenheim** Craftworks Content Pack enabled
-- the corresponding Morelord account entitlement
+- the corresponding Morelord Gaming account entitlement
 - the supported official Monsters of Drakkenheim Foundry content installed and available
 
 Enabling the Craftworks pack does not provide or unlock the official source product. After installing or changing the source content, run **Sync with Compendiums**.

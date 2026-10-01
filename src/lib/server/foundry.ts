@@ -71,7 +71,7 @@ export async function createActivationRequest(
 		.from(products)
 		.where(and(eq(products.slug, input.productSlug), eq(products.status, 'active')))
 		.limit(1);
-	if (!product) throw new AppError('Unknown or inactive Morelord product.');
+	if (!product) throw new AppError('Unknown or inactive Morelord Gaming product.');
 
 	const id = crypto.randomUUID();
 	const deviceSecret = randomText(48);
@@ -300,7 +300,7 @@ export async function validateInstallationToken(
 		.from(products)
 		.where(and(eq(products.slug, targetSlug), eq(products.status, 'active')))
 		.limit(1);
-	if (!targetProduct) throw new AppError('Unknown or inactive Morelord product.');
+	if (!targetProduct) throw new AppError('Unknown or inactive Morelord Gaming product.');
 
 	const customer = await db.query.stripeCustomers.findFirst({
 		where: eq(stripeCustomers.userId, installation.userId)
