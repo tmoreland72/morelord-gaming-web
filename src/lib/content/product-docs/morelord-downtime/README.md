@@ -14,7 +14,7 @@ Downtime tracks long-running character Projects across GM-managed downtime Sessi
 
 ## Setup
 
-Requires Foundry VTT 14, D&D5e 5.3 or newer, and Morelord Core 0.3.9 or newer. Enable Core and Downtime in your world. Open **Morelord Downtime** from the timer icon in Token Controls. Core provides the shared interface, in-app documentation, character eligibility, and Locations.
+Requires Foundry VTT 14, D&D, and Morelord Core 0.3.9 or newer. Enable Core and Downtime in your world. Open **Morelord Downtime** from the timer icon in Token Controls. Core provides the shared interface, in-app documentation, character eligibility, and Locations.
 
 Optional integrations are Journeys 0.2.1+, Craftworks 0.4.3+, and Marketplace 0.9.2+. Journeys supplies travel-day advancement; Craftworks supplies crafting Projects; Marketplace supplies Source Item wishlist choices, currency handling, and offers. Missing integrations disable their related features without preventing the base module from loading.
 

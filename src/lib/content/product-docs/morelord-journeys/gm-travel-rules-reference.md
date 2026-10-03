@@ -257,7 +257,7 @@ Use these panels during play whenever the party asks why a result or DC changed.
 
 ## What Journeys does not automate
 
-Journeys does not enforce encumbrance, begin combat, apply Peaceful Rest choices other than Heroic Inspiration, or automatically resolve the narrative effects of Craft, Cook, Prepare, Slumber, and Task. It continues to use the D&D 5e actor's existing Exhaustion value and system-defined Exhaustion effects.
+Journeys does not enforce encumbrance, begin combat, apply Peaceful Rest choices other than Heroic Inspiration, or automatically resolve the narrative effects of Craft, Cook, Prepare, Slumber, and Task. It continues to use the D&D actor's existing Exhaustion value and system-defined Exhaustion effects.
 
 ## Zero-DC resolution
 

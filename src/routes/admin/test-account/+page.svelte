@@ -6,14 +6,14 @@
 </script>
 
 <svelte:head>
-	<title>Test account | Morelord Gaming Admin</title>
+	<title>Test Accounts | Morelord Gaming Admin</title>
 	<meta name="robots" content="noindex,nofollow" />
 </svelte:head>
 
 <section class="page-hero compact-hero">
 	<div class="shell">
 		<div class="eyebrow">Morelord administration</div>
-		<h1>Test account</h1>
+		<h1>Test Accounts</h1>
 		<p class="lead">Repeat the signup experience with {data.email}.</p>
 	</div>
 </section>

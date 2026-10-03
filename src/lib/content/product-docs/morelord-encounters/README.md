@@ -10,7 +10,7 @@ order: 0
 
 # Morelord Encounters Documentation
 
-Morelord Encounters is a Game Master tool for building D&D 5e encounters from monster compendiums already installed in Foundry Virtual Tabletop. Champion GMs with the official Drakkenheim modules can also generate published Drakkenheim encounters with GM descriptions and draggable Actors. It verifies the adventuring party, calculates a difficulty target where applicable, respects Morelord Gaming content access, and generates encounter compositions for the GM to review.
+Morelord Encounters is a Game Master tool for building D&D encounters from monster compendiums already installed in Foundry Virtual Tabletop. Champion GMs with the official Drakkenheim modules can also generate published Drakkenheim encounters with GM descriptions and draggable Actors. It verifies the adventuring party, calculates a difficulty target where applicable, respects Morelord Gaming content access, and generates encounter compositions for the GM to review.
 
 Choose Random Encounters, Custom Encounters, published Drakkenheim Encounters, or Saved Encounters. Party and monster-source lists offer Select All and Unselect All controls. Sources without eligible monsters are omitted, and the system SRD packs are identified separately as 5.1 and 5.2.
 
@@ -22,7 +22,7 @@ The final roster contains Actor links that can be opened for inspection or dragg
 
 - [Game Master Manual](/docs/morelord-encounters/gm-manual) — installation, account access, encounter setup, guided non-combat situations, generation, saved encounters, Drakkenheim rivals, Actor sheets, and scene placement.
 
-These instructions describe the Morelord Encounters 0.1.13 development workspace, including the unreleased guided workflow, for Foundry Virtual Tabletop v14 and D&D 5e 5.3 or later, with Morelord Core 0.3.7 or later.
+These instructions describe the Morelord Encounters 0.1.13 development workspace, including the unreleased guided workflow, for Foundry Virtual Tabletop v14 and D&D, with Morelord Core 0.3.7 or later.
 
 Guide Me offers 40 original situations and remembers recent choices in this browser to avoid repeats until matching options are exhausted. The [Encounter Story implementation notes](/docs/morelord-encounters/stories) describe the first editable journal-based story workflow and its remaining integration boundaries.
 

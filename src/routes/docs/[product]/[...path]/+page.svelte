@@ -1,9 +1,10 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
+
 	import { getProductDocComponent } from '$lib/product-docs';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
-	const Document = $derived(getProductDocComponent(data.sourcePath));
 	const productName = $derived(
 		data.navigation.find((item) => item.href === `/docs/${data.metadata.product}`)?.title ??
 			data.metadata.product
@@ -21,11 +22,11 @@
 	/>
 </svelte:head>
 
-<section class="page-hero tools-hero compact-hero docs-hero">
-	<div class="shell">
+<section class="wiki-doc-header">
+	<div>
 		<nav class="docs-breadcrumbs" aria-label="Breadcrumb">
-			<a href="/tools">Morelord Tools</a><span>/</span><a href={`/tools/${data.metadata.product}`}
-				>{productName}</a
+			<a href={resolve('/tools')}>Morelord Tools</a><span>/</span><a
+				href={resolve('/tools/[slug]', { slug: data.metadata.product })}>{productName}</a
 			><span>/</span><span aria-current="page">Documentation</span>
 		</nav>
 		<div class="eyebrow">Product guide</div>
@@ -41,28 +42,37 @@
 	</div>
 </section>
 
-<section class="section brand-panel-section">
-	<div class="shell product-docs-layout">
-		<aside class="card product-docs-sidebar">
-			<div class="eyebrow">{productName}</div>
-			<h2>Documentation</h2>
-			<nav aria-label={`${productName} documentation`}>
-				{#each data.navigation as item}
-					<a href={item.href} class:active={item.href === `/docs/${data.metadata.slug}`}>
-						<span>{item.title}</span>
-						{#if item.audience}<small>{item.audience.replaceAll('-', ' ')}</small>{/if}
-					</a>
-				{/each}
-			</nav>
-			<a class="text-link product-docs-back" href={`/tools/${data.metadata.product}`}
-				>Back to product <span>→</span></a
-			>
-		</aside>
-
-		<article class="card docs-card docs-prose">
-			{#if Document}
-				<Document />
+<article class="docs-prose" data-requested-document={data.requestedDocument}>
+	{#each data.documents as document (document.id)}
+		{@const Document = getProductDocComponent(document.sourcePath)}
+		<section id={document.id} data-doc-part data-doc-route={`/docs/${document.metadata.slug}`}>
+			{#if document.metadata.slug !== document.metadata.product}
+				<h2 class="guide-heading">
+					{document.metadata.title.replace(`${productName.replace(/ Documentation$/, '')} `, '')}
+				</h2>
 			{/if}
-		</article>
-	</div>
-</section>
+			{#if Document}<Document />{/if}
+		</section>
+	{/each}
+</article>
+
+<style>
+	.wiki-doc-header h1 {
+		font-size: clamp(2.3rem, 5vw, 3.5rem);
+	}
+	.wiki-doc-header {
+		margin-bottom: 2rem;
+	}
+	.docs-prose {
+		padding: 0;
+	}
+	.docs-prose :global([data-doc-part] > h1) {
+		display: none;
+	}
+	.docs-prose :global([data-doc-part]) {
+		scroll-margin-top: 7rem;
+	}
+	.docs-prose :global(.guide-heading) {
+		margin-top: 3rem;
+	}
+</style>

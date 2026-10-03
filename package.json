@@ -30,7 +30,9 @@
 		"verify": "powershell -ExecutionPolicy Bypass -File ./scripts/verify.ps1",
 		"test:smoke": "playwright test tests/site.e2e.ts",
 		"auth:secret": "node scripts/generate-auth-secret.mjs",
-		"docs:sync": "node scripts/sync-product-docs.mjs"
+		"docs:sync": "node scripts/sync-product-docs.mjs",
+		"products:pull": "node scripts/sync-products.mjs --pull",
+		"products:push": "node scripts/sync-products.mjs --push"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

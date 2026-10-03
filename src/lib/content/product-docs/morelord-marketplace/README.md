@@ -9,7 +9,7 @@ version: 0.10.1
 
 ## Overview
 
-Morelord Marketplace is a shopping, selling, and inventory-transfer system for Foundry Virtual Tabletop and the dnd5e game system. It gives players a searchable global item catalog, direct character purchases and sales, currency-free inventory transfers, automatic purchase and sale currency handling, and detailed filters for item type, category, weapon class, weapon range, weapon properties, weapon masteries, rarity, source, attunement, price, and affordability.
+Morelord Marketplace is a shopping, selling, and inventory-transfer system for Foundry Virtual Tabletop and the D&D game system. It gives players a searchable global item catalog, direct character purchases and sales, currency-free inventory transfers, automatic purchase and sale currency handling, and detailed filters for item type, category, weapon class, weapon range, weapon properties, weapon masteries, rarity, source, attunement, price, and affordability.
 
 Game Masters control which Item compendiums supply the catalog, whether global buying and selling are enabled, the default sale value, transaction chat cards, and optional approval requirements. With Tools Premium or Tools Champion access, GMs can also build scene vendors with custom products, prices, reputation, limited or unlimited stock, randomized restocking, separate shopper and funding actors, portable shop definitions, and interactive shop tokens.
 
@@ -40,7 +40,7 @@ Choose the guide that matches your role:
 - [Game Master Manual](/docs/morelord-marketplace/gm) — installation, world configuration, premium access, approvals, and Shop Manager.
 - [Player Manual](/docs/morelord-marketplace/player) — selecting a character, browsing, buying, selling, transferring inventory, and using scene shops.
 
-These manuals describe Morelord Marketplace 0.10.1 for Foundry Virtual Tabletop v14 and the dnd5e game system.
+These manuals describe Morelord Marketplace 0.10.1 for Foundry Virtual Tabletop v14 and the D&D game system.
 
 
 These manuals cover Marketplace 0.10.1 with Morelord Core 0.4.0 or later. Buy and Sell use carts; shops support shared Locations, capability limits, and weighted random stock.

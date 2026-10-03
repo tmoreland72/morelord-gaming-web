@@ -14,7 +14,7 @@ order: 10
 ## Requirements
 
 - Foundry Virtual Tabletop v14
-- D&D 5e system 5.3 or later
+- D&D system
 - Morelord Core 0.3.7 or later
 - GM permission in the world
 
@@ -195,7 +195,7 @@ Character portraits identify travelers in assignments, checks, supplies, and res
 
 ## Native recovery and the world calendar
 
-Journeys records Long Rest sleep eligibility and applies its documented Exhaustion changes. It does not invoke native character-sheet Long Rest recovery or advance the world clock. Resolve HP, spell-slot, and item-use recovery separately through the system, checking that Exhaustion is not reduced a second time. D&D 5e v6 day/dawn/dusk recovery requires advancing the system calendar separately.
+Journeys records Long Rest sleep eligibility and applies its documented Exhaustion changes. It does not invoke native character-sheet Long Rest recovery or advance the world clock. Resolve HP, spell-slot, and item-use recovery separately through the system, checking that Exhaustion is not reduced a second time. D&D day/dawn/dusk recovery requires advancing the system calendar separately.
 
 ### Current journey display and progress
 

@@ -1,6 +1,6 @@
 ---
 title: Morelord Character Export Documentation
-description: Export D&D 5e characters from Foundry and import them into My Characters on Morelord Gaming.
+description: Export D&D characters from Foundry and import them into My Characters on Morelord Gaming.
 slug: morelord-character-export
 product: morelord-character-export
 version: 0.3.5
@@ -12,7 +12,7 @@ foundry: 14
 
 ## Overview
 
-Morelord Character Export lets GMs and players download a D&D 5e character from Foundry Virtual Tabletop and import it into **My Characters** on the Morelord Gaming website. The file includes character data, a snapshot of prepared sheet values, and available character and item artwork.
+Morelord Character Export lets GMs and players download a D&D character from Foundry Virtual Tabletop and import it into **My Characters** on the Morelord Gaming website. The file includes character data, a snapshot of prepared sheet values, and available character and item artwork.
 
 Exporting from Foundry does not require Morelord Core, a Morelord Gaming account connection, or a paid subscription. To import the file on the website, register for a free Morelord Gaming account and sign in.
 
@@ -21,15 +21,15 @@ This guide covers version 0.3.5. Exports are snapshots: later changes in Foundry
 ## Requirements
 
 - Foundry VTT v14 only.
-- D&D 5e system version 4.0.0 or later; verified with 5.3.3.
-- A supported ApplicationV2 character sheet, including the current D&D 5e and Tidy 5e sheets. Legacy ApplicationV1 sheets and Foundry v13 are unsupported.
-- A D&D 5e character Actor for which you have at least Observer permission. NPCs and other Actor types are not exportable.
+- D&D system.
+- A supported ApplicationV2 character sheet, including the current D&D and Tidy 5e sheets. Legacy ApplicationV1 sheets and Foundry v13 are unsupported.
+- A D&D character Actor for which you have at least Observer permission. NPCs and other Actor types are not exportable.
 
 ## Install and enable
 
 1. In Foundry Setup, open **Add-on Modules**, then **Install Module**.
 2. Paste the manifest URL below and install the module.
-3. Open your D&D 5e world and enable **Morelord Character Export** under **Manage Modules**.
+3. Open your D&D world and enable **Morelord Character Export** under **Manage Modules**.
 
 ```text
 https://raw.githubusercontent.com/tmoreland72/morelord-character-export/main/module.json
@@ -55,7 +55,7 @@ Export a new file when you want a more recent snapshot. The website determines h
 ## What the file contains
 
 - Source Actor data, including embedded Items, item activities, and Active Effects.
-- Prepared character values and item-use values captured from the running D&D 5e system.
+- Prepared character values and item-use values captured from the running D&D system.
 - Available portrait, prototype-token image, and Item icons, stored once per image path and referenced from the character and Items.
 - Foundry, system, and exporter versions, the export timestamp, and the source world ID.
 
@@ -65,7 +65,7 @@ Images are resized and converted to WebP when possible. An image that cannot be 
 
 ### Morelord Export is missing
 
-Confirm the module is enabled, the world uses D&D 5e on Foundry v14, and you opened a character rather than an NPC or another Actor type. Confirm the sheet uses ApplicationV2 and you have Observer permission or higher. A GM can adjust the character's permissions.
+Confirm the module is enabled, the world uses D&D on Foundry v14, and you opened a character rather than an NPC or another Actor type. Confirm the sheet uses ApplicationV2 and you have Observer permission or higher. A GM can adjust the character's permissions.
 
 ### Artwork is missing after import
 
@@ -73,7 +73,7 @@ Check that the image loads in Foundry, then export again. Missing files, inacces
 
 ### Export fails or the website rejects the file
 
-Check Foundry's notification and browser console for the export error. Use the JSON downloaded by **Morelord Export**, rather than a standard Foundry Actor export, and keep the file intact. Confirm you are signed in to the website. When reporting an issue, include the module, Foundry, and D&D 5e versions and the error message.
+Check Foundry's notification and browser console for the export error. Use the JSON downloaded by **Morelord Export**, rather than a standard Foundry Actor export, and keep the file intact. Confirm you are signed in to the website. When reporting an issue, include the module, Foundry, and D&D versions and the error message.
 
 ## Macro and format reference
 

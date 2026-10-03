@@ -5,13 +5,28 @@
 	let filter = $state<'active' | 'all' | 'resolved'>('active');
 	let search = $state('');
 
-	const visible = $derived(data.requests.filter((request) => {
-		const stateMatch = filter === 'all' || (filter === 'active' && request.status !== 'resolved') || (filter === 'resolved' && request.status === 'resolved');
-		const needle = search.trim().toLowerCase();
-		const searchMatch = !needle || [request.name, request.email, request.category, request.product, request.subject, request.message]
-			.filter(Boolean).some((value) => String(value).toLowerCase().includes(needle));
-		return stateMatch && searchMatch;
-	}));
+	const visible = $derived(
+		data.requests.filter((request) => {
+			const stateMatch =
+				filter === 'all' ||
+				(filter === 'active' && request.status !== 'resolved') ||
+				(filter === 'resolved' && request.status === 'resolved');
+			const needle = search.trim().toLowerCase();
+			const searchMatch =
+				!needle ||
+				[
+					request.name,
+					request.email,
+					request.category,
+					request.product,
+					request.subject,
+					request.message
+				]
+					.filter(Boolean)
+					.some((value) => String(value).toLowerCase().includes(needle));
+			return stateMatch && searchMatch;
+		})
+	);
 
 	function label(status: string): string {
 		if (status === 'in_progress') return 'In progress';
@@ -20,14 +35,14 @@
 </script>
 
 <svelte:head>
-	<title>Contact Messages | Morelord Administration</title>
+	<title>Contact Requests | Morelord Administration</title>
 	<meta name="robots" content="noindex,nofollow" />
 </svelte:head>
 
 <section class="page-hero compact-hero">
 	<div class="shell">
 		<div class="eyebrow">Morelord administration</div>
-		<h1>Contact messages</h1>
+		<h1>Contact Requests</h1>
 		<p class="lead">Review and track messages submitted through the public contact form.</p>
 	</div>
 </section>
@@ -36,16 +51,30 @@
 	<div class="shell support-admin">
 		<div class="metric-grid support-metrics">
 			<div class="metric-card"><strong>{data.counts.open}</strong><span>Open</span></div>
-			<div class="metric-card"><strong>{data.counts.inProgress}</strong><span>In progress</span></div>
+			<div class="metric-card">
+				<strong>{data.counts.inProgress}</strong><span>In progress</span>
+			</div>
 			<div class="metric-card"><strong>{data.counts.resolved}</strong><span>Resolved</span></div>
 		</div>
 
 		<div class="card support-toolbar">
-			<input aria-label="Search contact messages" placeholder="Search requests…" bind:value={search} />
+			<input
+				aria-label="Search contact messages"
+				placeholder="Search requests…"
+				bind:value={search}
+			/>
 			<div class="support-filter" role="group" aria-label="Contact message status filter">
-				<button class:active={filter === 'active'} type="button" onclick={() => filter = 'active'}>Active</button>
-				<button class:active={filter === 'all'} type="button" onclick={() => filter = 'all'}>All</button>
-				<button class:active={filter === 'resolved'} type="button" onclick={() => filter = 'resolved'}>Resolved</button>
+				<button class:active={filter === 'active'} type="button" onclick={() => (filter = 'active')}
+					>Active</button
+				>
+				<button class:active={filter === 'all'} type="button" onclick={() => (filter = 'all')}
+					>All</button
+				>
+				<button
+					class:active={filter === 'resolved'}
+					type="button"
+					onclick={() => (filter = 'resolved')}>Resolved</button
+				>
 			</div>
 		</div>
 
@@ -62,14 +91,17 @@
 								<time>{new Date(request.createdAt).toLocaleString()}</time>
 							</div>
 							<h2>{request.subject}</h2>
-							<p class="support-from">{request.name} · <a href={`mailto:${request.email}`}>{request.email}</a></p>
+							<p class="support-from">
+								{request.name} · <a href={`mailto:${request.email}`}>{request.email}</a>
+							</p>
 						</div>
 						<span class={`support-status ${request.status}`}>{label(request.status)}</span>
 					</div>
 					<p class="support-message">{request.message}</p>
 					<form method="POST" action="?/status" class="support-status-form">
 						<input type="hidden" name="id" value={request.id} />
-						<label><span>Status</span>
+						<label
+							><span>Status</span>
 							<select name="status" value={request.status}>
 								<option value="open">Open</option>
 								<option value="in_progress">In progress</option>
@@ -80,7 +112,10 @@
 					</form>
 				</article>
 			{:else}
-				<div class="card empty-state"><h2>No matching requests</h2><p>Try another filter or search term.</p></div>
+				<div class="card empty-state">
+					<h2>No matching requests</h2>
+					<p>Try another filter or search term.</p>
+				</div>
 			{/each}
 		</div>
 	</div>

@@ -1,6 +1,6 @@
 ---
 title: Morelord Journeys Documentation
-description: Plan and run structured D&D 5e travel days with supplies, player checks, encounters, foraging, and camp.
+description: Plan and run structured D&D travel days with supplies, player checks, encounters, foraging, and camp.
 slug: morelord-journeys
 product: morelord-journeys
 version: 0.3.6
@@ -20,4 +20,4 @@ Journey distance uses exact thirds of a normal travel day. Routes can begin with
 - [Game Master Travel Rules Reference](/docs/morelord-journeys/gm-travel-rules) — draft granular rules for the planned travel-mechanics update.
 - [Player Guide](/docs/morelord-journeys/player-guide) — responding to roll requests, managing supplies, keeping watch, and understanding expedition results.
 
-These guides describe Morelord Journeys 0.3.4 for Foundry Virtual Tabletop v14 and D&D 5e 5.3 or later.
+These guides describe Morelord Journeys 0.3.4 for Foundry Virtual Tabletop v14 and D&D.

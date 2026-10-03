@@ -68,6 +68,59 @@ test('internal documentation is not public', async ({ page }) => {
 	await expect(page).toHaveURL(/\/login/);
 });
 
+test('Docs opens the module wiki and keeps navigation available in guides', async ({ page }) => {
+	await page.goto('/');
+	await page
+		.getByRole('navigation', { name: 'Primary navigation' })
+		.getByRole('link', { name: 'Docs', exact: true })
+		.click();
+	await expect(page).toHaveURL(/\/docs$/);
+	const navigation = page.getByRole('navigation', { name: 'Module documentation' });
+	await expect(navigation.locator('summary')).toHaveCount(7);
+	await navigation.getByRole('link', { name: 'Morelord Marketplace', exact: true }).click();
+	await expect(
+		navigation.getByRole('link', { name: 'Morelord Marketplace', exact: true })
+	).toHaveAttribute('aria-current', 'page');
+	await expect(navigation.locator('.wiki-pages > a').filter({ hasText: /^Overview$/ })).toHaveCount(
+		0
+	);
+	await navigation.getByRole('link', { name: 'Game Master Manual', exact: true }).click();
+	await expect(page).toHaveURL(/\/docs\/morelord-marketplace#morelord-marketplace--gm--/);
+	await expect(page.locator('[data-doc-part]')).toHaveCount(3);
+	const section = navigation.locator('.wiki-sections a').first();
+	await expect(section).toBeVisible();
+	const href = await section.getAttribute('href');
+	await section.click();
+	await expect(page).toHaveURL(new RegExp(`${href?.split('#')[1]}$`));
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(navigation).toBeVisible();
+	expect(
+		await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)
+	).toBeTruthy();
+});
+
+test('Craftworks is consolidated and the Downtime disclosure opens its documentation', async ({
+	page
+}) => {
+	await page.goto('/docs/morelord-craftworks');
+	await expect(page.locator('[data-doc-part]')).toHaveCount(3);
+	const navigation = page.getByRole('navigation', { name: 'Module documentation' });
+	await navigation.getByRole('link', { name: 'Game Master Manual', exact: true }).click();
+	await expect(page).toHaveURL(/\/docs\/morelord-craftworks#/);
+	await expect(
+		page.locator('.docs-prose').getByRole('heading', { name: 'Player Manual', exact: true })
+	).toBeVisible();
+	await navigation
+		.locator('summary')
+		.filter({ hasText: 'Morelord Downtime' })
+		.click({ position: { x: 7, y: 15 } });
+	await expect(page).toHaveURL(/\/docs\/morelord-downtime$/);
+	await expect(navigation.getByRole('link', { name: 'GM workflow', exact: true })).toBeVisible();
+	await expect(
+		page.locator('.docs-prose').getByRole('heading', { name: 'Setup', exact: true })
+	).toBeVisible();
+});
+
 test('authentication status is not public', async ({ request }) => {
 	const response = await request.get('/api/system/auth-status');
 	expect(response.status()).toBe(404);

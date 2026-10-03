@@ -160,7 +160,11 @@ for (const product of registry.products) {
 		const targetFile = join(contentTarget, relative(docsSource, sourceFile));
 		mkdirSync(dirname(targetFile), { recursive: true });
 		const markdown = markdownBySource.get(resolve(sourceFile));
-		writeFileSync(targetFile, rewriteLinks(markdown, product.slug, documentRoutes, sourceFile));
+		const websiteCopy = markdown.replace(
+			/\b(?:D&D\s*5e|dnd5e)(\s+system)?(?:\s+(?:version\s+)?v?\d+(?:\.\d+){0,2}(?:\s+or\s+(?:later|newer))?(?:; verified with \d+(?:\.\d+){0,2})?)?/gi,
+			'D&D$1'
+		);
+		writeFileSync(targetFile, rewriteLinks(websiteCopy, product.slug, documentRoutes, sourceFile));
 	}
 
 	const sourceAssets =

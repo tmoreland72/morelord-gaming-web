@@ -1,6 +1,6 @@
 ---
 title: Game Master Manual
-description: Install, configure, and use Morelord Encounters in a D&D 5e world.
+description: Install, configure, and use Morelord Encounters in a D&D world.
 slug: morelord-encounters/gm-manual
 product: morelord-encounters
 audience: game-master
@@ -14,11 +14,11 @@ order: 10
 ## Requirements
 
 - Foundry Virtual Tabletop v14
-- D&D 5e system 5.3 or later
+- D&D system
 - Morelord Core 0.3.7 or later
 - GM permission in the world
 
-Morelord Encounters uses monster Actor compendiums supplied by D&D 5e and installed content modules. It does not download or duplicate monsters from books the world does not have installed.
+Morelord Encounters uses monster Actor compendiums supplied by D&D and installed content modules. It does not download or duplicate monsters from books the world does not have installed.
 
 ## Installation
 
@@ -72,7 +72,7 @@ Select every monster source allowed for the encounter. Each selector shows:
 - The Actor compendium name
 - A button that opens the underlying compendium for verification
 
-Source discovery checks enabled Actor compendiums for eligible monsters. Character-only packs such as Starter Heroes, vehicle-only packs, empty packs, and unreadable packs are omitted. Non-hostile humanoid NPCs are excluded by the same rule used during generation. D&D 5e's **Monsters (SRD)** pack is labeled **System Reference Document 5.1**; its **Actors** pack is labeled **System Reference Document 5.2**. Actor-level legacy book names do not override these editions.
+Source discovery checks enabled Actor compendiums for eligible monsters. Character-only packs such as Starter Heroes, vehicle-only packs, empty packs, and unreadable packs are omitted. Non-hostile humanoid NPCs are excluded by the same rule used during generation. D&D's **Monsters (SRD)** pack is labeled **System Reference Document 5.1**; its **Actors** pack is labeled **System Reference Document 5.2**. Actor-level legacy book names do not override these editions.
 
 Only selected, entitled sources contribute to the encounter catalog. Premium access allows installed monster sources beyond the SRD, but the GM controls which participate. Use **Select All** or **Unselect All** to update the source checkboxes without changing the party. These controls appear for Random and Custom Encounters; Drakkenheim locations and Saved Encounters use single selection.
 
@@ -180,7 +180,7 @@ The final footer is ordered **Start Over**, **Save**, **Close**. Start Over retu
 ### A source book is missing
 
 1. Confirm its module is installed and active.
-2. Confirm the Actor compendium is enabled in D&D 5e's source configuration.
+2. Confirm the Actor compendium is enabled in D&D's source configuration.
 3. Open Encounters Settings and select **Refresh**.
 4. Confirm the Morelord Gaming account has Encounters Premium when using non-SRD sources.
 5. Confirm the compendium contains eligible NPC monsters. A compendium containing only characters, vehicles, or non-hostile humanoids is intentionally omitted.

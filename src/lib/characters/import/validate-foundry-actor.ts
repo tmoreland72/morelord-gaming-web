@@ -43,7 +43,7 @@ export function validateFoundryActor(data: unknown): FoundryActor {
 	if (actor._stats?.systemId && actor._stats.systemId !== 'dnd5e') {
 		throw new Error(
 			`This Actor belongs to the "${actor._stats.systemId}" system. ` +
-				`Only dnd5e Actors are supported.`
+				`Only D&D Actors are supported.`
 		);
 	}
 

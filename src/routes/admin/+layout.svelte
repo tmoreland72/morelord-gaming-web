@@ -1,36 +1,105 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import type { Snippet } from 'svelte';
-
 	let { children }: { children: Snippet } = $props();
-
-	const tabs = [
-		{ href: '/admin', label: 'Overview', exact: true },
-		{ href: '/admin/products', label: 'Products' },
-		{ href: '/admin/billing', label: 'Billing' },
-		{ href: '/admin/subscription-audit', label: 'Subscription audit' },
-		{ href: '/admin/discount-codes', label: 'Friends & Family' },
-		{ href: '/admin/discord', label: 'Discord' },
-		{ href: '/admin/installations', label: 'Installations' },
-		{ href: '/admin/telemetry', label: 'Usage and errors' },
-		{ href: '/admin/support', label: 'Contact' },
-		{ href: '/admin/test-account', label: 'Test account' },
-		{ href: '/admin/docs', label: 'Admin docs' }
-	];
-
-	function active(href: string, exact = false): boolean {
-		return exact ? page.url.pathname === href : page.url.pathname === href || page.url.pathname.startsWith(`${href}/`);
+	const menu = [
+		{ label: 'Overview', links: [{ href: '/admin', label: 'Overview' }] },
+		{ label: 'Products', links: [{ href: '/admin/products', label: 'Products' }] },
+		{
+			label: 'Finance',
+			links: [
+				{ href: '/admin/billing', label: 'Billing' },
+				{ href: '/admin/subscription-audit', label: 'Subscriptions' },
+				{ href: '/admin/discount-codes', label: 'Promotions' }
+			]
+		},
+		{
+			label: 'Statistics',
+			links: [
+				{ href: '/admin/installations', label: 'Installations' },
+				{ href: '/admin/telemetry', label: 'Usage & Errors' }
+			]
+		},
+		{ label: 'Contact Requests', links: [{ href: '/admin/support', label: 'Contact Requests' }] },
+		{
+			label: 'Setup',
+			links: [
+				{ href: '/admin/discord', label: 'Discord' },
+				{ href: '/admin/test-account', label: 'Test Accounts' }
+			]
+		},
+		{ label: 'Docs', links: [{ href: '/admin/docs', label: 'Docs' }] }
+	] as const;
+	function active(href: string) {
+		return (
+			page.url.pathname === href || (href !== '/admin' && page.url.pathname.startsWith(`${href}/`))
+		);
 	}
 </script>
 
 <nav class="admin-tabs-wrap" aria-label="Administration sections">
 	<div class="shell admin-tabs">
-		{#each tabs as tab}
-			<a href={tab.href} class:active={active(tab.href, tab.exact)} aria-current={active(tab.href, tab.exact) ? 'page' : undefined}>
-				{tab.label}
-			</a>
+		{#each menu as group (group.label)}
+			{#if group.links.length === 1}
+				<a
+					href={resolve(group.links[0].href)}
+					class:active={active(group.links[0].href)}
+					aria-current={active(group.links[0].href) ? 'page' : undefined}>{group.label}</a
+				>
+			{:else}
+				<details>
+					<summary class:active={group.links.some((link) => active(link.href))}
+						>{group.label}</summary
+					>
+					<div class="admin-submenu">
+						{#each group.links as link (link.href)}
+							<a
+								href={resolve(link.href)}
+								class:active={active(link.href)}
+								aria-current={active(link.href) ? 'page' : undefined}
+								onclick={(event) => {
+									event.currentTarget.closest('details')?.removeAttribute('open');
+								}}>{link.label}</a
+							>
+						{/each}
+					</div>
+				</details>
+			{/if}
 		{/each}
 	</div>
 </nav>
-
 {@render children()}
+
+<style>
+	.admin-tabs {
+		overflow: visible;
+		flex-wrap: wrap;
+	}
+	details {
+		position: relative;
+	}
+	summary {
+		padding: 0.9rem 1rem 0.82rem;
+		cursor: pointer;
+		font-size: 0.82rem;
+		font-weight: 800;
+		color: #aa9d89;
+	}
+	summary.active {
+		color: var(--gold-light);
+	}
+	.admin-submenu {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		z-index: 40;
+		display: grid;
+		min-width: 190px;
+		padding: 0.35rem;
+		background: var(--charcoal);
+		border: 1px solid #d49b2c40;
+		border-radius: 6px;
+		box-shadow: 0 8px 24px #0008;
+	}
+</style>

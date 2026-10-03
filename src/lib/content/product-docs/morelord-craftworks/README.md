@@ -11,7 +11,7 @@ version: 0.4.13
 
 Morelord Craftworks brings harvesting, gathering, encounter loot, treasure hoards, materials, recipes, and crafting workflows into Foundry Virtual Tabletop. Players can browse a campaign's material and recipe catalogs, plan projects, and take part in GM-started acquisition sessions. Game Masters can configure content packs, tune acquisition rules, generate treasure, and create potions, spell scrolls, and spellbooks.
 
-Craftworks keeps materials as normal dnd5e Items. They can live in a character's inventory or in a shared Group actor, allowing a party to gather resources together while a specific character supplies the tools, proficiency, and checks for a crafting project.
+Craftworks keeps materials as normal D&D Items. They can live in a character's inventory or in a shared Group actor, allowing a party to gather resources together while a specific character supplies the tools, proficiency, and checks for a crafting project.
 
 Standard material and SRD 5.2 content works without a Morelord Gaming account. Other content packs and completed crafting workflows may require the corresponding Morelord Gaming entitlement and installed source content.
 
@@ -40,6 +40,6 @@ Craftworks can also support exceptional add-on content packs that go beyond the 
 - [Game Master Manual](/docs/morelord-craftworks/gm) — installation, world configuration, content synchronization, Harvest, Gather, Loot, Hoard, generators, exceptional content packs, and troubleshooting.
 - [Player Manual](/docs/morelord-craftworks/player) — browsing materials and recipes, planning and completing crafting projects, Harvest, Gather, shared party storage, and optional Drakkenheim content.
 
-These manuals describe Morelord Craftworks 0.4.9 for Foundry Virtual Tabletop v14 and dnd5e 5.3 or later. The in-Foundry **Documentation** button on the Craftworks dashboard opens the current product guide through Morelord Core.
+These manuals describe Morelord Craftworks 0.4.9 for Foundry Virtual Tabletop v14 and D&D. The in-Foundry **Documentation** button on the Craftworks dashboard opens the current product guide through Morelord Core.
 
 Page sections use Morelord Core bordered, shaded surfaces with shared padding, section headings, and spacing, matching Downtime. Older screenshots illustrate the workflows but may show the previous panel styling or omit the new add/remove controls. Refer to the manual text for current controls.

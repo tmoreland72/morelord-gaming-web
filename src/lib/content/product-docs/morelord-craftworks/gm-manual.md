@@ -10,9 +10,9 @@ foundry: 14
 
 # Morelord Craftworks Game Master Manual
 
-Morelord Craftworks gives a dnd5e world a connected system for harvesting creatures, gathering by terrain, generating encounter loot and hoards, managing materials and recipes, and running long-term crafting projects.
+Morelord Craftworks gives a D&D world a connected system for harvesting creatures, gathering by terrain, generating encounter loot and hoards, managing materials and recipes, and running long-term crafting projects.
 
-This manual applies to Morelord Craftworks 0.4.9, Foundry VTT v14, and dnd5e 5.3 or later.
+This manual applies to Morelord Craftworks 0.4.9, Foundry VTT v14, and D&D.
 
 ## Contents
 
@@ -49,7 +49,7 @@ Premium access is managed by Morelord Core. A content pack may also depend on of
 ### Requirements
 
 - Foundry Virtual Tabletop v14
-- dnd5e 5.3 or later
+- D&D
 - Morelord Core 0.3.7 or later
 - SocketLib 1.1.3 or later
 - Morelord Craftworks 0.4.9 or later
@@ -113,18 +113,18 @@ An active pack can contribute materials, recipes, Harvest and Gather profiles, e
 
 ### Synchronize compendiums
 
-Craftworks automatically synchronizes when the first active GM enters the world and a relevant content signature has changed. The signature includes Craftworks and dnd5e versions, enabled content packs, available Item compendiums, and versions of active modules that supply Item compendiums.
+Craftworks automatically synchronizes when the first active GM enters the world and a relevant content signature has changed. The signature includes Craftworks and D&D versions, enabled content packs, available Item compendiums, and versions of active modules that supply Item compendiums.
 
-Select **Sync with Compendiums** after installing or updating source content, changing dnd5e's configured sources, or troubleshooting a missing material or recipe. Synchronization updates Craftworks material compendiums, refreshes external Item discovery, and rebuilds the recipe index.
+Select **Sync with Compendiums** after installing or updating source content, changing D&D's configured sources, or troubleshooting a missing material or recipe. Synchronization updates Craftworks material compendiums, refreshes external Item discovery, and rebuilds the recipe index.
 
-Generated compendium-backed rewards respect the dnd5e **Configure Sources** selection. A disabled source is excluded when results are generated and checked again before an award is committed.
+Generated compendium-backed rewards respect the D&D **Configure Sources** selection. A disabled source is excluded when results are generated and checked again before an award is committed.
 
 ### Choose the acquisition recipient
 
 By default, Harvest and Gather materials go to the participating character. To centralize resources:
 
 1. Enable **Use Party Actor for Acquired Materials**.
-2. Choose a dnd5e Group actor under **Party Recipient Actor**.
+2. Choose a D&D Group actor under **Party Recipient Actor**.
 3. Save the configuration.
 
 The selected Group actor becomes the default recipient for supported acquisition awards. Loot and Hoard also let the GM choose from player characters and Group actors before awarding a result.
@@ -156,7 +156,7 @@ The final Gather DC is the terrain value plus the global modifier.
 
 The Loot settings independently enable materials, coin, and special treasure. Chance modifiers tune the frequency of each category, while material-quantity and coin multipliers adjust result sizes.
 
-Potion and spell-scroll rewards use enabled dnd5e Item sources. Material components remain the most common results and potions are more common than spell scrolls.
+Potion and spell-scroll rewards use enabled D&D Item sources. Material components remain the most common results and potions are more common than spell scrolls.
 
 ## Manage materials and recipes
 
@@ -222,7 +222,7 @@ Harvest is a synchronized session in which players test their characters against
 
 1. Keep defeated creature tokens on the active scene.
 2. Open **Craftworks → Harvest**.
-3. Review the detected defeated dnd5e NPC tokens.
+3. Review the detected defeated D&D NPC tokens.
 4. Include actual harvestable creatures and exclude shopkeepers, traps, or other defeated NPC-based tokens.
 5. Use **Select All** or **Clear All** when useful.
 6. Review creature type, CR, Harvest DC, rarity, components, and special instructions.
@@ -263,7 +263,7 @@ Gather is a GM-started, scene-based opportunity for individual characters.
 3. Review the displayed DC and active participants.
 4. Select participants using the same party-priority character picker as Harvest. The previous successful selection is remembered.
 5. Start the session. Connected players receive independent character windows. Offline characters open on the GM’s client; **Roll as GM** reopens their Gathering window. The character’s skills and inventory recipient are used in either case.
-6. Players choose an allowed skill and make the configured dnd5e roll, or decline.
+6. Players choose an allowed skill and make the configured D&D roll, or decline.
 7. Successful results award a material appropriate to the terrain.
 
 Gather attempts are tracked per character and scene. Reopening the tool does not grant unlimited repeat attempts. Use the GM reset control only when the scene should offer a new opportunity.
@@ -331,7 +331,7 @@ Each potion or scroll result defaults to **Quantity 1**. Change the result’s Q
 
 Category changes immediately update the available counts for every rarity, including zero when all categories are disabled.
 
-Open **Potion Generator**, choose quantities with the numeric fields or visible up/down controls, and generate a result from enabled dnd5e sources. Use **Display Results in Chat** to share a draft—such as a shop's current stock—without creating or awarding Items. To award it, choose a recipient and create the award. The source is validated again before delivery.
+Open **Potion Generator**, choose quantities with the numeric fields or visible up/down controls, and generate a result from enabled D&D sources. Use **Display Results in Chat** to share a draft—such as a shop's current stock—without creating or awarding Items. To award it, choose a recipient and create the award. The source is validated again before delivery.
 
 ![Potion Generator setup controls the number of random potions to draw.](/docs-assets/morelord-craftworks/assets/potion-generator-setup.png)
 
@@ -351,7 +351,7 @@ School selections immediately update the available counts at every level. No sch
 6. Choose the recipient.
 7. Select **Award Generated Spell Scrolls**.
 
-Generated scrolls use dnd5e's native scroll conversion, preserve the selected spell's usable mechanics, support levels above 1, and keep a link to the source spell.
+Generated scrolls use D&D's native scroll conversion, preserve the selected spell's usable mechanics, support levels above 1, and keep a link to the source spell.
 
 ![Spell Scroll Generator accepts independent quantities for cantrips and spell levels 1 through 9.](/docs-assets/morelord-craftworks/assets/spell-scroll-generator-setup.png)
 
@@ -439,7 +439,7 @@ When harvesting gives unexpected materials, use Core's **Download Troubleshootin
 
 - Confirm the corresponding Content Pack is enabled and available.
 - Confirm required official content is installed.
-- Check dnd5e **Configure Sources** for the expected Item compendium.
+- Check D&D **Configure Sources** for the expected Item compendium.
 - Select **Sync with Compendiums** in Craftworks Settings.
 - Reopen the browser after synchronization finishes.
 
@@ -463,7 +463,7 @@ Claims are reservations. Select **Finalize Harvest** to commit them to the resol
 
 ### A generated reward is missing or cannot be awarded
 
-Confirm its compendium remains enabled in dnd5e **Configure Sources**. Craftworks validates source availability when generating and again when awarding.
+Confirm its compendium remains enabled in D&D **Configure Sources**. Craftworks validates source availability when generating and again when awarding.
 
 ### Drakkenheim components are not appearing
 
@@ -479,9 +479,9 @@ Check the selected **Ingredient Inventory**. A requirement can depend on canonic
 
 ## Support
 
-Report reproducible problems at [Morelord Craftworks Issues](https://github.com/tmoreland72/morelord-craftworks/issues). Include Craftworks, Foundry, and dnd5e versions; the active content packs; relevant console errors; and steps to reproduce the problem.
+Report reproducible problems at [Morelord Craftworks Issues](https://github.com/tmoreland72/morelord-craftworks/issues). Include Craftworks, Foundry, and D&D versions; the active content packs; relevant console errors; and steps to reproduce the problem.
 
-## D&D 5e rarity compatibility
+## D&D rarity compatibility
 
 Potion, treasure, recipe, and material workflows accept legacy rarity fields and v6 rarity collections. Where one rarity is needed, the lowest listed rarity is used, matching the system Item getter. Existing items and recipe identifiers do not need a migration.
 

@@ -44,7 +44,7 @@ You need a character actor that you own. The Marketplace chooses your actor in t
 
 Select your character token before opening the global Marketplace when you want to be certain which character is used.
 
-Your character needs enough dnd5e currency to purchase an item. The Marketplace automatically converts denominations when checking funds and applying a transaction.
+Your character needs enough D&D currency to purchase an item. The Marketplace automatically converts denominations when checking funds and applying a transaction.
 
 ## Open the global Marketplace
 
@@ -229,7 +229,7 @@ Completed transaction cards may also be posted to chat when the GM enables that 
 
 ### No funding actor is available
 
-- Confirm your character has a dnd5e currency section.
+- Confirm your character has a D&D currency section.
 - Ask the GM to grant you Owner permission for the intended character or party Group actor.
 - Reopen the shop after permissions change.
 

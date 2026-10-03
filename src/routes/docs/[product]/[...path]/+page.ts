@@ -6,5 +6,9 @@ export const load: PageLoad = ({ params }) => {
 	const document = getProductDoc(params.product, params.path);
 	if (!document) error(404, 'Documentation not found');
 
-	return document;
+	return {
+		...getProductDoc(params.product)!,
+		requestedDocument: document.documents.find((item) => item.sourcePath === document.sourcePath)!
+			.id
+	};
 };

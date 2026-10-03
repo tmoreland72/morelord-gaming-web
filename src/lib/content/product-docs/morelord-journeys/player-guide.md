@@ -28,7 +28,7 @@ You may place `Water (Pint)` inside a waterskin. Journeys counts the contained w
 
 Keep the Foundry world open during the expedition. A request dialog identifies the character, skill, purpose, and DC when applicable.
 
-Select the roll button and complete the normal D&D 5e configuration dialog. The result is posted through D&D 5e and returned to the GM's Journeys interface automatically.
+Select the roll button and complete the normal D&D configuration dialog. The result is posted through D&D and returned to the GM's Journeys interface automatically.
 
 ## Discovery checks
 
@@ -60,7 +60,7 @@ Your selected camp action may affect how alert the character is:
 
 Craft, Cook, and Prepare require a campfire. A character who is not assigned to Take a Watch receives the same rest treatment as Slumber.
 
-Follow the GM's instruction about advantage or disadvantage in the D&D 5e roll configuration dialog.
+Follow the GM's instruction about advantage or disadvantage in the D&D roll configuration dialog.
 
 ## Crafting during camp
 

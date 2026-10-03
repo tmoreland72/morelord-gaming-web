@@ -1,60 +1,41 @@
-<svelte:head>
-	<title>Administrator Documentation | Morelord Gaming</title>
-	<meta name="robots" content="noindex,nofollow" />
-</svelte:head>
+<script lang="ts">
+	import { resolve } from '$app/paths';
+	import { adminDocGuides } from '$lib/admin-docs';
+</script>
 
-<section class="page-hero compact-hero">
-	<div class="shell">
-		<div class="eyebrow">Morelord administration</div>
-		<h1>Operations documentation</h1>
-		<p class="lead">
-			Private reference material for maintaining the website, integrations, billing and releases.
-		</p>
-	</div>
-</section>
+<svelte:head
+	><title>Administrator Documentation | Morelord Gaming</title><meta
+		name="robots"
+		content="noindex,nofollow"
+	/></svelte:head
+>
+<div class="eyebrow">Morelord administration wiki</div>
+<h1>Operations documentation</h1>
+<p class="lead">
+	Private reference material for maintaining the website, integrations, billing and releases. Choose
+	a guide from the sidebar.
+</p>
+{#each adminDocGuides as guide (guide.slug)}
+	<article>
+		<h2><a href={resolve(`/admin/docs/${guide.slug}`)}>{guide.title}</a></h2>
+		<p>{guide.description}</p>
+	</article>
+{/each}
 
-<section class="section brand-panel-section">
-	<div class="shell docs-layout">
-		<article class="card docs-card">
-			<div class="eyebrow">Identity</div>
-			<h2>Authentication</h2>
-			<p>Configure Better Auth, Google Cloud OAuth, optional Discord OAuth and administrator access.</p>
-			<a class="text-link" href="/admin/docs/authentication">Open guide <span>→</span></a>
-		</article>
-
-		<article class="card docs-card">
-			<div class="eyebrow">Hosting</div>
-			<h2>Cloudflare deployment</h2>
-			<p>Maintain Worker deployment, D1 migrations, GitHub Actions, secrets and custom domains.</p>
-			<a class="text-link" href="/admin/docs/deployment">Open guide <span>→</span></a>
-		</article>
-
-		<article class="card docs-card">
-			<div class="eyebrow">Billing</div>
-			<h2>Stripe subscriptions</h2>
-			<p>Manage products, prices, features, webhooks, the customer portal and test-to-live migration.</p>
-			<a class="text-link" href="/admin/docs/stripe">Open guide <span>→</span></a>
-		</article>
-
-		<article class="card docs-card">
-			<div class="eyebrow">Community</div>
-			<h2>Discord integration</h2>
-			<p>Maintain OAuth account linking, the Morelord bot, role hierarchy and membership synchronization.</p>
-			<a class="text-link" href="/admin/docs/discord">Open guide <span>→</span></a>
-		</article>
-
-		<article class="card docs-card">
-			<div class="eyebrow">Analytics</div>
-			<h2>Foundry installations</h2>
-			<p>Understand active worlds, unique accounts, membership conversion, product adoption and version statistics.</p>
-			<a class="text-link" href="/admin/docs/installations">Open guide <span>→</span></a>
-		</article>
-
-		<article class="card docs-card">
-			<div class="eyebrow">Publishing</div>
-			<h2>Release automation</h2>
-			<p>Publish module releases and synchronize the public Morelord release feed.</p>
-			<a class="text-link" href="/admin/docs/release-automation">Open guide <span>→</span></a>
-		</article>
-	</div>
-</section>
+<style>
+	h1 {
+		font-size: clamp(2.3rem, 5vw, 3.5rem);
+	}
+	article {
+		padding-block: 1.3rem;
+		border-top: 1px solid #d49b2c33;
+	}
+	h2 {
+		font-size: 1.6rem;
+		margin-bottom: 0.6rem;
+	}
+	p {
+		color: var(--muted);
+		line-height: 1.7;
+	}
+</style>

@@ -12,9 +12,9 @@
 		<div class="eyebrow">Operations guide</div>
 		<h1>Production deployment</h1>
 		<p class="lead">
-			The website is deployed from GitHub Actions to Cloudflare Workers. Every production
-			deployment validates the application, applies D1 migrations, publishes the Worker and
-			checks the public health endpoints.
+			The website is deployed from GitHub Actions to Cloudflare Workers. Every production deployment
+			validates the application, applies D1 migrations, publishes the Worker and checks the public
+			health endpoints.
 		</p>
 	</div>
 </section>
@@ -25,22 +25,23 @@
 			<h2>1. Create the GitHub production environment</h2>
 			<p>
 				In the GitHub repository, open <strong>Settings → Environments</strong> and create an
-				environment named <code>production</code>. The deployment workflow uses that environment
-				so approval rules can be added later without changing the workflow.
+				environment named <code>production</code>. The deployment workflow uses that environment so
+				approval rules can be added later without changing the workflow.
 			</p>
 
 			<h2>2. Add required repository environment secrets</h2>
 			<p>Add these secrets to the <code>production</code> environment:</p>
-			<pre><code>CLOUDFLARE_API_TOKEN
+			<pre><code
+					>CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 BETTER_AUTH_SECRET
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
-RELEASE_PUBLISH_TOKEN</code></pre>
+RELEASE_PUBLISH_TOKEN</code
+				></pre>
 			<p>
-				Stripe values and Discord values may be added when those integrations
-				are enabled. Never commit production secrets to <code>wrangler.jsonc</code> or an environment
-				file.
+				Stripe values and Discord values may be added when those integrations are enabled. Never
+				commit production secrets to <code>wrangler.jsonc</code> or an environment file.
 			</p>
 
 			<h2>3. Add non-secret production variables</h2>
@@ -48,14 +49,16 @@ RELEASE_PUBLISH_TOKEN</code></pre>
 				Cloudflare Worker variables are configured separately from encrypted secrets. Add these
 				through the Cloudflare dashboard or with Wrangler after the first deployment:
 			</p>
-			<pre><code>ORIGIN=https://your-domain.example
+			<pre><code
+					>ORIGIN=https://your-domain.example
 ADMIN_EMAILS=your-google-email@example.com
 DISCORD_REDIRECT_URI=https://your-domain.example/api/discord/callback
 DISCORD_GUILD_ID=
 DISCORD_ROLE_COMMUNITY=
 DISCORD_ROLE_PREMIUM=
 DISCORD_ROLE_CHAMPION=
-DISCORD_INVITE_URL=</code></pre>
+DISCORD_INVITE_URL=</code
+				></pre>
 
 			<h2>4. Add the production URL to GitHub</h2>
 			<p>
@@ -74,8 +77,26 @@ DISCORD_INVITE_URL=</code></pre>
 			<h2>6. Deploy</h2>
 			<p>
 				Push to <code>main</code>, or open the repository's <strong>Actions</strong> tab and run
-				<strong>Deploy Morelord Gaming Website</strong> manually. The workflow will stop before
-				deployment when validation or a database migration fails.
+				<strong>Deploy Morelord Gaming Website</strong> manually. The workflow will stop before deployment
+				when validation or a database migration fails.
+			</p>
+			<h2>7. Synchronize the product catalog</h2>
+			<p>
+				<code>npm run products:pull</code> copies the live products, features, feature assignments, releases,
+				and release changes into the local database. Rows and IDs match exactly; existing references are
+				updated when IDs differ.
+			</p>
+			<p>
+				After editing locally, run <code>npm run products:push</code> to preview the upload. Run
+				<code>npm run products:push -- --apply</code> only when ready to update live records. Take a fresh
+				pull before editing to avoid overwriting newer live changes.
+			</p>
+			<p>
+				Each sync saves source and target snapshots and its SQL under <code
+					>.local/product-sync</code
+				>, then verifies every catalog row and database references. Deletions stop if the removed
+				records are still used outside the catalog. User accounts, imported characters, and billing
+				records are not copied.
 			</p>
 		</article>
 	</div>

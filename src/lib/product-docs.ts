@@ -1,4 +1,8 @@
 import type { Component } from 'svelte';
+// Website short copy from Core's MORELORD-BRAND-GUIDE.md.
+import productDescriptions from '$lib/content/product-descriptions.json';
+
+const descriptions: Record<string, string> = productDescriptions;
 
 export type ProductDocMetadata = {
 	title: string;
@@ -52,7 +56,34 @@ export function getProductDoc(product: string, path = '') {
 		}))
 		.sort((left, right) => left.order - right.order || left.title.localeCompare(right.title));
 
-	return { sourcePath, metadata: module.metadata, navigation };
+	const documents = Object.entries(modules)
+		.filter(([, candidate]) => candidate.metadata.product === product)
+		.sort(
+			([, left], [, right]) =>
+				routeOrder(left) - routeOrder(right) ||
+				left.metadata.title.localeCompare(right.metadata.title)
+		)
+		.map(([sourcePath, candidate]) => ({
+			sourcePath,
+			metadata: candidate.metadata,
+			id: candidate.metadata.slug.replaceAll('/', '--')
+		}));
+	return { sourcePath, metadata: module.metadata, navigation, documents };
+}
+
+export function getProductDocGroups() {
+	return Object.values(modules)
+		.filter((module) => module.metadata.slug === module.metadata.product)
+		.map((module) => ({
+			product: module.metadata.product,
+			title: module.metadata.product
+				.split('-')
+				.map((word) => word[0].toUpperCase() + word.slice(1))
+				.join(' '),
+			description: descriptions[module.metadata.product] ?? module.metadata.description,
+			href: routeFromSlug(module.metadata.slug)
+		}))
+		.sort((left, right) => left.title.localeCompare(right.title));
 }
 
 export function getProductDocComponent(sourcePath: string): Component | null {

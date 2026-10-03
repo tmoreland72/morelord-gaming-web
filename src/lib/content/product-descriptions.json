@@ -1,0 +1,9 @@
+{
+	"morelord-marketplace": "Morelord Marketplace turns your enabled item compendiums into a searchable, player-ready catalog. Characters can buy and sell from their inventories, use personal or shared party funds, and interact with scene vendors built by the GM.",
+	"morelord-journeys": "Morelord Journeys turns overland travel into a persistent part of the campaign. Plan the route, manage expedition roles and supplies, resolve each travel day, and preserve the story of the journey from departure to camp.",
+	"morelord-encounters": "Morelord Encounters helps GMs turn a difficulty target and available monster sources into a game-ready roster. Choose from six encounter styles, review the results, and drag linked monster Actors directly into the scene.",
+	"morelord-craftworks": "Morelord Craftworks connects what characters find to what they can make. Run gathering, harvesting, encounter loot, and hoards; browse materials and recipes; and manage inventory-backed crafting projects inside Foundry VTT.",
+	"morelord-core": "Morelord Core connects a Foundry world to a Morelord Gaming account and provides shared access checks for supported modules. It also provides the shared design system, Location management, actor-participation helpers, in-app documentation services, and sanitized diagnostic exports for support.",
+	"morelord-downtime": "Morelord Downtime turns time between adventures into visible opportunities and ongoing Projects. GMs prepare and publish Sessions; players create permitted Projects and allocate time for the characters they own.",
+	"morelord-character-export": "Bring your Foundry characters to My Characters on the Morelord Gaming website. GMs and players can choose Morelord Export on a supported D&D character sheet, download the character file, and import it after registering for a free website account."
+}

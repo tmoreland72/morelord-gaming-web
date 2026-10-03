@@ -4,14 +4,46 @@
 	let { data }: { data: PageData } = $props();
 
 	const integrations = $derived([
-		{ name: 'Authentication secret', ready: data.configuration.authSecret, detail: 'Signs sessions and authentication state.' },
-		{ name: 'Google OAuth', ready: data.configuration.googleOAuth, detail: 'Customer sign-in through Google.' },
-		{ name: 'Stripe API and webhook', ready: data.configuration.stripe, detail: 'Checkout, billing portal and subscription events.' },
-		{ name: 'Stripe prices', ready: data.configuration.stripePrices, detail: 'Monthly and annual Premium and Champion prices.' },
-		{ name: 'Discord OAuth', ready: data.configuration.discordOAuth, detail: 'Customer sign-in and Discord account linking.' },
-		{ name: 'Discord role sync', ready: data.configuration.discordRoles, detail: 'Bot and managed subscription roles.' },
-		{ name: 'Release publishing', ready: data.configuration.releasePublishing, detail: 'Secures automated product release updates.' },
-		{ name: 'Administrator access', ready: data.configuration.adminAccess, detail: 'Restricts this dashboard by email address.' }
+		{
+			name: 'Authentication secret',
+			ready: data.configuration.authSecret,
+			detail: 'Signs sessions and authentication state.'
+		},
+		{
+			name: 'Google OAuth',
+			ready: data.configuration.googleOAuth,
+			detail: 'Customer sign-in through Google.'
+		},
+		{
+			name: 'Stripe API and webhook',
+			ready: data.configuration.stripe,
+			detail: 'Checkout, billing portal and subscription events.'
+		},
+		{
+			name: 'Stripe prices',
+			ready: data.configuration.stripePrices,
+			detail: 'Monthly and annual Premium and Champion prices.'
+		},
+		{
+			name: 'Discord OAuth',
+			ready: data.configuration.discordOAuth,
+			detail: 'Customer sign-in and Discord account linking.'
+		},
+		{
+			name: 'Discord role sync',
+			ready: data.configuration.discordRoles,
+			detail: 'Bot and managed subscription roles.'
+		},
+		{
+			name: 'Release publishing',
+			ready: data.configuration.releasePublishing,
+			detail: 'Secures automated product release updates.'
+		},
+		{
+			name: 'Administrator access',
+			ready: data.configuration.adminAccess,
+			detail: 'Restricts this dashboard by email address.'
+		}
 	]);
 
 	const readyCount = $derived(integrations.filter((item) => item.ready).length);
@@ -25,14 +57,15 @@
 <section class="page-hero compact-hero">
 	<div class="shell">
 		<div class="eyebrow">Morelord administration</div>
-		<h1>System readiness</h1>
-		<p class="lead">A private overview of configuration, database activity and connected services.</p>
+		<h1>Overview</h1>
+		<p class="lead">
+			A private overview of configuration, database activity and connected services.
+		</p>
 	</div>
 </section>
 
 <section class="section brand-panel-section">
 	<div class="shell admin-dashboard">
-
 		<div class="admin-summary card">
 			<div>
 				<span class="tag">Signed in as administrator</span>
@@ -55,7 +88,7 @@
 			</div>
 
 			<div class="status-grid">
-				{#each integrations as integration}
+				{#each integrations as integration (integration.name)}
 					<article class="card status-card" class:ready={integration.ready}>
 						<div class="status-line">
 							<span class="status-dot" aria-hidden="true"></span>
@@ -80,13 +113,30 @@
 			<div class="metric-grid">
 				<div class="metric-card"><strong>{data.counts.products}</strong><span>Products</span></div>
 				<div class="metric-card"><strong>{data.counts.releases}</strong><span>Releases</span></div>
-				<div class="metric-card"><strong>{data.counts.users}</strong><span>Users</span></div>
-				<div class="metric-card"><strong>{data.counts.subscriptions}</strong><span>Subscriptions</span></div>
-				<div class="metric-card"><strong>{data.counts.entitlements}</strong><span>Entitlements</span></div>
-				<div class="metric-card"><strong>{data.counts.installations}</strong><span>Foundry installs</span></div>
-				<div class="metric-card"><strong>{data.counts.discordConnections}</strong><span>Discord links</span></div>
-				<div class="metric-card"><strong>{data.counts.webhookEvents}</strong><span>Webhook events</span></div>
-				<div class="metric-card"><strong>{data.counts.supportRequests}</strong><span>Contact messages</span></div>
+				<div class="metric-card">
+					<strong>{data.counts.users}</strong><span>Registered Accounts</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.characters}</strong><span>Imported Characters</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.subscriptions}</strong><span>Subscriptions</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.entitlements}</strong><span>Entitlements</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.installations}</strong><span>Foundry installs</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.discordConnections}</strong><span>Discord links</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.webhookEvents}</strong><span>Webhook events</span>
+				</div>
+				<div class="metric-card">
+					<strong>{data.counts.supportRequests}</strong><span>Contact messages</span>
+				</div>
 			</div>
 		</section>
 

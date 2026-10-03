@@ -13,6 +13,7 @@ async function count(db: D1Database, table: string): Promise<number> {
 		'products',
 		'releases',
 		'user',
+		'characters',
 		'subscriptions',
 		'active_entitlements',
 		'foundry_installations',
@@ -21,10 +22,15 @@ async function count(db: D1Database, table: string): Promise<number> {
 		'support_requests'
 	]);
 	if (!allowed.has(table)) throw new Error('Unsupported diagnostics table.');
-	const filter = table === 'subscriptions'
-		? ' WHERE is_current = 1'
-		: table === 'foundry_installations' ? ' WHERE revoked_at IS NULL' : '';
-	const row = await db.prepare(`SELECT COUNT(*) AS total FROM ${table}${filter}`).first<{ total: number }>();
+	const filter =
+		table === 'subscriptions'
+			? ' WHERE is_current = 1'
+			: table === 'foundry_installations'
+				? ' WHERE revoked_at IS NULL'
+				: '';
+	const row = await db
+		.prepare(`SELECT COUNT(*) AS total FROM ${table}${filter}`)
+		.first<{ total: number }>();
 	return Number(row?.total ?? 0);
 }
 
@@ -39,6 +45,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		products,
 		releases,
 		users,
+		characters,
 		subscriptions,
 		entitlements,
 		installations,
@@ -51,26 +58,35 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 		count(db, 'products'),
 		count(db, 'releases'),
 		count(db, 'user'),
+		count(db, 'characters'),
 		count(db, 'subscriptions'),
 		count(db, 'active_entitlements'),
 		count(db, 'foundry_installations'),
 		count(db, 'discord_connections'),
 		count(db, 'webhook_events'),
 		count(db, 'support_requests'),
-		db.prepare(`SELECT r.version, r.title, r.published_at AS publishedAt, p.name AS productName
+		db
+			.prepare(
+				`SELECT r.version, r.title, r.published_at AS publishedAt, p.name AS productName
 			FROM releases r INNER JOIN products p ON p.id = r.product_id
-			ORDER BY r.published_at DESC LIMIT 1`).first<{
-			version: string;
-			title: string;
-			publishedAt: number;
-			productName: string;
-		}>(),
-		db.prepare(`SELECT provider, event_type AS eventType, processed_at AS processedAt
-			FROM webhook_events ORDER BY processed_at DESC LIMIT 1`).first<{
-			provider: string;
-			eventType: string;
-			processedAt: number;
-		}>()
+			ORDER BY r.published_at DESC LIMIT 1`
+			)
+			.first<{
+				version: string;
+				title: string;
+				publishedAt: number;
+				productName: string;
+			}>(),
+		db
+			.prepare(
+				`SELECT provider, event_type AS eventType, processed_at AS processedAt
+			FROM webhook_events ORDER BY processed_at DESC LIMIT 1`
+			)
+			.first<{
+				provider: string;
+				eventType: string;
+				processedAt: number;
+			}>()
 	]);
 
 	return {
@@ -79,6 +95,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			products,
 			releases,
 			users,
+			characters,
 			subscriptions,
 			entitlements,
 			installations,
@@ -100,7 +117,12 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 			discordOAuth: configured(env.DISCORD_CLIENT_ID) && configured(env.DISCORD_CLIENT_SECRET),
 			discordRoles:
 				configured(env.DISCORD_BOT_TOKEN) &&
-				Boolean(discordSettings.guildId && discordSettings.roleToolsId && discordSettings.rolePremiumId && discordSettings.roleChampionId),
+				Boolean(
+					discordSettings.guildId &&
+					discordSettings.roleToolsId &&
+					discordSettings.rolePremiumId &&
+					discordSettings.roleChampionId
+				),
 			releasePublishing: configured(env.RELEASE_PUBLISH_TOKEN),
 			adminAccess: configured(env.ADMIN_EMAILS)
 		}

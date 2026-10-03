@@ -31,7 +31,7 @@ This manual applies to Morelord Craftworks 0.4.9.
 
 You normally need a character assigned to your Foundry user or an owned character token on the scene. Your GM controls the available Content Packs, recipe knowledge, acquisition settings, and whether acquired materials go to individual characters or a shared party Group actor.
 
-Materials are normal dnd5e loot Items. Their Craftworks identity includes information such as rarity, category, processing stage, tags, and source pack, so a recipe may require more than an item with a similar name.
+Materials are normal D&D loot Items. Their Craftworks identity includes information such as rarity, category, processing stage, tags, and source pack, so a recipe may require more than an item with a similar name.
 
 ## Open Craftworks
 
@@ -163,7 +163,7 @@ Gather is an individual opportunity tied to the current scene and its terrain.
 1. Wait for the GM to start Gather.
 2. Review the terrain and displayed DC.
 3. Choose an allowed Gathering skill.
-4. Make the configured dnd5e roll, or decline the opportunity.
+4. Make the configured D&D roll, or decline the opportunity.
 5. On a success, Craftworks awards an appropriate material from the active terrain content.
 
 The GM selects participating characters using the same party-priority picker as Harvest. If you own multiple included characters, each receives an independently titled Gather window and a separate scene-tracked attempt.
@@ -172,13 +172,13 @@ An attempt is tracked for your character on that scene, so closing and reopening
 
 ![The player Gather window shows the terrain, DC, available skills, and decline option.](/docs-assets/morelord-craftworks/assets/gather-player-ready.png)
 
-![Gather uses the normal dnd5e roll-configuration dialog for the selected skill.](/docs-assets/morelord-craftworks/assets/gather-player-roll-configuration.png)
+![Gather uses the normal D&D roll-configuration dialog for the selected skill.](/docs-assets/morelord-craftworks/assets/gather-player-roll-configuration.png)
 
 ![A successful Gather attempt displays the resulting material and outcome.](/docs-assets/morelord-craftworks/assets/gather-player-success.png)
 
 ## Understand awards and storage
 
-Your GM can configure acquired Craftworks materials to go directly to participating characters or to a shared dnd5e Group actor. Loot and Hoard awards also let the GM choose a player character or Group actor as recipient.
+Your GM can configure acquired Craftworks materials to go directly to participating characters or to a shared D&D Group actor. Loot and Hoard awards also let the GM choose a player character or Group actor as recipient.
 
 When Craftworks commits an award, it posts a consolidated public chat card. The card can include the recipient, linked item names, images, rarities, quantities, and currency. Select a linked item to inspect its document.
 
@@ -217,7 +217,7 @@ If the pack or its official source content is unavailable, Craftworks can use st
 
 - Clear Search and active filters.
 - Ask the GM whether the relevant Content Pack is enabled.
-- Ask the GM to confirm the required official source is installed and selected in dnd5e **Configure Sources**.
+- Ask the GM to confirm the required official source is installed and selected in D&D **Configure Sources**.
 - Ask the GM to run **Sync with Compendiums**.
 
 ### A recipe is Unknown
