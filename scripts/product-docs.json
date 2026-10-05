@@ -64,6 +64,9 @@
 					"source": "gm-manual.md"
 				},
 				{
+					"source": "player-guide.md"
+				},
+				{
 					"source": "encounter-stories-design.md",
 					"title": "Morelord Encounter Stories",
 					"description": "Encounter Story journals, authoring, and optional integrations.",
