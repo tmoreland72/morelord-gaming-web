@@ -45,6 +45,14 @@ test('home page and footer link to the configured Discord server', async ({ page
 	).toHaveAttribute('href', discordInviteUrl);
 });
 
+test('footer links to the Morelord Gaming Etsy shop', async ({ page }) => {
+	await page.goto('/');
+	const etsy = page.getByRole('contentinfo').getByRole('link', { name: 'Shop on Etsy' });
+	await expect(etsy).toHaveAttribute('href', 'https://www.etsy.com/shop/MorelordGaming');
+	await expect(etsy).toHaveAttribute('target', '_blank');
+	await expect(etsy).toHaveAttribute('rel', 'external noreferrer');
+});
+
 test('release publishing rejects unauthenticated requests', async ({ request }) => {
 	const response = await request.post('/api/releases', {
 		data: {

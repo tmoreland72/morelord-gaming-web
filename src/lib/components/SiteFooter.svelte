@@ -21,6 +21,9 @@
 			>
 			<a href="/tools">Foundry Tools</a>
 			<a href="/pricing">Tools memberships</a>
+			<a href="https://www.etsy.com/shop/MorelordGaming" target="_blank" rel="external noreferrer"
+				>Shop on Etsy</a
+			>
 		</div>
 		<div>
 			<h3>Resources</h3>
