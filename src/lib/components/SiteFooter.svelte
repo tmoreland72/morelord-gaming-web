@@ -19,6 +19,9 @@
 				target="_blank"
 				rel="external noreferrer">StartPlaying profile</a
 			>
+			<a href="https://www.etsy.com/shop/MorelordGaming" target="_blank" rel="external noreferrer"
+				>Shop on Etsy</a
+			>
 			<a href="/tools">Foundry Tools</a>
 			<a href="/pricing">Tools memberships</a>
 		</div>
