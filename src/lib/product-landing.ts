@@ -13,6 +13,8 @@ export type LandingVideo = {
 export type ProductLanding = {
 	headline: string;
 	subhead: string;
+	/** Two or three short paragraphs under the headline. */
+	description: string[];
 	/** YouTube video id for the demo near the top. Omit when the product has no public demo yet. */
 	youtubeId?: string;
 	/** Extra demos rendered below the feature list. */
@@ -20,6 +22,9 @@ export type ProductLanding = {
 	requiresCore: boolean;
 	features: Partial<Record<FeatureTier, LandingFeature[]>>;
 };
+
+export const moduleInstallerBlurb =
+	'Morelord Gaming modules can be installed directly from the Foundry native module installer. Just search for "morelord".';
 
 const roadToPhandalin: LandingVideo = {
 	youtubeId: 'kubQ5qZ6B0I',
@@ -42,6 +47,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'View and share your Foundry character anywhere.',
 		subhead:
 			'Download a character from Foundry, open the sheet on the Morelord Gaming website, and share a link when you want someone else to see it.',
+		description: [
+			'Morelord Character Export is for players and GMs who want a character somewhere other than the table. From the character sheet in Foundry, you download a file. The character there is left unchanged.',
+			'The file is a snapshot. It carries the character data, the values the sheet had already prepared, and the artwork that was available. A later change in Foundry does not update the copy until you export again.',
+			'A free Morelord Gaming account is enough to import the file into My Characters, open the sheet in a browser, and share a link or keep the character private. Exporting does not require Morelord Core.'
+		],
 		youtubeId: 'FkbDyflfSpU',
 		requiresCore: false,
 		features: {
@@ -63,6 +73,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: "Camp, keep watch and rest, even when the party isn't traveling.",
 		subhead:
 			'Plan the route and resolve the travel day, then assign watches and a long rest. The party can camp without covering any ground.',
+		description: [
+			'Morelord Journeys is for the GM running the road and for the players answering the checks. You plan the route and the party, then play the travel day instead of skipping to the destination.',
+			'A day can include weather, pace, encounters, discovery, foraging, navigation, and whether to press on. Food and water are pooled from the travelers and the shared party. Tents, bedrolls, and blankets stay with the person carrying them.',
+			'When the party stops, you assign watches and camp, then see whether the long rest was interrupted. Camping works even when nobody traveled. The GM keeps the expedition record, and players use the roll requests on their characters.'
+		],
 		youtubeId: 'wuTtNGgRsxc',
 		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
@@ -95,6 +110,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Let the party shop, sell, and trade during the session.',
 		subhead:
 			'Players buy and sell from the item compendiums you enable, and move gear to another character or the shared party.',
+		description: [
+			'Morelord Marketplace is for a table that wants to shop, sell, and move gear during the session. Players work from the characters they have. The GM chooses which item compendiums are for sale and sets the sale rate.',
+			'A player can sell what a character is carrying, buy from those compendiums, or hand an item to another character or the shared party. Payment can come from the character or from the party, and the item goes to the character you chose. A transfer does not move coin. A connected GM applies it.',
+			'With Tools Premium or Champion, a purchase or a sale can wait until you accept it. You can also place a vendor on a scene, with its own stock, prices, and restocking.'
+		],
 		youtubeId: 'jLHKF39rGjM',
 		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
@@ -136,6 +156,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Turn what the party finds into what they can make.',
 		subhead:
 			'Harvest, gather, and loot in Foundry, then browse the materials and recipes those finds can become.',
+		description: [
+			'Morelord Craftworks is for a party that comes back with materials and wants to see what those finds can become. The GM starts harvesting, gathering, encounter loot, and hoards. Players browse the materials and recipes.',
+			"Materials are ordinary items. They can live in a character's inventory or with the shared party. The character doing the work still brings the tools, the proficiency, and the check.",
+			'Recipes whose finished items come from the System Reference Document compendiums in the world are included. Finishing the item, and recipes from other books you have installed, are part of Tools Premium. Monsters of Drakkenheim components and recipes are part of Champion access when that content is installed.'
+		],
 		youtubeId: 'qmcmKaunt40',
 		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
@@ -185,6 +210,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Build a ready-to-run encounter from monsters you already have.',
 		subhead:
 			'Choose a difficulty, review the roster, and drag the creatures onto the scene. Morelord Encounters uses monster compendiums installed in the world.',
+		description: [
+			'Morelord Encounters is a GM tool for building a scene from monsters already in the world. It looks at the party, aims at a difficulty, and gives you a roster to review before anything reaches the table.',
+			'The included encounters use System Reference Document monsters from the world. Tools Premium can draw on the other monster compendiums you have installed. You can also start from a written encounter, edit it for the campaign, and bring that roster into play.',
+			'Open a creature from the roster or drag it onto the scene, and save the encounter for later in this world. With Tools Premium, Guide Me can offer a situation from a few questions, including a scene that is not a fight.'
+		],
 		youtubeId: 'xADXldd1oRE',
 		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
@@ -219,6 +249,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Connect your Foundry world to Morelord once.',
 		subhead:
 			'Core links the world to a Morelord Gaming account and shares membership, locations, and support tools with the other modules.',
+		description: [
+			'Morelord Core is for the GM connecting a Foundry world. Players do not set it up. One connection lets the other Morelord modules see the membership for that world.',
+			'Foundry shows a short-lived code. You approve it on the Morelord Gaming website, then come back. You can refresh access after a membership change, open your account, or disconnect the world. Disconnecting does not delete the campaign.',
+			'Core also keeps a few shared tools: a diagnostic file for Morelord Gaming that leaves campaign notes out, a settings backup you can reuse in another world, locations you can assign to a scene, and the distance to another visible token when you hover it.'
+		],
 		youtubeId: '2advzIa3o9Q',
 		requiresCore: false,
 		features: {
@@ -250,6 +285,11 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Give the party projects between adventures.',
 		subhead:
 			"Publish a downtime session, let players spend their characters' time, and keep unfinished projects for the next session. Downtime requires Tools Premium or Champion.",
+		description: [
+			'Morelord Downtime is for the stretch between adventures. It requires Tools Premium or Champion. The GM sets the place, the hours, who is included, and which activities are allowed, then publishes the session.',
+			'Players spend time on characters they own. A project that is not finished stays available for a later session. Training follows study with an instructor. A commission tracks hired work across campaign days. Choosing the item does not buy it, craft it, or deliver it.',
+			"With Marketplace installed, committed time and gold can seek an item from a character's wishlist. With Craftworks installed, crafting projects open there. With Journeys installed, completed travel days can move the campaign calendar forward."
+		],
 		youtubeId: 'kubQ5qZ6B0I',
 		requiresCore: true,
 		features: {
@@ -282,6 +322,7 @@ export function getProductLanding(
 		landings[slug] ?? {
 			headline: fallback.name,
 			subhead: fallback.summary,
+			description: fallback.summary ? [fallback.summary] : [],
 			requiresCore: slug !== 'morelord-core',
 			features: {}
 		}
