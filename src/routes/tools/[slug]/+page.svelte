@@ -5,6 +5,7 @@
 	import { githubRepoUrl } from '$lib/github';
 	import {
 		getProductLanding,
+		moduleInstallerBlurb,
 		productCallToAction,
 		publicFeatureTiers,
 		type FeatureTier
@@ -58,7 +59,14 @@
 		<div>
 			<div class="eyebrow">{data.product.name}</div>
 			<h1>{landing.headline}</h1>
-			<p class="lead">{landing.subhead}</p>
+			{#if landing.description.length > 0}
+				<div class="product-description">
+					{#each landing.description as paragraph, index (index)}
+						<p>{paragraph}</p>
+					{/each}
+				</div>
+			{/if}
+			<p class="installer-blurb">{moduleInstallerBlurb}</p>
 			<div class="actions">
 				{#if callToAction}
 					<a

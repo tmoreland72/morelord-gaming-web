@@ -179,6 +179,9 @@ h3 { margin:.2rem 0 .65rem; font-size:1.5rem; color:#fff2cb; }
 
 .product-hero-layout { display:grid; grid-template-columns:minmax(0,1fr) 260px; gap:2rem; align-items:center; }
 .landing-hero h1 { max-width:18em; font-size:clamp(2.15rem, 4.8vw, 3.55rem); line-height:1.12; }
+.product-description { max-width:42rem; display:grid; gap:.85rem; margin-top:1.15rem; }
+.product-description p { margin:0; color:#d4c8b4; font-size:1.05rem; line-height:1.7; }
+.installer-blurb { max-width:42rem; margin:1.15rem 0 0; color:#f6dfae; font-size:1.02rem; line-height:1.65; }
 .product-mascot { width:260px; max-height:260px; object-fit:contain; filter:drop-shadow(0 16px 20px #0009); }
 .product-demo-section { padding-top:2.2rem; padding-bottom:0; }
 .product-demo { margin-bottom:0; }

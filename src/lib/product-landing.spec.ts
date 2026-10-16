@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { getProductLanding, productCallToAction, publicFeatureTiers } from './product-landing';
+import {
+	getProductLanding,
+	moduleInstallerBlurb,
+	productCallToAction,
+	publicFeatureTiers
+} from './product-landing';
 
 const slugs = [
 	'morelord-core',
@@ -18,6 +23,21 @@ describe('product landing copy', () => {
 			expect(landing.headline.length).toBeGreaterThan(12);
 			expect(landing.subhead.length).toBeGreaterThan(12);
 			expect(landing.headline).not.toBe('Fallback');
+		}
+	});
+
+	it('explains each product in two or three paragraphs and keeps the installer blurb exact', () => {
+		expect(moduleInstallerBlurb).toBe(
+			'Morelord Gaming modules can be installed directly from the Foundry native module installer. Just search for "morelord".'
+		);
+		for (const slug of slugs) {
+			const landing = getProductLanding(slug, { name: 'Fallback', summary: 'Fallback summary' });
+			expect(landing.description.length).toBeGreaterThanOrEqual(2);
+			expect(landing.description.length).toBeLessThanOrEqual(3);
+			for (const paragraph of landing.description) {
+				expect(paragraph.trim().length).toBeGreaterThan(40);
+				expect(paragraph).not.toContain(moduleInstallerBlurb);
+			}
 		}
 	});
 
