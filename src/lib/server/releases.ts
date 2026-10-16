@@ -1,6 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
+import { publicReleaseChange, stripInternalReleaseNotes } from '$lib/release-notes';
 import { getDb } from '$lib/server/db';
 import { products, releaseAnnouncements, releases } from '$lib/server/db/schema';
 import { getDiscordSettings } from '$lib/server/discord';
@@ -62,6 +63,11 @@ export async function publishProductRelease(
 	input: ReleaseInput,
 	options: { webhookUrl?: string; origin?: string; requestUrl: string }
 ) {
+	const summary = stripInternalReleaseNotes(input.summary) || null;
+	const changes = (input.changes ?? []).flatMap((change) => {
+		const description = publicReleaseChange(change.description);
+		return description ? [{ ...change, description }] : [];
+	});
 	const db = getDb(d1);
 	const [product] = await db
 		.select({ id: products.id, name: products.name, status: products.status })
@@ -103,7 +109,7 @@ export async function publishProductRelease(
 				product.id,
 				input.version,
 				input.title.trim(),
-				input.summary?.trim() || null,
+				summary,
 				publishedAt,
 				input.githubReleaseUrl || null,
 				input.downloadUrl || null,
@@ -113,7 +119,7 @@ export async function publishProductRelease(
 		d1.prepare('DELETE FROM release_changes WHERE release_id = ?1').bind(releaseId)
 	];
 
-	for (const [index, change] of (input.changes ?? []).entries()) {
+	for (const [index, change] of changes.entries()) {
 		statements.push(
 			d1
 				.prepare(
@@ -155,10 +161,10 @@ export async function publishProductRelease(
 						productSlug: input.productSlug,
 						version: input.version,
 						title: input.title.trim(),
-						summary: input.summary?.trim(),
+						summary: summary ?? undefined,
 						publicUrl,
 						githubReleaseUrl: input.githubReleaseUrl ?? undefined,
-						changes: input.changes ?? []
+						changes
 					},
 					discordSettings.roleToolsId
 				);

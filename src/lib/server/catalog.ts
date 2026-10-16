@@ -1,6 +1,19 @@
 import { asc, desc, eq } from 'drizzle-orm';
+import { publicReleaseChange, stripInternalReleaseNotes } from '$lib/release-notes';
 import { getDb } from '$lib/server/db';
-import { products, productFeatures, features, releases, releaseChanges, subscriptionTiers } from '$lib/server/db/schema';
+import {
+	products,
+	productFeatures,
+	features,
+	releases,
+	releaseChanges,
+	subscriptionTiers
+} from '$lib/server/db/schema';
+
+function publicSummary(summary: string | null): string | null {
+	const text = stripInternalReleaseNotes(summary);
+	return text || null;
+}
 
 export type CatalogProduct = {
 	id: string;
@@ -14,15 +27,19 @@ export type CatalogProduct = {
 
 export async function listActiveProducts(d1: D1Database): Promise<CatalogProduct[]> {
 	const db = getDb(d1);
-	return db.select({
-		id: products.id,
-		slug: products.slug,
-		name: products.name,
-		summary: products.summary,
-		status: products.status,
-		githubRepository: products.githubRepository,
-		manifestUrl: products.manifestUrl
-	}).from(products).where(eq(products.status, 'active')).orderBy(asc(products.name));
+	return db
+		.select({
+			id: products.id,
+			slug: products.slug,
+			name: products.name,
+			summary: products.summary,
+			status: products.status,
+			githubRepository: products.githubRepository,
+			manifestUrl: products.manifestUrl
+		})
+		.from(products)
+		.where(eq(products.status, 'active'))
+		.orderBy(asc(products.name));
 }
 
 export async function getProductBySlug(d1: D1Database, slug: string) {
@@ -49,7 +66,14 @@ export async function getProductBySlug(d1: D1Database, slug: string) {
 		.orderBy(desc(releases.publishedAt))
 		.limit(10);
 
-	return { product, features: featureRows, releases: releaseRows };
+	return {
+		product,
+		features: featureRows,
+		releases: releaseRows.map((release) => ({
+			...release,
+			summary: publicSummary(release.summary)
+		}))
+	};
 }
 
 export async function listReleases(d1: D1Database) {
@@ -71,16 +95,28 @@ export async function listReleases(d1: D1Database) {
 		.innerJoin(products, eq(releases.productId, products.id))
 		.orderBy(desc(releases.publishedAt));
 
-	return Promise.all(releaseRows.map(async (release) => ({
-		...release,
-		changes: await db
-			.select()
-			.from(releaseChanges)
-			.where(eq(releaseChanges.releaseId, release.id))
-			.orderBy(asc(releaseChanges.sortOrder))
-	})));
+	return Promise.all(
+		releaseRows.map(async (release) => ({
+			...release,
+			summary: publicSummary(release.summary),
+			changes: (
+				await db
+					.select()
+					.from(releaseChanges)
+					.where(eq(releaseChanges.releaseId, release.id))
+					.orderBy(asc(releaseChanges.sortOrder))
+			).flatMap((change) => {
+				const description = publicReleaseChange(change.description);
+				return description ? [{ ...change, description }] : [];
+			})
+		}))
+	);
 }
 
 export async function listActiveTiers(d1: D1Database) {
-	return getDb(d1).select().from(subscriptionTiers).where(eq(subscriptionTiers.active, true)).orderBy(asc(subscriptionTiers.id));
+	return getDb(d1)
+		.select()
+		.from(subscriptionTiers)
+		.where(eq(subscriptionTiers.active, true))
+		.orderBy(asc(subscriptionTiers.id));
 }
