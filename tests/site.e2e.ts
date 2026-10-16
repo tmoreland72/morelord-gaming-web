@@ -139,3 +139,105 @@ test('protected administration redirects anonymous visitors to login', async ({ 
 	await page.goto('/admin');
 	await expect(page).toHaveURL(/\/login/);
 });
+
+const productLandings: Array<{
+	path: string;
+	headline: string;
+	video: string | null;
+	premium: boolean;
+	standard?: boolean;
+	champion?: boolean;
+}> = [
+	{
+		path: '/tools/morelord-character-export',
+		headline: 'View and share your Foundry character anywhere.',
+		video: 'FkbDyflfSpU',
+		premium: false
+	},
+	{
+		path: '/tools/morelord-journeys',
+		headline: "Camp, keep watch and rest, even when the party isn't traveling.",
+		video: 'wuTtNGgRsxc',
+		premium: false
+	},
+	{
+		path: '/tools/morelord-marketplace',
+		headline: 'Let the party shop, sell, and trade during the session.',
+		video: null,
+		premium: true
+	},
+	{
+		path: '/tools/morelord-downtime',
+		headline: 'Give the party projects between adventures.',
+		video: null,
+		premium: true,
+		standard: false
+	},
+	{
+		path: '/tools/morelord-core',
+		headline: 'Connect your Foundry world to Morelord once.',
+		video: null,
+		premium: false
+	},
+	{
+		path: '/tools/morelord-craftworks',
+		headline: 'Turn what the party finds into what they can make.',
+		video: null,
+		premium: true,
+		champion: true
+	},
+	{
+		path: '/tools/morelord-encounters',
+		headline: 'Build a ready-to-run encounter from monsters you already have.',
+		video: null,
+		premium: true
+	}
+];
+
+for (const product of productLandings) {
+	test(`${product.path} is an audience landing page`, async ({ page }) => {
+		const response = await page.goto(product.path);
+		expect(response?.ok()).toBeTruthy();
+		const headline = page.getByRole('heading', { level: 1, name: product.headline });
+		await expect(headline).toBeVisible();
+		const signup = page.getByRole('link', { name: 'Create your free account' });
+		await expect(signup).toBeVisible();
+		await expect(signup).toHaveAttribute(
+			'href',
+			`/login?returnTo=${encodeURIComponent(product.path)}`
+		);
+		await expect(page.getByRole('link', { name: 'Unlock premium features' })).toHaveCount(0);
+		await expect(page.getByText('paste this manifest URL')).toHaveCount(0);
+		await expect(page.getByText("Install it from Foundry's module browser.")).toBeVisible();
+		const install = page.getByRole('heading', { name: 'Add the module' });
+		const headlineBox = await headline.boundingBox();
+		const installBox = await install.boundingBox();
+		expect(headlineBox && installBox && installBox.y > headlineBox.y).toBeTruthy();
+		if (product.video) {
+			await expect(page.locator(`iframe[src*="${product.video}"]`)).toBeVisible();
+		}
+		const premium = page.getByRole('heading', { name: 'Premium features' });
+		if (product.premium) await expect(premium).toBeVisible();
+		else await expect(premium).toHaveCount(0);
+		if (product.standard === false) {
+			await expect(page.getByRole('heading', { name: 'Standard features' })).toHaveCount(0);
+		}
+		if (product.champion) {
+			await expect(page.getByRole('heading', { name: 'Champion features' })).toBeVisible();
+		}
+	});
+}
+
+test('release cards render markdown and omit internal dev notes', async ({ page }) => {
+	await page.goto('/tools/morelord-journeys');
+	await expect(page.locator('.release-copy strong', { hasText: 'Save Journey' })).toBeVisible();
+	await expect(page.getByText('**Save Journey**')).toHaveCount(0);
+
+	await page.goto('/tools/morelord-character-export');
+	await expect(page.getByText(/\/tmp\//)).toHaveCount(0);
+	await expect(page.locator('.release-copy code', { hasText: 'release-notes/' })).toBeVisible();
+
+	await page.goto('/releases');
+	await expect(page.getByText(/\/tmp\//)).toHaveCount(0);
+	await expect(page.getByText(/release staging/i)).toHaveCount(0);
+});
