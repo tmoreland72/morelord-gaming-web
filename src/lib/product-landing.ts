@@ -5,13 +5,25 @@ export type LandingFeature = {
 
 export type FeatureTier = 'standard' | 'premium' | 'champion';
 
+export type LandingVideo = {
+	youtubeId: string;
+	caption: string;
+};
+
 export type ProductLanding = {
 	headline: string;
 	subhead: string;
-	/** YouTube video id. Omit when the product has no public demo yet. */
+	/** YouTube video id for the demo near the top. Omit when the product has no public demo yet. */
 	youtubeId?: string;
+	/** Extra demos rendered below the feature list. */
+	secondaryVideos?: LandingVideo[];
 	requiresCore: boolean;
 	features: Partial<Record<FeatureTier, LandingFeature[]>>;
+};
+
+const roadToPhandalin: LandingVideo = {
+	youtubeId: 'kubQ5qZ6B0I',
+	caption: 'See it in a full campaign: Road to Phandalin'
 };
 
 export type CatalogFeature = {
@@ -52,6 +64,7 @@ const landings: Record<string, ProductLanding> = {
 		subhead:
 			'Plan the route and resolve the travel day, then assign watches and a long rest. The party can camp without covering any ground.',
 		youtubeId: 'wuTtNGgRsxc',
+		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [
@@ -82,6 +95,8 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Let the party shop, sell, and trade during the session.',
 		subhead:
 			'Players buy and sell from the item compendiums you enable, and move gear to another character or the shared party.',
+		youtubeId: 'jLHKF39rGjM',
+		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [
@@ -121,6 +136,8 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Turn what the party finds into what they can make.',
 		subhead:
 			'Harvest, gather, and loot in Foundry, then browse the materials and recipes those finds can become.',
+		youtubeId: 'qmcmKaunt40',
+		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [
@@ -168,6 +185,8 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Build a ready-to-run encounter from monsters you already have.',
 		subhead:
 			'Choose a difficulty, review the roster, and drag the creatures onto the scene. Morelord Encounters uses monster compendiums installed in the world.',
+		youtubeId: 'xADXldd1oRE',
+		secondaryVideos: [roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [
@@ -200,6 +219,7 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Connect your Foundry world to Morelord once.',
 		subhead:
 			'Core links the world to a Morelord Gaming account and shares membership, locations, and support tools with the other modules.',
+		youtubeId: '2advzIa3o9Q',
 		requiresCore: false,
 		features: {
 			standard: [
@@ -230,6 +250,7 @@ const landings: Record<string, ProductLanding> = {
 		headline: 'Give the party projects between adventures.',
 		subhead:
 			"Publish a downtime session, let players spend their characters' time, and keep unfinished projects for the next session. Downtime requires Tools Premium or Champion.",
+		youtubeId: 'kubQ5qZ6B0I',
 		requiresCore: true,
 		features: {
 			premium: [

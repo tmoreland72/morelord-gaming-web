@@ -182,6 +182,10 @@ h3 { margin:.2rem 0 .65rem; font-size:1.5rem; color:#fff2cb; }
 .product-mascot { width:260px; max-height:260px; object-fit:contain; filter:drop-shadow(0 16px 20px #0009); }
 .product-demo-section { padding-top:2.2rem; padding-bottom:0; }
 .product-demo { margin-bottom:0; }
+.campaign-demo-section { padding-top:1.5rem; }
+.campaign-demo { margin:0; }
+.campaign-demo + .campaign-demo { margin-top:2rem; }
+.campaign-demo figcaption { max-width:860px; margin:.35rem auto 0; color:#aa9c88; text-align:center; }
 .feature-columns { display:grid; grid-template-columns:repeat(var(--tier-count, 2), minmax(0, 1fr)); gap:1.5rem; }
 .feature-tier-card h2 { margin-top:.85rem; }
 .premium-tier-card { border-color:#efb33188; background:linear-gradient(145deg,#321812,#18100d); box-shadow:0 22px 70px #8f211b2b; }

@@ -144,6 +144,7 @@ const productLandings: Array<{
 	path: string;
 	headline: string;
 	video: string | null;
+	campaign?: boolean;
 	premium: boolean;
 	standard?: boolean;
 	champion?: boolean;
@@ -158,38 +159,42 @@ const productLandings: Array<{
 		path: '/tools/morelord-journeys',
 		headline: "Camp, keep watch and rest, even when the party isn't traveling.",
 		video: 'wuTtNGgRsxc',
+		campaign: true,
 		premium: false
 	},
 	{
 		path: '/tools/morelord-marketplace',
 		headline: 'Let the party shop, sell, and trade during the session.',
-		video: null,
+		video: 'jLHKF39rGjM',
+		campaign: true,
 		premium: true
 	},
 	{
 		path: '/tools/morelord-downtime',
 		headline: 'Give the party projects between adventures.',
-		video: null,
+		video: 'kubQ5qZ6B0I',
 		premium: true,
 		standard: false
 	},
 	{
 		path: '/tools/morelord-core',
 		headline: 'Connect your Foundry world to Morelord once.',
-		video: null,
+		video: '2advzIa3o9Q',
 		premium: false
 	},
 	{
 		path: '/tools/morelord-craftworks',
 		headline: 'Turn what the party finds into what they can make.',
-		video: null,
+		video: 'qmcmKaunt40',
+		campaign: true,
 		premium: true,
 		champion: true
 	},
 	{
 		path: '/tools/morelord-encounters',
 		headline: 'Build a ready-to-run encounter from monsters you already have.',
-		video: null,
+		video: 'xADXldd1oRE',
+		campaign: true,
 		premium: true
 	}
 ];
@@ -215,6 +220,20 @@ for (const product of productLandings) {
 		expect(headlineBox && installBox && installBox.y > headlineBox.y).toBeTruthy();
 		if (product.video) {
 			await expect(page.locator(`iframe[src*="${product.video}"]`)).toBeVisible();
+		}
+		const campaignCaption = page.getByText('See it in a full campaign: Road to Phandalin');
+		if (product.campaign) {
+			const campaignVideo = page.locator(
+				'iframe[title="See it in a full campaign: Road to Phandalin"]'
+			);
+			await expect(campaignVideo).toBeVisible();
+			await expect(campaignCaption).toBeVisible();
+			const featureHeading = page.getByRole('heading', { name: /features$/ }).first();
+			const featureBox = await featureHeading.boundingBox();
+			const campaignBox = await campaignVideo.boundingBox();
+			expect(featureBox && campaignBox && campaignBox.y > featureBox.y).toBeTruthy();
+		} else {
+			await expect(campaignCaption).toHaveCount(0);
 		}
 		const premium = page.getByRole('heading', { name: 'Premium features' });
 		if (product.premium) await expect(premium).toBeVisible();

@@ -21,19 +21,47 @@ describe('product landing copy', () => {
 		}
 	});
 
-	it('uses the ad headlines and demo videos for Character Export and Journeys', () => {
-		expect(getProductLanding('morelord-character-export', { name: '', summary: '' }).headline).toBe(
+	it('uses the ad headlines and the channel-manager demo videos', () => {
+		const fallback = { name: '', summary: '' };
+		expect(getProductLanding('morelord-character-export', fallback).headline).toBe(
 			'View and share your Foundry character anywhere.'
 		);
-		expect(
-			getProductLanding('morelord-character-export', { name: '', summary: '' }).youtubeId
-		).toBe('FkbDyflfSpU');
-		expect(getProductLanding('morelord-journeys', { name: '', summary: '' }).headline).toBe(
+		expect(getProductLanding('morelord-journeys', fallback).headline).toBe(
 			"Camp, keep watch and rest, even when the party isn't traveling."
 		);
-		expect(getProductLanding('morelord-journeys', { name: '', summary: '' }).youtubeId).toBe(
-			'wuTtNGgRsxc'
-		);
+		expect(getProductLanding('morelord-character-export', fallback).youtubeId).toBe('FkbDyflfSpU');
+		expect(getProductLanding('morelord-journeys', fallback).youtubeId).toBe('wuTtNGgRsxc');
+		expect(getProductLanding('morelord-marketplace', fallback).youtubeId).toBe('jLHKF39rGjM');
+		expect(getProductLanding('morelord-craftworks', fallback).youtubeId).toBe('qmcmKaunt40');
+		expect(getProductLanding('morelord-encounters', fallback).youtubeId).toBe('xADXldd1oRE');
+		expect(getProductLanding('morelord-core', fallback).youtubeId).toBe('2advzIa3o9Q');
+		expect(getProductLanding('morelord-downtime', fallback).youtubeId).toBe('kubQ5qZ6B0I');
+		for (const slug of slugs) {
+			expect(getProductLanding(slug, fallback).youtubeId).not.toBe('0d4kaqyP4OI');
+		}
+	});
+
+	it('adds Road to Phandalin below the product demo where the campaign shows that module', () => {
+		const fallback = { name: '', summary: '' };
+		const campaign = {
+			youtubeId: 'kubQ5qZ6B0I',
+			caption: 'See it in a full campaign: Road to Phandalin'
+		};
+		for (const slug of [
+			'morelord-journeys',
+			'morelord-marketplace',
+			'morelord-encounters',
+			'morelord-craftworks'
+		]) {
+			const landing = getProductLanding(slug, fallback);
+			expect(landing.secondaryVideos).toEqual([campaign]);
+			expect(landing.youtubeId).not.toBe(campaign.youtubeId);
+		}
+		expect(getProductLanding('morelord-downtime', fallback).secondaryVideos).toBeUndefined();
+		expect(
+			getProductLanding('morelord-character-export', fallback).secondaryVideos
+		).toBeUndefined();
+		expect(getProductLanding('morelord-core', fallback).secondaryVideos).toBeUndefined();
 	});
 
 	it('hides premium and standard cards that have no real features', () => {

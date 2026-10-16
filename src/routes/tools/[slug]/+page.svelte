@@ -117,6 +117,28 @@
 	</section>
 {/if}
 
+{#if landing.secondaryVideos && landing.secondaryVideos.length > 0}
+	<section class="section campaign-demo-section" aria-label="More demos">
+		<div class="shell">
+			{#each landing.secondaryVideos as video (video.youtubeId)}
+				<figure class="campaign-demo">
+					<div class="docs-video product-demo">
+						<iframe
+							src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}`}
+							title={video.caption}
+							loading="lazy"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							referrerpolicy="strict-origin-when-cross-origin"
+							allowfullscreen
+						></iframe>
+					</div>
+					<figcaption>{video.caption}</figcaption>
+				</figure>
+			{/each}
+		</div>
+	</section>
+{/if}
+
 {#if latestRelease}
 	<section class="section parchment-section">
 		<div class="shell">
