@@ -10,11 +10,32 @@ export type LandingVideo = {
 	caption: string;
 };
 
+export type SheetPreview = {
+	src: string;
+	alt: string;
+};
+
+export type LandingRequirements = {
+	title: string;
+	body: string;
+};
+
 export type ProductLanding = {
 	headline: string;
 	subhead: string;
 	/** Two or three short paragraphs under the headline. */
 	description: string[];
+	/**
+	 * One short line for the hero. When set, the longer description moves below the demo video
+	 * so the account button and video can sit above the fold.
+	 */
+	benefit?: string;
+	/** Plain line beside the account button. */
+	freeAccount?: string;
+	/** Screenshot of a finished shared character sheet. */
+	sheetPreview?: SheetPreview;
+	/** Replaces the default no-Core requirements card. */
+	requirements?: LandingRequirements;
 	/** YouTube video id for the demo near the top. Omit when the product has no public demo yet. */
 	youtubeId?: string;
 	/** Extra demos rendered below the feature list. */
@@ -44,9 +65,21 @@ export type CatalogFeature = {
  */
 const landings: Record<string, ProductLanding> = {
 	'morelord-character-export': {
-		headline: 'View and share your Foundry character anywhere.',
+		headline: 'View and share your Foundry characters anywhere.',
 		subhead:
 			'Download a character from Foundry, open the sheet on the Morelord Gaming website, and share a link when you want someone else to see it.',
+		benefit:
+			'Create a free account to import characters that you or your GM exported with Morelord Character Export. See every detail of your sheet in any browser, and share it with anyone.',
+		freeAccount:
+			'A free account lets you import the character under My Characters, open the sheet in a browser, and share a public link.',
+		sheetPreview: {
+			src: '/branding/chuck-shared-sheet.png',
+			alt: "Chuck's shared character sheet on Morelord Gaming, with hit points, armor class, and ability scores."
+		},
+		requirements: {
+			title: 'No account to export',
+			body: 'Exporting from Foundry needs no Morelord account and no Morelord Core. A free account is only for viewing and sharing the character on the website.'
+		},
 		description: [
 			'Morelord Character Export is for players and GMs who want a character somewhere other than the table. From the character sheet in Foundry, you download a file. The character there is left unchanged.',
 			'The file is a snapshot. It carries the character data, the values the sheet had already prepared, and the artwork that was available. A later change in Foundry does not update the copy until you export again.',
