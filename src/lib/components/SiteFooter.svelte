@@ -45,25 +45,6 @@
 				Professional online adventures and practical Foundry VTT tools—built by a game master, for
 				game masters and players.
 			</p>
-			<nav class="social-links" aria-label="Social media">
-				<ul>
-					{#each socialLinks as link (link.id)}
-						<li>
-							<a
-								href={link.href}
-								target="_blank"
-								rel="external noreferrer"
-								aria-label={link.label}
-								title={link.label}
-							>
-								<svg viewBox="0 0 24 24" aria-hidden="true">
-									<path d={socialIcons[link.id]} />
-								</svg>
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</nav>
 		</div>
 		<div>
 			<h3>Morelord Gaming</h3>
@@ -88,6 +69,25 @@
 			<a href="/privacy">Privacy Policy</a>
 			<a href="/terms">Terms of Service</a>
 		</div>
+		<nav class="social-links" aria-label="Social media">
+			<ul>
+				{#each socialLinks as link (link.id)}
+					<li>
+						<a
+							href={link.href}
+							target="_blank"
+							rel="external noreferrer"
+							aria-label={link.label}
+							title={link.label}
+						>
+							<svg viewBox="0 0 24 24" aria-hidden="true">
+								<path d={socialIcons[link.id]} />
+							</svg>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</nav>
 	</div>
 	<div class="shell copyright">
 		© {new Date().getFullYear()} Morelord Gaming. All rights reserved.
@@ -95,13 +95,37 @@
 </footer>
 
 <style>
+	.social-links {
+		display: block;
+		position: static;
+		grid-column: 1 / -1;
+		justify-self: end;
+		max-width: 100%;
+		padding: 0;
+		border: 0;
+		background: transparent;
+		box-shadow: none;
+	}
+
 	.social-links ul {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: flex-end;
 		gap: 0.55rem;
-		margin: 1.15rem 0 0;
+		max-width: 100%;
+		margin: 0.35rem 0 0;
 		padding: 0;
 		list-style: none;
+	}
+
+	@media (max-width: 620px) {
+		.social-links {
+			justify-self: center;
+		}
+
+		.social-links ul {
+			justify-content: center;
+		}
 	}
 
 	.social-links a {
@@ -111,6 +135,7 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		margin: 0;
+		padding: 0;
 		border: 1px solid #e5a62d55;
 		border-radius: 10px;
 		color: #c7baa6;
@@ -119,6 +144,10 @@
 			color 0.2s ease,
 			border-color 0.2s ease,
 			background 0.2s ease;
+	}
+
+	.social-links a::after {
+		content: none;
 	}
 
 	.social-links a:hover,
