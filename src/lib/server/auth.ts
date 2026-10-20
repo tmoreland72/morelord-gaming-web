@@ -23,6 +23,9 @@ function socialProviders() {
 		providers.discord = {
 			clientId: env.DISCORD_CLIENT_ID!,
 			clientSecret: env.DISCORD_CLIENT_SECRET!,
+			// Better Auth defaults Discord to prompt=none so an existing Discord
+			// session can sign in without another consent screen. The separate
+			// role-link flow sets prompt=consent on its own authorize URL.
 			mapProfileToUser(profile) {
 				if (!profile.email || !profile.verified) {
 					throw new APIError('FORBIDDEN', {
@@ -37,7 +40,10 @@ function socialProviders() {
 	if (configured.google) {
 		providers.google = {
 			clientId: env.GOOGLE_CLIENT_ID!,
-			clientSecret: env.GOOGLE_CLIENT_SECRET!
+			clientSecret: env.GOOGLE_CLIENT_SECRET!,
+			// Omitting prompt lets Google reuse the browser's current session.
+			// select_account shows the account chooser on every sign-in.
+			prompt: 'select_account'
 		};
 	}
 

@@ -1,8 +1,53 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { FIRST_VALIDATION_POLL_MS, awaitingFirstValidation } from '$lib/foundry-installation-status';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData | null } = $props();
+	let polledInstallations = $state<PageData['installations'] | null>(null);
+	const installations = $derived(polledInstallations ?? data.installations);
+
+	$effect(() => {
+		void data.installations;
+		polledInstallations = null;
+	});
+
+	$effect(() => {
+		if (!awaitingFirstValidation(installations)) return;
+
+		let stopped = false;
+		const refresh = async () => {
+			if (stopped) return;
+			try {
+				const response = await fetch('/api/account/installations');
+				if (!response.ok) return;
+				const rows = (await response.json()) as PageData['installations'];
+				if (stopped) return;
+				polledInstallations = rows.map((row) => ({
+					...row,
+					createdAt: new Date(row.createdAt),
+					lastValidatedAt: row.lastValidatedAt ? new Date(row.lastValidatedAt) : null
+				}));
+			} catch {
+				// The next poll retries. A failed read leaves the current card in place.
+			}
+		};
+		void refresh();
+		const timer = setInterval(() => void refresh(), FIRST_VALIDATION_POLL_MS);
+		const onVisible = () => {
+			if (document.visibilityState === 'visible') void refresh();
+		};
+		const onPageShow = () => void refresh();
+		document.addEventListener('visibilitychange', onVisible);
+		window.addEventListener('pageshow', onPageShow);
+
+		return () => {
+			stopped = true;
+			clearInterval(timer);
+			document.removeEventListener('visibilitychange', onVisible);
+			window.removeEventListener('pageshow', onPageShow);
+		};
+	});
 
 	const membership = $derived(
 		data.billing?.subscription?.plan?.startsWith('champion')
@@ -175,8 +220,8 @@
 
 			<section class="account-section">
 				<div class="section-heading"><div><div class="eyebrow">Authorized devices</div><h2>Foundry installations</h2></div><p>Revoke an installation you no longer recognize or use. Revocation does not delete any world or module data.</p></div>
-				{#if data.installations.length}
-					<div class="installation-list">{#each data.installations as installation}<article class="card installation-row"><div><span class="tag">{installation.productName}</span><h3>{installation.label}</h3><p>{installation.worldName ? `World: ${installation.worldName}` : 'No world name supplied'}{installation.foundryVersion ? ` · Foundry ${installation.foundryVersion}` : ''}{installation.moduleVersion ? ` · Module ${installation.moduleVersion}` : ''}</p><small>Connected {new Date(installation.createdAt).toLocaleDateString()}{installation.lastValidatedAt ? ` · Last checked ${new Date(installation.lastValidatedAt).toLocaleString()}` : ' · Not yet validated'}</small></div><form method="POST" action="?/revokeInstallation" use:enhance><input type="hidden" name="installationId" value={installation.id} /><button class="button secondary danger-button" type="submit">Revoke</button></form></article>{/each}</div>
+				{#if installations.length}
+					<div class="installation-list">{#each installations as installation (installation.id)}<article class="card installation-row"><div><span class="tag">{installation.productName}</span><h3>{installation.label}</h3><p>{installation.worldName ? `World: ${installation.worldName}` : 'No world name supplied'}{installation.foundryVersion ? ` · Foundry ${installation.foundryVersion}` : ''}{installation.moduleVersion ? ` · Module ${installation.moduleVersion}` : ''}</p><small>Connected {new Date(installation.createdAt).toLocaleDateString()}{installation.lastValidatedAt ? ` · Last checked ${new Date(installation.lastValidatedAt).toLocaleString()}` : ' · Not yet validated'}</small></div><form method="POST" action="?/revokeInstallation" use:enhance><input type="hidden" name="installationId" value={installation.id} /><button class="button secondary danger-button" type="submit">Revoke</button></form></article>{/each}</div>
 				{:else}<article class="card empty-state"><h3>No Foundry installations connected</h3><p>Your connected worlds and hosted servers will appear here after you activate a Morelord Gaming module.</p></article>{/if}
 			</section>
 		</div>

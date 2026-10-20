@@ -111,7 +111,9 @@ async function startSignIn(
 	});
 	const payload = (await response.json()) as { url?: string };
 	expect(response.status, JSON.stringify(payload)).toBe(200);
-	const state = new URL(payload.url ?? '').searchParams.get('state');
+	const authorize = new URL(payload.url ?? '');
+	if (provider === 'google') expect(authorize.searchParams.get('prompt')).toBe('select_account');
+	const state = authorize.searchParams.get('state');
 	expect(state).toBeTruthy();
 	return { state: state!, redirects };
 }
