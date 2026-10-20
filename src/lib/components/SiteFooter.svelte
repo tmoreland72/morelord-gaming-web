@@ -24,6 +24,11 @@
 			<a href="https://www.etsy.com/shop/MorelordGaming" target="_blank" rel="external noreferrer"
 				>Shop on Etsy</a
 			>
+			<a
+				href="https://www.facebook.com/profile.php?id=61595274225719"
+				target="_blank"
+				rel="external noreferrer">Follow us on Facebook</a
+			>
 		</div>
 		<div>
 			<h3>Resources</h3>

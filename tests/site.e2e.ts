@@ -53,6 +53,19 @@ test('footer links to the Morelord Gaming Etsy shop', async ({ page }) => {
 	await expect(etsy).toHaveAttribute('rel', 'external noreferrer');
 });
 
+test('footer links to the Morelord Gaming Facebook page', async ({ page }) => {
+	await page.goto('/');
+	const facebook = page
+		.getByRole('contentinfo')
+		.getByRole('link', { name: 'Follow us on Facebook' });
+	await expect(facebook).toHaveAttribute(
+		'href',
+		'https://www.facebook.com/profile.php?id=61595274225719'
+	);
+	await expect(facebook).toHaveAttribute('target', '_blank');
+	await expect(facebook).toHaveAttribute('rel', 'external noreferrer');
+});
+
 test('release publishing rejects unauthenticated requests', async ({ request }) => {
 	const response = await request.post('/api/releases', {
 		data: {
