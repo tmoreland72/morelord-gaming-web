@@ -44,14 +44,14 @@ describe('product landing copy', () => {
 	it('uses the ad headlines and the channel-manager demo videos', () => {
 		const fallback = { name: '', summary: '' };
 		expect(getProductLanding('morelord-character-export', fallback).headline).toBe(
-			'View and share your Foundry character anywhere.'
+			'View and share your Foundry characters anywhere.'
 		);
 		expect(getProductLanding('morelord-journeys', fallback).headline).toBe(
 			"Camp, keep watch and rest, even when the party isn't traveling."
 		);
 		expect(getProductLanding('morelord-character-export', fallback).youtubeId).toBe('FkbDyflfSpU');
 		expect(getProductLanding('morelord-character-export', fallback).benefit).toBe(
-			'Export your Foundry character with the prepared sheet values and artwork the built-in export leaves out, then view and share it on morelordgaming.com with a free account.'
+			'Create a free account to import characters that you or your GM exported with Morelord Character Export. See every detail of your sheet in any browser, and share it with anyone.'
 		);
 		expect(getProductLanding('morelord-character-export', fallback).freeAccount).toContain(
 			'My Characters'

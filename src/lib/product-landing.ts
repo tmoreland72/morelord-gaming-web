@@ -65,11 +65,11 @@ export type CatalogFeature = {
  */
 const landings: Record<string, ProductLanding> = {
 	'morelord-character-export': {
-		headline: 'View and share your Foundry character anywhere.',
+		headline: 'View and share your Foundry characters anywhere.',
 		subhead:
 			'Download a character from Foundry, open the sheet on the Morelord Gaming website, and share a link when you want someone else to see it.',
 		benefit:
-			'Export your Foundry character with the prepared sheet values and artwork the built-in export leaves out, then view and share it on morelordgaming.com with a free account.',
+			'Create a free account to import characters that you or your GM exported with Morelord Character Export. See every detail of your sheet in any browser, and share it with anyone.',
 		freeAccount:
 			'A free account lets you import the character under My Characters, open the sheet in a browser, and share a public link.',
 		sheetPreview: {

@@ -151,7 +151,7 @@ const productLandings: Array<{
 }> = [
 	{
 		path: '/tools/morelord-character-export',
-		headline: 'View and share your Foundry character anywhere.',
+		headline: 'View and share your Foundry characters anywhere.',
 		video: 'FkbDyflfSpU',
 		premium: false
 	},
