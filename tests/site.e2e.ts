@@ -40,30 +40,37 @@ test('home page and footer link to the configured Discord server', async ({ page
 		'href',
 		'https://www.youtube.com/@MorelordGaming'
 	);
-	await expect(
-		page.getByRole('contentinfo').getByRole('link', { name: 'Join our Discord' })
-	).toHaveAttribute('href', discordInviteUrl);
+	const discord = page.getByRole('contentinfo').getByRole('link', { name: 'Join our Discord' });
+	await expect(discord).toHaveAttribute('href', discordInviteUrl);
+	await expect(discord).toHaveAttribute('target', '_blank');
+	await expect(discord).toHaveAttribute('rel', 'external noreferrer');
 });
 
-test('footer links to the Morelord Gaming Etsy shop', async ({ page }) => {
+test('footer social icons link to Discord, Etsy, and Facebook', async ({ page }) => {
 	await page.goto('/');
-	const etsy = page.getByRole('contentinfo').getByRole('link', { name: 'Shop on Etsy' });
-	await expect(etsy).toHaveAttribute('href', 'https://www.etsy.com/shop/MorelordGaming');
-	await expect(etsy).toHaveAttribute('target', '_blank');
-	await expect(etsy).toHaveAttribute('rel', 'external noreferrer');
-});
+	const social = page.getByRole('contentinfo').getByRole('navigation', { name: 'Social media' });
+	const links = [
+		{ name: 'Join our Discord', href: 'https://discord.gg/B5YKQf579E' },
+		{ name: 'Shop on Etsy', href: 'https://www.etsy.com/shop/MorelordGaming' },
+		{
+			name: 'Follow us on Facebook',
+			href: 'https://www.facebook.com/profile.php?id=61595274225719'
+		}
+	];
 
-test('footer links to the Morelord Gaming Facebook page', async ({ page }) => {
-	await page.goto('/');
-	const facebook = page
-		.getByRole('contentinfo')
-		.getByRole('link', { name: 'Follow us on Facebook' });
-	await expect(facebook).toHaveAttribute(
-		'href',
-		'https://www.facebook.com/profile.php?id=61595274225719'
-	);
-	await expect(facebook).toHaveAttribute('target', '_blank');
-	await expect(facebook).toHaveAttribute('rel', 'external noreferrer');
+	await expect(social.getByRole('link')).toHaveCount(3);
+	for (const link of links) {
+		const anchor = social.getByRole('link', { name: link.name });
+		await expect(anchor).toHaveAttribute('href', link.href);
+		await expect(anchor).toHaveAttribute('title', link.name);
+		await expect(anchor).toHaveAttribute('target', '_blank');
+		await expect(anchor).toHaveAttribute('rel', 'external noreferrer');
+		await expect(anchor.locator('svg')).toBeVisible();
+	}
+	await expect(social.getByRole('link', { name: /X|Instagram/ })).toHaveCount(0);
+	await expect(page.getByRole('contentinfo').getByText('Shop on Etsy')).toHaveCount(0);
+	await expect(page.getByRole('contentinfo').getByText('Follow us on Facebook')).toHaveCount(0);
+	await expect(page.getByRole('contentinfo').getByText('Join our Discord')).toHaveCount(0);
 });
 
 test('release publishing rejects unauthenticated requests', async ({ request }) => {
