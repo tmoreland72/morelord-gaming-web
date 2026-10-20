@@ -20,8 +20,18 @@ import {
 import { AppError } from '$lib/server/errors';
 import { z } from 'zod';
 
-const ACTIVATION_MINUTES = 15;
+export const ACTIVATION_MINUTES = 15;
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const ACTIVATION_CODE_PATTERN = new RegExp(`^[${CODE_ALPHABET}]{4}-?[${CODE_ALPHABET}]{4}$`);
+
+/** Accept only a Core user code. Invalid or unexpected characters return an empty string. */
+export function parseActivationCode(value: string | null | undefined): string {
+	if (typeof value !== 'string') return '';
+	const trimmed = value.trim().toUpperCase();
+	if (!ACTIVATION_CODE_PATTERN.test(trimmed)) return '';
+	const compact = trimmed.replace('-', '');
+	return `${compact.slice(0, 4)}-${compact.slice(4)}`;
+}
 
 const optionalLabel = z.string().trim().max(120).optional();
 

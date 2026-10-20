@@ -9,8 +9,15 @@ import {
 	getDiscordSettings,
 	syncDiscordRoles
 } from '$lib/server/discord';
-import { approveActivation, listUserInstallations, revokeInstallation } from '$lib/server/foundry';
+import {
+	ACTIVATION_MINUTES,
+	approveActivation,
+	listUserInstallations,
+	parseActivationCode,
+	revokeInstallation
+} from '$lib/server/foundry';
 import { isAdminEmail } from '$lib/server/admin';
+import { accountPageReturnTo, loginPathForReturnTo } from '$lib/server/return-to';
 
 export const load: PageServerLoad = async ({ locals, platform, url }) => {
 	const db = platform?.env?.DB;
@@ -28,28 +35,36 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 		discordRoleSyncConfigured: db ? await discordRoleSyncConfigured(db) : false,
 		checkoutSuccess: url.searchParams.get('checkout') === 'success',
 		discordResult: url.searchParams.get('discord'),
-		activationCode: url.searchParams.get('activation')?.trim().toUpperCase() ?? '',
-		accountReturnTo: `${url.pathname}${url.search}${url.searchParams.get('activation') ? '#foundry-activation' : ''}`,
+		activationCode: parseActivationCode(url.searchParams.get('activation')),
+		activationExpiresMinutes: ACTIVATION_MINUTES,
+		accountReturnTo: accountPageReturnTo(url),
 		isAdmin: isAdminEmail(locals.user?.email)
 	};
 };
 
 export const actions: Actions = {
-	approveActivation: async ({ locals, platform, request }) => {
-		if (!locals.user) redirect(303, '/login?returnTo=/account');
+	approveActivation: async ({ locals, platform, request, url }) => {
+		if (!locals.user) redirect(303, loginPathForReturnTo(accountPageReturnTo(url)));
 		if (!platform?.env?.DB) return fail(503, { activationError: 'Database unavailable.' });
 		const data = await request.formData();
 		const code = String(data.get('code') ?? '').trim();
-		if (!code) return fail(400, { activationError: 'Enter the activation code shown in Foundry.', activationCode: code });
+		if (!code)
+			return fail(400, {
+				activationError: 'Enter the activation code shown in Foundry.',
+				activationCode: code
+			});
 		try {
 			await approveActivation(platform.env.DB, locals.user.id, code);
 			return { activationSuccess: true, activationCode: code.toUpperCase() };
 		} catch (error) {
-			return fail(400, { activationError: error instanceof Error ? error.message : 'Activation failed.', activationCode: code });
+			return fail(400, {
+				activationError: error instanceof Error ? error.message : 'Activation failed.',
+				activationCode: code
+			});
 		}
 	},
-	revokeInstallation: async ({ locals, platform, request }) => {
-		if (!locals.user) redirect(303, '/login?returnTo=/account');
+	revokeInstallation: async ({ locals, platform, request, url }) => {
+		if (!locals.user) redirect(303, loginPathForReturnTo(accountPageReturnTo(url)));
 		if (!platform?.env?.DB) return fail(503, { revokeError: 'Database unavailable.' });
 		const data = await request.formData();
 		const installationId = String(data.get('installationId') ?? '');
@@ -57,18 +72,20 @@ export const actions: Actions = {
 		await revokeInstallation(platform.env.DB, locals.user.id, installationId);
 		return { revokeSuccess: true };
 	},
-	syncDiscord: async ({ locals, platform }) => {
-		if (!locals.user) redirect(303, '/login?returnTo=/account');
+	syncDiscord: async ({ locals, platform, url }) => {
+		if (!locals.user) redirect(303, loginPathForReturnTo(accountPageReturnTo(url)));
 		if (!platform?.env?.DB) return fail(503, { discordError: 'Database unavailable.' });
 		try {
 			const result = await syncDiscordRoles(platform.env.DB, locals.user.id);
 			return { discordSyncSuccess: true, discordMessage: result.message };
 		} catch (error) {
-			return fail(400, { discordError: error instanceof Error ? error.message : 'Discord synchronization failed.' });
+			return fail(400, {
+				discordError: error instanceof Error ? error.message : 'Discord synchronization failed.'
+			});
 		}
 	},
-	disconnectDiscord: async ({ locals, platform }) => {
-		if (!locals.user) redirect(303, '/login?returnTo=/account');
+	disconnectDiscord: async ({ locals, platform, url }) => {
+		if (!locals.user) redirect(303, loginPathForReturnTo(accountPageReturnTo(url)));
 		if (!platform?.env?.DB) return fail(503, { discordError: 'Database unavailable.' });
 		await disconnectDiscord(platform.env.DB, locals.user.id);
 		return { discordDisconnectSuccess: true };

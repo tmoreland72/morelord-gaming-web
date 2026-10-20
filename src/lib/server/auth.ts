@@ -58,6 +58,8 @@ export const createAuth = (d1: D1Database, baseURL?: string) => {
 		emailAndPassword: { enabled: false },
 		socialProviders: socialProviders(),
 		trustedOrigins: [resolvedBaseURL],
+		// Vitest skips origin checks unless this is set. Production already checks them.
+		advanced: { disableOriginCheck: false },
 		account: {
 			accountLinking: {
 				enabled: true,
