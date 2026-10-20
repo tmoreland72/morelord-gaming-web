@@ -37,4 +37,13 @@ describe('Discord authentication', () => {
 		expect(options.account?.accountLinking?.trustedProviders).not.toContain('discord');
 		expect(options.socialProviders).not.toHaveProperty('github');
 	});
+
+	it('asks Google to show the account chooser', () => {
+		env.GOOGLE_CLIENT_ID = 'google-client';
+		env.GOOGLE_CLIENT_SECRET = 'google-secret';
+		const options = createAuth(null!, 'https://morelordgaming.com').options;
+		const google = options.socialProviders?.google;
+		if (!google || typeof google === 'function') throw new Error('Google provider missing');
+		expect(google.prompt).toBe('select_account');
+	});
 });

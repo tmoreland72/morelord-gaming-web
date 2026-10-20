@@ -19,7 +19,8 @@ import {
 import { isAdminEmail } from '$lib/server/admin';
 import { accountPageReturnTo, loginPathForReturnTo } from '$lib/server/return-to';
 
-export const load: PageServerLoad = async ({ locals, platform, url }) => {
+export const load: PageServerLoad = async ({ locals, platform, url, setHeaders }) => {
+	setHeaders({ 'cache-control': 'private, no-store' });
 	const db = platform?.env?.DB;
 	const billing = locals.user && db ? await getBillingSummary(db, locals.user.id) : null;
 	const installations = locals.user && db ? await listUserInstallations(db, locals.user.id) : [];
