@@ -26,11 +26,10 @@ export type ProductLanding = {
 	/** Two or three short paragraphs under the headline. */
 	description: string[];
 	/**
-	 * One short line for the hero. When set, the longer description moves below the demo video
-	 * so the account button and video can sit above the fold.
+	 * One short line for the hero. When set, the longer description moves below the demo video.
 	 */
 	benefit?: string;
-	/** Plain line beside the account button. */
+	/** Plain line under the benefit, above the account button. */
 	freeAccount?: string;
 	/** Screenshot of a finished shared character sheet. */
 	sheetPreview?: SheetPreview;

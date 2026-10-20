@@ -55,13 +55,15 @@
 	<meta name="description" content={landing.benefit ?? landing.subhead} />
 </svelte:head>
 
-<section class="page-hero tools-hero compact-hero landing-hero" class:conversion-hero={compactHero}>
-	<div class="shell product-hero-layout" class:conversion-hero-layout={compactHero}>
+<section class="page-hero tools-hero compact-hero landing-hero">
+	<div class="shell product-hero-layout">
 		<div>
 			<div class="eyebrow">{data.product.name}</div>
 			<h1>{landing.headline}</h1>
 			{#if landing.benefit}
-				<p class="benefit-line">{landing.benefit}</p>
+				<div class="product-description">
+					<p>{landing.benefit}</p>
+				</div>
 			{:else if landing.description.length > 0}
 				<div class="product-description">
 					{#each landing.description as paragraph, index (index)}
@@ -72,7 +74,10 @@
 			{#if !compactHero}
 				<p class="installer-blurb">{moduleInstallerBlurb}</p>
 			{/if}
-			<div class="actions" class:conversion-actions={compactHero}>
+			{#if landing.freeAccount}
+				<p class="installer-blurb">{landing.freeAccount}</p>
+			{/if}
+			<div class="actions">
 				{#if callToAction}
 					<a
 						class="button"
@@ -80,9 +85,6 @@
 							? resolve(`/login?returnTo=${encodeURIComponent(`/tools/${data.product.slug}`)}`)
 							: resolve('/pricing')}>{callToAction.label}</a
 					>
-				{/if}
-				{#if landing.freeAccount}
-					<p class="free-account-line">{landing.freeAccount}</p>
 				{/if}
 				<a
 					class="button secondary"
@@ -92,7 +94,7 @@
 			</div>
 		</div>
 		{#if landing.sheetPreview}
-			<img class="sheet-preview" src={landing.sheetPreview.src} alt={landing.sheetPreview.alt} />
+			<img class="product-mascot" src={landing.sheetPreview.src} alt={landing.sheetPreview.alt} />
 		{:else}
 			<img class="product-mascot" src="/branding/morelord-mascot.png" alt="Chuck the goblin king" />
 		{/if}
@@ -100,11 +102,7 @@
 </section>
 
 {#if landing.youtubeId}
-	<section
-		class="section product-demo-section"
-		class:conversion-demo={compactHero}
-		aria-label={`${data.product.name} demo`}
-	>
+	<section class="section product-demo-section" aria-label={`${data.product.name} demo`}>
 		<div class="shell">
 			<div class="docs-video product-demo">
 				<iframe
@@ -121,11 +119,13 @@
 {/if}
 
 {#if compactHero && landing.description.length > 0}
-	<section class="section product-story-section">
-		<div class="shell product-description">
-			{#each landing.description as paragraph, index (index)}
-				<p>{paragraph}</p>
-			{/each}
+	<section class="section">
+		<div class="shell">
+			<div class="product-description">
+				{#each landing.description as paragraph, index (index)}
+					<p>{paragraph}</p>
+				{/each}
+			</div>
 			<p class="installer-blurb">{moduleInstallerBlurb}</p>
 		</div>
 	</section>
