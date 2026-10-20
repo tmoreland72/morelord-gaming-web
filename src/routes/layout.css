@@ -423,7 +423,11 @@ button.button:disabled {
 .activation-card { display:grid; gap:.9rem; align-content:start; }
 .activation-card label { color:#f3d58c; font-weight:850; }
 .activation-card input { width:100%; padding:.9rem 1rem; border:1px solid #d7a53e66; border-radius:9px; outline:none; background:#100c09; color:#fff4d2; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:1.3rem; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+.activation-card input::placeholder { color:#978a78; font-weight:650; letter-spacing:.04em; text-transform:none; }
 .activation-card input:focus { border-color:var(--gold-light); box-shadow:0 0 0 3px #e5a51222; }
+.activation-hint { margin:0; color:#c6b9a5; line-height:1.5; }
+.activation-code { color:#fff4d2; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; letter-spacing:.12em; }
+.account-section.activation-priority { padding-top:0; border-top:0; }
 .activation-card small, .installation-row small { color:#978a78; line-height:1.5; }
 .activation-help ol { margin:1rem 0 0; padding-left:1.35rem; color:#c6b9a5; line-height:1.8; }
 .activation-help strong { color:#f2d38a; }

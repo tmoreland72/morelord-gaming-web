@@ -1,11 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { configuredAuthProviders, type AuthProviderName } from '$lib/server/auth';
+import { safeReturnTo, socialSignInRedirects } from '$lib/server/return-to';
 import type { Actions, PageServerLoad } from './$types';
-
-function safeReturnTo(value: string | null): string {
-	if (!value || !value.startsWith('/') || value.startsWith('//')) return '/account';
-	return value;
-}
 
 export const load: PageServerLoad = ({ locals, url }) => {
 	const returnTo = safeReturnTo(url.searchParams.get('returnTo'));
@@ -29,14 +25,22 @@ export const actions: Actions = {
 		}
 
 		if (!providers[provider]) {
-			return fail(503, { message: `${provider === 'google' ? 'Google' : 'Discord'} sign-in is not configured.` });
+			return fail(503, {
+				message: `${provider === 'google' ? 'Google' : 'Discord'} sign-in is not configured.`
+			});
 		}
 
 		const result = await event.locals.auth.api.signInSocial({
-			body: { provider, callbackURL: returnTo }
+			body: {
+				provider,
+				disableRedirect: true,
+				...socialSignInRedirects(event.url.origin, returnTo)
+			}
 		});
 
 		if (result.url) redirect(302, result.url);
-		return fail(400, { message: 'Sign-in could not be started. Confirm the OAuth application settings.' });
+		return fail(400, {
+			message: 'Sign-in could not be started. Confirm the OAuth application settings.'
+		});
 	}
 };

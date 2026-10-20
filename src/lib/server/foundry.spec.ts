@@ -1,10 +1,29 @@
 import { describe, expect, it } from 'vitest';
-import { activationPollSchema, activationStartSchema, normalizeActivationCode } from './foundry';
+import {
+	ACTIVATION_MINUTES,
+	activationPollSchema,
+	activationStartSchema,
+	normalizeActivationCode,
+	parseActivationCode
+} from './foundry';
 
 describe('normalizeActivationCode', () => {
 	it('strips separators and uppercases an 8-character code', () => {
 		expect(normalizeActivationCode('ab-cd-ef-gh')).toBe('ABCDEFGH');
 		expect(normalizeActivationCode('abcd-efgh')).toBe('ABCDEFGH');
+	});
+});
+
+describe('parseActivationCode', () => {
+	it('accepts the Core code format and rejects anything else', () => {
+		expect(ACTIVATION_MINUTES).toBe(15);
+		expect(parseActivationCode(' abcd-2345 ')).toBe('ABCD-2345');
+		expect(parseActivationCode('ABCD2345')).toBe('ABCD-2345');
+		expect(parseActivationCode('ABCD-IIII')).toBe('');
+		expect(parseActivationCode('<script>alert(1)</script>')).toBe('');
+		expect(parseActivationCode('ABCD-2345<script>')).toBe('');
+		expect(parseActivationCode('')).toBe('');
+		expect(parseActivationCode(null)).toBe('');
 	});
 });
 

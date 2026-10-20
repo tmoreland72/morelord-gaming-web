@@ -66,6 +66,9 @@
 
 	<section class="section brand-panel-section">
 		<div class="shell account-dashboard">
+			{#if data.activationCode}
+				{@render foundryConnection(true)}
+			{/if}
 			{#if data.checkoutSuccess}
 				<div class="success-banner"><strong>Thank you!</strong> Stripe is confirming your membership. Your account will update when the subscription webhook arrives.</div>
 			{/if}
@@ -166,34 +169,9 @@
 				{/if}
 			</section>
 
-			<section class="account-section" id="foundry-activation">
-				<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Foundry creates a temporary code, opens this page and waits for your approval. You never enter your Morelord Gaming password inside Foundry.</p></div>
-				<div class="activation-grid">
-					{#if form?.activationSuccess}
-						<article class="card activation-card activation-complete">
-							<div class="activation-success-icon"><i class="fa-solid fa-circle-check"></i></div>
-							<span class="tag">Connection approved</span>
-							<h3>Return to Foundry</h3>
-							<p>Morelord Core is waiting for this approval and should finish connecting automatically within a few seconds.</p>
-							<p><strong>You may now close this browser tab and return to Foundry.</strong></p>
-							<button class="button" type="button" onclick={closeActivationTab}>Close this tab</button>
-							<small>Some browsers do not allow a website to close a tab. In that case, close it normally.</small>
-						</article>
-					{:else}
-						<form class="card activation-card" method="POST" action="?/approveActivation" use:enhance>
-							{#if data.activationCode}
-								<div class="activation-request-banner"><i class="fa-solid fa-link"></i><div><strong>Foundry is waiting for approval.</strong><span>Confirm that this code matches the code shown in Morelord Core.</span></div></div>
-							{/if}
-							<label for="activation-code">Activation code</label>
-							<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="ABCD-2345" value={getActivationCode(form)} autofocus={Boolean(data.activationCode)} />
-							{#if form?.activationError}<p class="form-error">{form.activationError}</p>{/if}
-							<button class="button" type="submit">Approve Foundry Connection</button>
-							<small>Codes expire after 15 minutes and can be used only once.</small>
-						</form>
-					{/if}
-					<article class="card activation-help"><span class="tag">What happens next</span><ol><li>Confirm the code matches the one displayed in Foundry.</li><li>Select <strong>Approve Foundry Connection</strong>.</li><li>Wait for the success message on this page.</li><li>Close this tab and return to Foundry. Core completes the connection automatically.</li></ol></article>
-				</div>
-			</section>
+			{#if !data.activationCode}
+				{@render foundryConnection(false)}
+			{/if}
 
 			<section class="account-section">
 				<div class="section-heading"><div><div class="eyebrow">Authorized devices</div><h2>Foundry installations</h2></div><p>Revoke an installation you no longer recognize or use. Revocation does not delete any world or module data.</p></div>
@@ -203,6 +181,51 @@
 			</section>
 		</div>
 	</section>
+{:else if data.activationCode}
+	<section class="page-hero account-hero" id="foundry-activation">
+		<div class="shell account-layout">
+			<div>
+				<div class="eyebrow">Foundry VTT</div>
+				<h1>Foundry is waiting to connect.</h1>
+				<p class="lead">Your code: <strong class="activation-code">{data.activationCode}</strong> (matches Morelord Core). Sign in or create a free account to approve.</p>
+				<div class="actions"><a class="button" href={`/login?returnTo=${encodeURIComponent(data.accountReturnTo)}`}>Sign in or create an account</a></div>
+			</div>
+			<div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and Discord sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div>
+		</div>
+	</section>
 {:else}
 	<section class="page-hero account-hero"><div class="shell account-layout"><div><div class="eyebrow">Morelord Gaming account</div><h1>Manage tools, subscriptions and connected services.</h1><p class="lead">One account connects your Tools membership, Foundry installations, Discord benefits and billing.</p><div class="actions"><a class="button" href={`/login?returnTo=${encodeURIComponent(data.accountReturnTo)}`}>Sign in or create an account</a></div></div><div class="account-panel"><img src="/branding/morelord-mascot.png" alt="Morelord Gaming mascot" /><h3>Your account will include</h3><ul class="feature-list"><li>Google and Discord sign-in</li><li>Stripe subscription management</li><li>Discord account linking</li><li>Foundry installation activation</li></ul></div></div></section>
 {/if}
+
+{#snippet foundryConnection(priority: boolean)}
+	<section class="account-section" class:activation-priority={priority} id="foundry-activation">
+		<div class="section-heading"><div><div class="eyebrow">Foundry VTT</div><h2>Connect an installation</h2></div><p>Foundry creates a temporary code, opens this page and waits for your approval. You never enter your Morelord Gaming password inside Foundry.</p></div>
+		<div class="activation-grid">
+			{#if form?.activationSuccess}
+				<article class="card activation-card activation-complete">
+					<div class="activation-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+					<span class="tag">Connection approved</span>
+					<h3>Return to Foundry</h3>
+					<p>Morelord Core is waiting for this approval and should finish connecting automatically within a few seconds.</p>
+					<p><strong>You may now close this browser tab and return to Foundry.</strong></p>
+					<button class="button" type="button" onclick={closeActivationTab}>Close this tab</button>
+					<small>Some browsers do not allow a website to close a tab. In that case, close it normally.</small>
+				</article>
+			{:else}
+				<form class="card activation-card" method="POST" action="?/approveActivation" use:enhance>
+					{#if data.activationCode}
+						<div class="activation-request-banner"><i class="fa-solid fa-link"></i><div><strong>Foundry is waiting for approval.</strong><span>This code is already filled in and only needs approving.</span></div></div>
+					{:else}
+						<p class="activation-hint">Find this code in Foundry: Game Settings &gt; Morelord Core &gt; Connect Morelord Account. It looks like ABCD-2345.</p>
+					{/if}
+					<label for="activation-code">Activation code</label>
+					<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="e.g. ABCD-2345" value={getActivationCode(form)} autofocus={Boolean(data.activationCode)} />
+					{#if form?.activationError}<p class="form-error">{form.activationError}</p>{/if}
+					<button class="button" type="submit">Approve Foundry Connection</button>
+					<small>Expires in {data.activationExpiresMinutes} minutes; if it expired, click Connect again in Foundry.</small>
+				</form>
+			{/if}
+			<article class="card activation-help"><span class="tag">What happens next</span><ol><li>Confirm the code matches the one displayed in Foundry.</li><li>Select <strong>Approve Foundry Connection</strong>.</li><li>Wait for the success message on this page.</li><li>Close this tab and return to Foundry. Core completes the connection automatically.</li></ol></article>
+		</div>
+	</section>
+{/snippet}
