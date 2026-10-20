@@ -182,18 +182,6 @@ h3 { margin:.2rem 0 .65rem; font-size:1.5rem; color:#fff2cb; }
 .product-description { max-width:42rem; display:grid; gap:.85rem; margin-top:1.15rem; }
 .product-description p { margin:0; color:#d4c8b4; font-size:1.05rem; line-height:1.7; }
 .installer-blurb { max-width:42rem; margin:1.15rem 0 0; color:#f6dfae; font-size:1.02rem; line-height:1.65; }
-.conversion-hero.compact-hero { padding-block:.85rem .35rem; }
-.conversion-hero.landing-hero h1 { max-width:16em; margin:.3rem 0 .45rem; font-size:clamp(1.7rem, 2.5vw, 2.15rem); }
-.conversion-hero .benefit-line { max-width:40rem; margin:0; color:#d4c8b4; font-size:1.02rem; line-height:1.4; }
-.conversion-hero .actions { margin-top:.7rem; }
-.conversion-actions { align-items:center; }
-.conversion-actions .free-account-line { flex:1 1 18rem; max-width:36rem; margin:0; color:#f6dfae; font-size:.98rem; line-height:1.4; }
-.conversion-hero-layout { align-items:start; grid-template-columns:minmax(0,1fr) 240px; gap:1rem; }
-.sheet-preview { width:240px; height:250px; object-fit:cover; object-position:top center; border:1px solid #d49b2c66; border-radius:12px; box-shadow:0 16px 36px #0008; }
-.conversion-demo.product-demo-section { padding-top:.55rem; }
-.conversion-demo .docs-video { width:min(100%, 620px); margin-top:0; }
-.product-story-section { padding:2.2rem 0 0; }
-.product-story-section .product-description { margin-top:0; }
 .product-mascot { width:260px; max-height:260px; object-fit:contain; filter:drop-shadow(0 16px 20px #0009); }
 .product-demo-section { padding-top:2.2rem; padding-bottom:0; }
 .product-demo { margin-bottom:0; }
@@ -246,7 +234,6 @@ h3 { margin:.2rem 0 .65rem; font-size:1.5rem; color:#fff2cb; }
 @media (max-width: 900px) {
 	.product-hero-layout, .feature-columns, .feature-columns.three-tiers, .login-layout { grid-template-columns:1fr; }
 	.product-mascot { display:none; }
-	.sheet-preview { width:100%; height:210px; }
 	.login-panel { margin-top:2rem; }
 }
 
