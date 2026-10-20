@@ -40,6 +40,7 @@
 		})
 	);
 	const latestRelease = $derived(data.releases[0] ?? null);
+	const compactHero = $derived(Boolean(landing.benefit));
 
 	async function copyManifest(): Promise<void> {
 		if (!data.product.manifestUrl) return;
@@ -51,23 +52,27 @@
 
 <svelte:head>
 	<title>{data.product.name} | Morelord Tools</title>
-	<meta name="description" content={landing.subhead} />
+	<meta name="description" content={landing.benefit ?? landing.subhead} />
 </svelte:head>
 
-<section class="page-hero tools-hero compact-hero landing-hero">
-	<div class="shell product-hero-layout">
+<section class="page-hero tools-hero compact-hero landing-hero" class:conversion-hero={compactHero}>
+	<div class="shell product-hero-layout" class:conversion-hero-layout={compactHero}>
 		<div>
 			<div class="eyebrow">{data.product.name}</div>
 			<h1>{landing.headline}</h1>
-			{#if landing.description.length > 0}
+			{#if landing.benefit}
+				<p class="benefit-line">{landing.benefit}</p>
+			{:else if landing.description.length > 0}
 				<div class="product-description">
 					{#each landing.description as paragraph, index (index)}
 						<p>{paragraph}</p>
 					{/each}
 				</div>
 			{/if}
-			<p class="installer-blurb">{moduleInstallerBlurb}</p>
-			<div class="actions">
+			{#if !compactHero}
+				<p class="installer-blurb">{moduleInstallerBlurb}</p>
+			{/if}
+			<div class="actions" class:conversion-actions={compactHero}>
 				{#if callToAction}
 					<a
 						class="button"
@@ -76,6 +81,9 @@
 							: resolve('/pricing')}>{callToAction.label}</a
 					>
 				{/if}
+				{#if landing.freeAccount}
+					<p class="free-account-line">{landing.freeAccount}</p>
+				{/if}
 				<a
 					class="button secondary"
 					href={resolve('/docs/[product]/[...path]', { product: data.product.slug, path: '' })}
@@ -83,12 +91,20 @@
 				>
 			</div>
 		</div>
-		<img class="product-mascot" src="/branding/morelord-mascot.png" alt="Chuck the goblin king" />
+		{#if landing.sheetPreview}
+			<img class="sheet-preview" src={landing.sheetPreview.src} alt={landing.sheetPreview.alt} />
+		{:else}
+			<img class="product-mascot" src="/branding/morelord-mascot.png" alt="Chuck the goblin king" />
+		{/if}
 	</div>
 </section>
 
 {#if landing.youtubeId}
-	<section class="section product-demo-section" aria-label={`${data.product.name} demo`}>
+	<section
+		class="section product-demo-section"
+		class:conversion-demo={compactHero}
+		aria-label={`${data.product.name} demo`}
+	>
 		<div class="shell">
 			<div class="docs-video product-demo">
 				<iframe
@@ -100,6 +116,17 @@
 					allowfullscreen
 				></iframe>
 			</div>
+		</div>
+	</section>
+{/if}
+
+{#if compactHero && landing.description.length > 0}
+	<section class="section product-story-section">
+		<div class="shell product-description">
+			{#each landing.description as paragraph, index (index)}
+				<p>{paragraph}</p>
+			{/each}
+			<p class="installer-blurb">{moduleInstallerBlurb}</p>
 		</div>
 	</section>
 {/if}
@@ -227,10 +254,10 @@
 					>Get Morelord Core <span>→</span></a
 				>
 			{:else}
-				<h2>A free Morelord account</h2>
+				<h2>{landing.requirements?.title ?? 'A free Morelord account'}</h2>
 				<p>
-					Exporting a character does not require Morelord Core. Create a free account when you want
-					to import, view, or share the character on the website.
+					{landing.requirements?.body ??
+						'Exporting a character does not require Morelord Core. Create a free account when you want to import, view, or share the character on the website.'}
 				</p>
 			{/if}
 		</aside>

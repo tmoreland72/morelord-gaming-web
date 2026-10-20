@@ -50,6 +50,17 @@ describe('product landing copy', () => {
 			"Camp, keep watch and rest, even when the party isn't traveling."
 		);
 		expect(getProductLanding('morelord-character-export', fallback).youtubeId).toBe('FkbDyflfSpU');
+		expect(getProductLanding('morelord-character-export', fallback).benefit).toBe(
+			'Export your Foundry character with the prepared sheet values and artwork the built-in export leaves out, then view and share it on morelordgaming.com with a free account.'
+		);
+		expect(getProductLanding('morelord-character-export', fallback).freeAccount).toContain(
+			'My Characters'
+		);
+		expect(getProductLanding('morelord-character-export', fallback).requirements?.body).toContain(
+			'needs no Morelord account'
+		);
+		expect(getProductLanding('morelord-journeys', fallback).benefit).toBeUndefined();
+		expect(getProductLanding('morelord-journeys', fallback).sheetPreview).toBeUndefined();
 		expect(getProductLanding('morelord-journeys', fallback).youtubeId).toBe('wuTtNGgRsxc');
 		expect(getProductLanding('morelord-marketplace', fallback).youtubeId).toBe('jLHKF39rGjM');
 		expect(getProductLanding('morelord-craftworks', fallback).youtubeId).toBe('qmcmKaunt40');
