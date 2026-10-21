@@ -74,6 +74,8 @@ describe('installation validation timestamp', () => {
 		const polled = await pollActivation(database, started.activationId, started.deviceSecret);
 		expect(polled.status).toBe('approved');
 		if (polled.status !== 'approved') return;
+		expect(polled.token).toBeDefined();
+		if (polled.token === undefined) return;
 
 		const entitlement = await validateInstallationToken(database, polled.token, 'morelord-core', {
 			foundryVersion: '13.346',

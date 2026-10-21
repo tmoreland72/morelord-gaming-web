@@ -94,6 +94,10 @@
 	function discordAvatarUrl(discordUserId: string, avatar: string | null): string | null {
 		return avatar ? `https://cdn.discordapp.com/avatars/${discordUserId}/${avatar}.png?size=128` : null;
 	}
+
+	function focusActivationCode(node: HTMLInputElement, enabled: boolean) {
+		if (enabled) node.focus();
+	}
 </script>
 
 <svelte:head>
@@ -264,7 +268,7 @@
 						<p class="activation-hint">Find this code in Foundry: Game Settings &gt; Morelord Core &gt; Connect Morelord Account. It looks like ABCD-2345.</p>
 					{/if}
 					<label for="activation-code">Activation code</label>
-					<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="e.g. ABCD-2345" value={getActivationCode(form)} autofocus={Boolean(data.activationCode)} />
+					<input id="activation-code" name="code" autocomplete="one-time-code" inputmode="text" maxlength="9" placeholder="e.g. ABCD-2345" value={getActivationCode(form)} use:focusActivationCode={Boolean(data.activationCode)} />
 					{#if form?.activationError}<p class="form-error">{form.activationError}</p>{/if}
 					<button class="button" type="submit">Approve Foundry Connection</button>
 					<small>Expires in {data.activationExpiresMinutes} minutes; if it expired, click Connect again in Foundry.</small>
