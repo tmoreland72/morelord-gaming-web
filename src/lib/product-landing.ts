@@ -282,9 +282,9 @@ const landings: Record<string, ProductLanding> = {
 		subhead:
 			'Core links the world to a Morelord Gaming account and shares membership, locations, and support tools with the other modules.',
 		description: [
-			'Morelord Core is for the GM connecting a Foundry world. Players do not set it up. One connection lets the other Morelord modules see the membership for that world.',
+			'Morelord Core is for the GM connecting a Foundry world. Players do not connect the account. One connection lets the other Morelord modules see the membership for that world.',
 			'Foundry shows a short-lived code. You approve it on the Morelord Gaming website, then come back. You can refresh access after a membership change, open your account, or disconnect the world. Disconnecting does not delete the campaign.',
-			'Core also keeps a few shared tools: a diagnostic file for Morelord Gaming that leaves campaign notes out, a settings backup you can reuse in another world, locations you can assign to a scene, and the distance to another visible token when you hover it.'
+			'Core also keeps a few shared tools: a diagnostic file for Morelord Gaming that leaves campaign notes out, a settings backup you can reuse in another world, locations you can assign to a scene, the distance to another visible token when you hover it, and a mark on a token after that creature uses its reaction. In a sidebar directory, you can select several documents and delete them together.'
 		],
 		youtubeId: '2advzIa3o9Q',
 		requiresCore: false,
@@ -309,6 +309,21 @@ const landings: Record<string, ProductLanding> = {
 					name: 'Locations the campaign can share',
 					description:
 						'Name places and the activities they allow, then assign a location to a scene.'
+				},
+				{
+					name: 'Distance when you hover a token',
+					description:
+						'See how far another visible token is. Each player can turn the indicator off.'
+				},
+				{
+					name: 'A mark when a reaction is used',
+					description:
+						'Core can mark a token after a creature uses its reaction in combat, then clear the mark at the start of its next turn.'
+				},
+				{
+					name: 'Delete several documents',
+					description:
+						'Select multiple entries in a sidebar directory, review the names, and delete them together.'
 				}
 			]
 		}

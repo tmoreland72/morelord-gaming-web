@@ -18,6 +18,7 @@ describe('overview record counts', () => {
 				INSERT INTO releases VALUES ('p1', '1.0', 'First', 1), ('p1', '2.0', 'Second', 2);
 				CREATE TABLE user (id TEXT);
 				INSERT INTO user VALUES ('u1'), ('u2'), ('u3'), ('u4');
+				CREATE TABLE characters (id TEXT);
 				CREATE TABLE subscriptions (is_current INTEGER);
 				INSERT INTO subscriptions VALUES (1), (1), (1), (0);
 				CREATE TABLE active_entitlements (stripe_customer_id TEXT, lookup_key TEXT);
@@ -42,6 +43,7 @@ describe('overview record counts', () => {
 				products: 3,
 				releases: 2,
 				users: 4,
+				characters: 0,
 				subscriptions: 3,
 				entitlements: 2,
 				installations: 2,

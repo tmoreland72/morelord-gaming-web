@@ -9,11 +9,45 @@ foundry: 13
 
 # Morelord Core: GM Product Guide
 
-Morelord Core connects a Foundry VTT world to your Morelord Gaming account. Supported Morelord Tools modules use that connection to check which premium features are available in the world.
+## Documentation
 
-This guide is for Game Masters. Players do not need to configure Morelord Core.
+**Documentation** opens the corresponding module's documentation on the Morelord Gaming website in a new browser tab. Use the website's module tree and nested section links to navigate the complete guides. Modules without a dedicated website page open the documentation index.
+
+Every player and GM page, including module Game Settings, must document each field and action using its displayed label, accepted values, defaults, dependencies, and effects. Examples belong in the guide.
+
+Morelord Core provides shared account access, Locations, user participation controls, settings transfer, and support tools for Morelord Gaming modules. Supported Morelord Tools modules use its account connection to check which premium features are available in the world.
+
+Reviewed against local Core 0.3.13 on September 23, 2026. This implementation review is not a new compatibility test or public-release announcement.
+
+Recording check: the public Core 0.3.13 package installed from Foundry's catalog does not include the one-time reporting notice described below from the development worktree. In that package, open **Connect or Manage Account → Core Settings** to choose reporting preferences directly. The video documentation must follow the installed package's actual controls.
+
+This guide is for Game Masters. Players can change their own **Token Distance Indicator** preference in Module Settings; they do not need to configure account access. **Reaction Used** is a world setting changed by a GM.
 
 ## What Morelord Core Does
+
+### Delete multiple sidebar documents
+
+GMs can use **Select multiple** in Scenes, Actors, Items, Journal, Rollable Tables, Cards, Macros, and Playlists, including their pop-out directories. Core must be enabled; account linking and premium access are not required. Selection starts empty and is kept separately for each directory window.
+
+- **Select multiple** shows a labeled checkbox beside each world document. Check or uncheck individual documents; existing entry opening and dragging remain available.
+- **Select visible** adds all currently displayed entries, respecting the current search and collapsed folders. Previously selected entries stay selected even when hidden by a later search or folder collapse.
+- **Clear selection** unchecks every selected document, including hidden entries.
+- **Delete selected (N)** opens a confirmation listing the selected document names. It is disabled with no selection and while confirmation/deletion is pending. **Cancel**, the default confirmation action, keeps the documents and selection. **Delete selected** in the confirmation permanently deletes the listed documents through Foundry's native document API. There is no undo; native deletion effects apply, including a document's embedded content. Folders are kept.
+- **Done selecting** exits selection mode and clears selection.
+
+For example, search the Actors directory for a batch's common name, choose **Select multiple → Select visible**, review **Delete selected (N)**, then confirm. Selection survives directory rerenders but resets when the client reloads. Only world documents are included: compendium packs, chat messages, combat entries, journal pages, and individual playlist sounds are outside this directory action.
+
+### Token Distance Indicator
+
+**Token Distance Indicator** accepts checked (enabled) or unchecked (disabled), defaults to checked, and applies only to the current user's client. Choose **Save Core Settings** to apply it here, or change the same checkbox directly in **Game Settings → Configure Settings → Morelord Core**. Players use that settings checkbox. No account connection or premium access is required. Disable it when using another distance indicator such as TheRipper's Hover Distance to avoid duplicate displays.
+
+Select exactly one token, then hover over another visible token to see distance between their nearest occupied spaces using native grid/diagonal rules. Adjacent tokens show 5 ft on feet-based scenes, and distances round up to 5-unit intervals in the scene's units. Token size does not add extra center-to-center distance. Gridless scenes measure nearest footprint edges with a half-space allowance for adjacency. Players can instead hover without selecting: Core uses their assigned character's token if exactly one owned, visible token exists. Multiple selections, ambiguous character tokens, and hovering the source itself show nothing. The indicator measures flat map distance without elevation, walls, reach, or movement costs; it never exposes hidden or unseen tokens to players.
+
+### Reaction Used
+
+**Reaction Used** accepts checked (enabled) or unchecked (disabled), defaults to checked, and applies to the whole world. Only a GM can change it. Choose **Save Core Settings** to apply it here, or change the same checkbox in **Game Settings → Configure Settings → Morelord Core**. No account connection or premium access is required. Automatic marking listens for a D&D activity whose activation type is reaction.
+
+While **Reaction Used** is checked, a creature in a started combat that uses such an activity is marked on its token. In the right-click token HUD status effects the status is labeled **Reaction**, so the name fits the grid. Anyone allowed to update that token can toggle **Reaction** there, including for an opportunity attack, a readied action, or a mark that should not stay on. The active GM removes the mark when that creature's turn starts. When the turn is a shared mob turn from Morelord Encounters, the active GM removes it from every token in that mob on the scene. When combat is deleted, ends, or the round returns to 0, the active GM removes it from tokens on that combat's scene. A player client, and a GM who is not the active GM, does not clear marks. Unchecking **Reaction Used** stops automatic marking and clearing. The status remains on the token HUD for manual use.
 
 Morelord Core provides one shared account connection for supported Morelord Tools modules. From Foundry, a GM can:
 
@@ -27,21 +61,26 @@ Morelord Core does not remove existing world data if premium access expires.
 
 ## Requirements
 
-- Foundry Virtual Tabletop version 13.
+- Foundry Virtual Tabletop 13 or later, within the installed manifest's supported range. The reviewed manifest records 14.368 as verified; this guide does not establish additional version testing.
+- socketlib version 1.1.3 or later.
 - Permission to configure the world as a GM.
-- A Morelord Gaming account.
+- A Morelord Gaming account for account linking. Shared Locations, reporting preferences, and troubleshooting do not require an account connection.
 - Internet access for the initial connection and periodic access checks.
 
 ## Install and Enable Morelord Core
 
 1. From Foundry's **Setup** screen, open **Add-on Modules**.
-2. Install **Morelord Core**. If you are installing by manifest URL, use:
+2. Select **Install Module**, find **Morelord Core**, and install it. Complete the required dependency installation for **socketlib** if prompted. If you are installing by manifest URL, use:
 
    `https://raw.githubusercontent.com/tmoreland72/morelord-core/main/module.json`
 
-3. Launch the world you want to connect.
-4. Open **Game Settings → Manage Modules**.
-5. Enable **Morelord Core**, then save the module configuration.
+3. Install the other Morelord Gaming modules you intend to use from the same Setup page, checking each package's compatibility and dependencies. Installation makes packages available to Foundry; activation is separate for each world.
+4. Launch the compatible world you want to connect and log in as a GM.
+5. Open the **Settings sidebar → Module Management** (Foundry 14).
+6. Enable the desired modules and accept Foundry's required-dependency activation when offered. Verify **Morelord Core** and **socketlib** are enabled for modules that require them. For example, Downtime requires Core, and Core requires socketlib. Recommended integrations are optional and are not the same as required dependencies.
+7. Save the module configuration and complete any requested reload. Handle the reporting-preferences notice if it appears, then open **Game Settings → Configure Settings → Module Settings → Morelord Core**.
+
+The Core video is a concise options reference for GMs already familiar with Foundry. It focuses on Morelord-specific choices and their effects; these installation steps remain available as a written reference. A complete suite installation is not required to use Core. Character Export does not declare Core as a required dependency in its reviewed local manifest.
 
 The account connection applies to the current world. Repeat the connection process in each world that should use your Morelord Gaming access.
 
@@ -50,16 +89,37 @@ The account connection applies to the current world. Repeat the connection proce
 1. Open **Game Settings → Configure Settings → Module Settings → Morelord Core**.
 2. Select **Connect or Manage Account**.
 3. In the **Morelord Account** window, select **Connect Morelord Account**.
-4. Foundry opens the Morelord Gaming approval page in your browser and displays a temporary code.
-5. Confirm that the code in Foundry matches the prefilled code on the website.
+4. Foundry opens the Morelord Gaming approval page in your browser. The **Morelord Account** window shows the temporary code in large type at the top of the pending view.
+5. It should already be filled in on that page; if not, paste it.
+   Select **Copy** to put the code on the clipboard. If copying is unavailable, select the code itself and copy it manually.
+   If you signed in using a different browser, open your Morelord Gaming account page there and paste the code into **Activation code**.
 6. On the website, select **Approve Foundry Connection**.
 7. Return to Foundry. Foundry checks for approval automatically and reports when the account is connected.
 
+While approval is pending, the window provides:
+
+- **Copy:** Copies the temporary code. If the browser cannot access the clipboard, select the code and copy it manually.
+- **Open approval page:** Opens the same approval address Foundry uses when it tries to open the page automatically, including when that page was blocked.
+
 The temporary code expires after 15 minutes. If it expires or activation fails, start the connection process again to create a new code.
 
-If the browser page does not open, select **Reopen Approval Page** in the Foundry window. Check your browser's pop-up settings if the page still does not appear.
+If the browser page does not open, select **Open approval page**. Check your browser's pop-up settings if you want the page to open automatically next time.
 
 ## Review Account and Access Status
+
+### Connect Discord from the website
+
+On your Morelord Gaming account page, select **Connect Discord** and authorize the Discord account you intend to use. Linking an identity does not automatically join the community server. If the page reports that you are not in the server, follow **Join the Morelord Gaming Discord**, accept the invite, and complete Discord's required server onboarding.
+
+Return to the Morelord Gaming account page and select **Synchronize roles**. Review its status, then check your channel access in Discord. A successful synchronization message does not by itself prove that every channel permission is configured correctly. If a channel reports that you cannot send messages, include that channel and the synchronization status when reporting the access problem.
+
+### Membership changes and Discord channels
+
+Use **Manage billing → Update subscription** on your website account to select a different plan. Review the price and billing terms before confirming. After the website shows your updated membership, select **Synchronize roles** and return to Discord.
+
+The September 23 member walkthrough verified Premium channels **premium-support** and **premium-previews**. Champion retained those channels and added **champion-tavern**, **champion-support**, and **champion-polls**. The corrected Premium support composer and all three Champion composers were enabled. A live poll was not available, so voting behavior was not verified. Channel access depends on the synchronized membership and the server's current permissions.
+
+### Foundry connection details
 
 Open **Game Settings → Configure Settings → Module Settings → Morelord Core → Connect or Manage Account**.
 
@@ -101,30 +161,71 @@ After cached access is no longer usable, premium features may be unavailable unt
 
 Disconnecting clears the account token, installation reference, connection label, and cached access information stored by Morelord Core in the current world. It does not delete existing world content. You can reconnect later by completing the approval process again.
 
-## Anonymous Usage Statistics
+## Core Settings and Reporting Preferences
 
-The GM-only **Share Anonymous Usage Statistics** setting is enabled by default. When enabled, Morelord Core includes only these two version values during access checks:
+**Token Distance Indicator** and **Reaction Used** are described under What Morelord Core Does. Open **Connect or Manage Account**, then scroll to **Core Settings** to change them with the controls below. These controls are available without connecting an account. Use **Save Core Settings** to apply changes.
 
-- The installed Morelord Core version.
-- The installed Foundry version.
+| Control | Meaning |
+| --- | --- |
+| Morelord Gaming Website | Address for activation and access checks. Default: `https://morelordgaming.com`. Keep it unless intentionally using another supported endpoint. |
+| Share feature usage | Shares feature actions, active module versions, Foundry/system versions, and GM/player role under a random world reporting ID. Reports are pseudonymous and exclude campaign content. |
+| Share error reports | Independently shares error types, Morelord code locations, failed operations, and versions. Recent feature actions accompany errors only when feature sharing is enabled. Custom error text and account credentials are excluded. |
+| Enable Developer Mode | Off by default. Limits access for testing across Morelord Gaming modules and pauses both reporting streams. It does not grant paid access. |
+| Test Subscription Level | Standard, Premium, or Champion, capped by the connected account and each module's actual access. Default: Standard. Applies while Developer Mode is enabled; Standard disables paid access. Unavailable higher choices are disabled. Reopen module windows after saving to refresh displays. |
 
-This usage report does not add campaign, player, actor, item, chat, or world-name data. Turning the setting off does not affect account linking, access checks, or premium access.
+The elected active GM receives a one-time **Morelord Reporting Preferences** notice. Both reporting choices are preselected unless a previous choice was saved. Uncheck either to opt out, then choose **Save Reporting Preferences**. Closing without saving leaves preferences unchanged and offers the notice at the next GM session. Existing version-only consent does not automatically authorize broader reporting. Change either choice later in Core Settings without affecting account linking or premium access.
 
-To change the setting:
+Account activation separately supplies world and installation information needed to approve and label that connection. See [TELEMETRY.md](/docs/morelord-core/telemetry) for reporting details.
 
-1. Open **Game Settings → Configure Settings → Module Settings → Morelord Core**.
-2. Enable or disable **Share Anonymous Usage Statistics**.
-3. Save your changes.
+## Ignored Users
 
-During the separate account-connection process, Foundry supplies installation and world information needed to label and approve that connection. Core Settings also offers independent feature-usage and error-reporting choices without account connection. Broader reporting requires a fresh explicit choice; prior version-only consent does not enable it. Reports use a separate random world ID, fixed feature codes and sanitized error code locations, excluding campaign content and credentials. Developer Mode suppresses reporting. See [TELEMETRY.md](/docs/morelord-core/telemetry) for coverage, privacy and the website deployment prerequisite.
+Open **Morelord Core → Select Ignored Users**. Check recording or observer accounts to exclude them, then select **Save**. Uncheck and save to include them again. Ignored accounts cannot send or receive routed Morelord Gaming module messages; do not ignore participating GMs or players. This does not delete users or change their Foundry role.
+
+Characters assigned to or owned only by ignored users are also excluded from shared character selections, including party-group members. Characters shared with a non-ignored player remain available, even if that player is offline. GM-managed party members without a player owner or assigned user remain available. Reopen a selection window after changing Ignored Users to refresh its options; existing stored participation records are preserved.
+
+## Shared Locations
+
+Shared Locations give Morelord Gaming modules a common description of a place. Downtime uses location information to expose available activities, while Craftworks can check crafting location requirements such as access to a forge. Marketplace and Journeys also use shared locations for their own workflows. Configure capabilities to describe the facilities those workflows need; creating a location record alone does not create the services or activities themselves. The individual module guides explain their uses in detail.
+
+Open **Morelord Core → Manage Shared Locations**. Choose **Create First Location** when empty, or the plus button to add another. Select a saved location in the left list to edit it.
+
+Enter a **Name**, **Settlement Type**, and optional GM-facing **Notes**. Settlement choices are Road, Hamlet (1–100 people), Village (101–1,000), Town (1,001–6,000), City (6,001–25,000), Metropolis (25,001+), and Other. Population ranges are suggestions, not enforced limits.
+
+Choose **Add Capability** for each service the location provides. Core registers Forge, Marketplace, Alchemist, Library, Temple, Contractor, Instructor, and Workshop; enabled integrations can register additional types. A capability describes facilities or services; it does not create a shop, NPC, recipe, or project.
+
+Each row has a **Type**, **Tier**, optional **Specialty**, optional **Source**, and a remove button. Tiers are Common, Uncommon, Rare, Very Rare, and Legendary. A higher tier satisfies a lower-tier requirement of the same type. Settlement size does not determine tier. Specialty can match a specific requirement; use the value expected by the consuming workflow. Source records where the capability comes from. Remove a row with its trash button, then save.
+
+Under **Associated Scenes**, use **Filter Scenes** to find names. Click a Scene to select it; click again to deselect it. Several Scenes can share a location. Clearing the filter reveals the full list. Saving an association already owned by another location moves that association to the newly saved location. The current Scene determines the shared location used by applicable workflows.
+
+Choose **Save Location** to persist changes; the editor stays open. Reopen a saved entry to review it. Save edits before selecting another location. Journeys, Craftworks, Marketplace, and Downtime can consume these records.
+
+**Delete** asks for confirmation. Choose **No** to keep the record. Choosing **Yes** removes the location; projects and integrations referring to it may become unavailable. Deleting a location does not delete its Foundry Scenes.
+
+## Export and Import Settings
+
+Open **Morelord Core → Export / Import Settings**. The list shows enabled modules with eligible settings and their counts. **Export Settings** downloads `morelord-settings.json`, including eligible world settings and preferences from the current browser.
+
+To import, enable the relevant modules, choose a JSON file under **Settings File**, then select **Import Settings**. Matching settings are replaced; settings absent from the file remain unchanged. Missing or disabled modules and unknown settings are skipped. Review the imported/skipped counts and reload Foundry to refresh module views. Export your current configuration before replacing it.
+
+This is configuration transfer, not a world backup. Credentials, access caches, reporting preferences/credentials, shops, shared Locations, active journeys, downtime projects, and window positions are excluded. Actor/user references retain their IDs and are not remapped between worlds. Files are validated before writing. A failed write triggers an attempt to restore previous values; restoration failures are reported.
+
+## Documentation and Community
+
+The account window's **Documentation** button opens Core's built-in reference, currently containing Morelord Account and Troubleshooting sections. This GM guide provides the fuller reference for configuration and shared Locations.
+
+**Morelord Core → Join Discord** opens the Morelord Gaming Discord community for support, feature requests, and discussion. GMs and players can use it without an account connection.
+
+The Foundry button opens the community invite; it does not itself link a Discord identity or assign membership roles. The verified Premium and Champion channel access is described above. An isolated Standard permission comparison and live poll voting remain unverified. Foundry Developer Mode does not establish Discord access.
 
 ## Troubleshooting
+
+Select **Morelord Core → Download Troubleshooting File** to download a JSON report immediately. No account connection is required. It includes Foundry, game-system, module, browser, display, graphics, and supported module diagnostic details. It excludes credentials, network addresses, users, campaign content, and installation/world identifiers from the JSON. The filename includes the sanitized world ID; review it before sharing. Downloading does not upload the report or submit a support request.
 
 For missing Craftworks components, download a troubleshooting file **before** using **Sync with Compendiums**, then another afterward. Updated Core and Craftworks include pack configuration/access, material and recipe counts, source availability, sync status, and recent sync/harvest outcome codes. Recent outcomes cover only this client since reload; no character names, campaign documents, or raw error messages are included.
 
 ### The approval page did not open
 
-Select **Reopen Approval Page**. If nothing happens, allow pop-ups for Foundry or copy the workflow to a browser that can reach MorelordGaming.com.
+Select **Open approval page**. That link uses the same approval address. If the link does not open, allow pop-ups for Foundry or paste the address into a browser that can reach MorelordGaming.com. Select **Copy** and paste the code if the approval page did not fill it in.
 
 ### The temporary code expired
 
@@ -132,7 +233,7 @@ Close or return from the pending activation and start the connection again. Each
 
 ### Foundry stays on “Waiting for website approval”
 
-Confirm that the code shown in Foundry matches the code on the website and that you selected **Approve Foundry Connection**. If the attempt expires, start again.
+It should already be filled in on the approval page; if not, select **Copy** and paste the code. Confirm that you selected **Approve Foundry Connection**. If the attempt expires, start again.
 
 ### A membership change is not showing
 
@@ -162,5 +263,12 @@ If needed, disconnect and reconnect the world to create a fresh account connecti
 | Check membership | Morelord Core module settings | Open **Connect or Manage Account** |
 | Update access | Morelord Account window | **Refresh Access** |
 | Manage the web account | Morelord Account window | **Open Account** |
-| Stop version reporting | Morelord Core module settings | Disable **Share Anonymous Usage Statistics** |
+| Change reporting | Account window → Core Settings | Set the two reporting choices, then **Save Core Settings** |
+| Mark reactions | Account window → Core Settings | Check or uncheck **Reaction Used**, then **Save Core Settings** |
+| Exclude observers | Morelord Core module settings | **Select Ignored Users** |
+| Manage locations | Morelord Core module settings | **Manage Shared Locations** |
+| Transfer configuration | Morelord Core module settings | **Export / Import Settings** |
+| Get a support report | Morelord Core module settings | **Download Troubleshooting File** |
+| Open the community | Morelord Core module settings | **Join Discord** |
 | Remove the connection | Morelord Account window | **Disconnect** |
+
