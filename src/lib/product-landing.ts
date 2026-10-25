@@ -51,6 +51,11 @@ const roadToPhandalin: LandingVideo = {
 	caption: 'See it in a full campaign: Road to Phandalin'
 };
 
+const campingWithoutTravel: LandingVideo = {
+	youtubeId: 'wuTtNGgRsxc',
+	caption: 'Camping without traveling: a short use-case demo'
+};
+
 export type CatalogFeature = {
 	key: string;
 	name: string;
@@ -110,8 +115,8 @@ const landings: Record<string, ProductLanding> = {
 			'A day can include weather, pace, encounters, discovery, foraging, navigation, and whether to press on. Food and water are pooled from the travelers and the shared party. Tents, bedrolls, and blankets stay with the person carrying them.',
 			'When the party stops, you assign watches and camp, then see whether the long rest was interrupted. Camping works even when nobody traveled. The GM keeps the expedition record, and players use the roll requests on their characters.'
 		],
-		youtubeId: 'wuTtNGgRsxc',
-		secondaryVideos: [roadToPhandalin],
+		youtubeId: 'T4_9GPdveBw',
+		secondaryVideos: [campingWithoutTravel, roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [

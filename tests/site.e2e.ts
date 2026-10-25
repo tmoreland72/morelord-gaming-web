@@ -194,6 +194,7 @@ const productLandings: Array<{
 	headline: string;
 	video: string | null;
 	campaign?: boolean;
+	secondary?: { video: string; caption: string };
 	premium: boolean;
 	standard?: boolean;
 	champion?: boolean;
@@ -207,7 +208,11 @@ const productLandings: Array<{
 	{
 		path: '/tools/morelord-journeys',
 		headline: "Camp, keep watch and rest, even when the party isn't traveling.",
-		video: 'wuTtNGgRsxc',
+		video: 'T4_9GPdveBw',
+		secondary: {
+			video: 'wuTtNGgRsxc',
+			caption: 'Camping without traveling: a short use-case demo'
+		},
 		campaign: true,
 		premium: false
 	},
@@ -268,7 +273,16 @@ for (const product of productLandings) {
 		const installBox = await install.boundingBox();
 		expect(headlineBox && installBox && installBox.y > headlineBox.y).toBeTruthy();
 		if (product.video) {
-			await expect(page.locator(`iframe[src*="${product.video}"]`)).toBeVisible();
+			const mainVideo = page.locator(`iframe[src*="${product.video}"]`);
+			await expect(mainVideo).toBeVisible();
+			if (product.secondary) {
+				const secondaryVideo = page.locator(`iframe[src*="${product.secondary.video}"]`);
+				await expect(secondaryVideo).toBeVisible();
+				await expect(page.getByText(product.secondary.caption)).toBeVisible();
+				const mainBox = await mainVideo.boundingBox();
+				const secondaryBox = await secondaryVideo.boundingBox();
+				expect(mainBox && secondaryBox && secondaryBox.y > mainBox.y).toBeTruthy();
+			}
 		}
 		const campaignCaption = page.getByText('See it in a full campaign: Road to Phandalin');
 		if (product.campaign) {
@@ -308,4 +322,53 @@ test('release cards render markdown and omit internal dev notes', async ({ page 
 	await page.goto('/releases');
 	await expect(page.getByText(/\/tmp\//)).toHaveCount(0);
 	await expect(page.getByText(/release staging/i)).toHaveCount(0);
+});
+
+test('Core, Journeys, Craftworks, and Marketplace guides show the main demo', async ({ page }) => {
+	await page.goto('/tools/morelord-core');
+	await expect(page.locator('iframe[src*="2advzIa3o9Q"]')).toBeVisible();
+	await expect(page.locator('iframe[src*="_HcB3GmkleA"]')).toHaveCount(0);
+	await expect(page.locator('img[src*="core-screenshot"], img[src*="core-demo"]')).toHaveCount(0);
+
+	await page.goto('/docs/morelord-core');
+	const coreDemo = page.locator('iframe[title="Morelord Core demo"]');
+	await expect(coreDemo).toBeVisible();
+	await expect(coreDemo).toHaveAttribute('src', /2advzIa3o9Q/);
+	await expect(page.locator('iframe[src*="_HcB3GmkleA"]')).toHaveCount(0);
+	await expect(page.locator('img[src="/images/foundry/core-locations.png"]')).toHaveAttribute(
+		'alt',
+		/Phandalin/
+	);
+	await expect(
+		page.locator('img[src="/images/foundry/core-settings-transfer.png"]')
+	).toHaveAttribute('alt', /Export Settings/);
+	await expect(page.locator('img[src*="core-screenshot"], img[src*="core-demo"]')).toHaveCount(0);
+
+	await page.goto('/docs/morelord-journeys');
+	const journeysDemo = page.locator('iframe[title="Morelord Journeys demo"]');
+	await expect(journeysDemo).toBeVisible();
+	await expect(journeysDemo).toHaveAttribute('src', /T4_9GPdveBw/);
+	await expect(page.locator('iframe[src*="wuTtNGgRsxc"]')).toHaveCount(0);
+
+	await page.goto('/docs/morelord-craftworks');
+	const craftworksDemo = page.locator('iframe[title="Morelord Craftworks demo"]');
+	const craftworksExtra = page.locator('iframe[title="Morelord Craftworks additional demo"]');
+	await expect(craftworksDemo).toHaveAttribute('src', /qmcmKaunt40/);
+	await expect(craftworksExtra).toHaveAttribute('src', /XFebMhTQEA8/);
+	const craftworksMain = await craftworksDemo.boundingBox();
+	const craftworksSecondary = await craftworksExtra.boundingBox();
+	expect(
+		craftworksMain && craftworksSecondary && craftworksSecondary.y > craftworksMain.y
+	).toBeTruthy();
+
+	await page.goto('/docs/morelord-marketplace');
+	const marketplaceDemo = page.locator('iframe[title="Morelord Marketplace demo"]');
+	const marketplaceExtra = page.locator('iframe[title="Morelord Marketplace additional demo"]');
+	await expect(marketplaceDemo).toHaveAttribute('src', /jLHKF39rGjM/);
+	await expect(marketplaceExtra).toHaveAttribute('src', /UeHIy5t6FGs/);
+	const marketplaceMain = await marketplaceDemo.boundingBox();
+	const marketplaceSecondary = await marketplaceExtra.boundingBox();
+	expect(
+		marketplaceMain && marketplaceSecondary && marketplaceSecondary.y > marketplaceMain.y
+	).toBeTruthy();
 });
