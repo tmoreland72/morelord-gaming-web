@@ -61,7 +61,7 @@ describe('product landing copy', () => {
 		);
 		expect(getProductLanding('morelord-journeys', fallback).benefit).toBeUndefined();
 		expect(getProductLanding('morelord-journeys', fallback).sheetPreview).toBeUndefined();
-		expect(getProductLanding('morelord-journeys', fallback).youtubeId).toBe('wuTtNGgRsxc');
+		expect(getProductLanding('morelord-journeys', fallback).youtubeId).toBe('T4_9GPdveBw');
 		expect(getProductLanding('morelord-marketplace', fallback).youtubeId).toBe('jLHKF39rGjM');
 		expect(getProductLanding('morelord-craftworks', fallback).youtubeId).toBe('qmcmKaunt40');
 		expect(getProductLanding('morelord-encounters', fallback).youtubeId).toBe('xADXldd1oRE');
@@ -78,16 +78,21 @@ describe('product landing copy', () => {
 			youtubeId: 'kubQ5qZ6B0I',
 			caption: 'See it in a full campaign: Road to Phandalin'
 		};
-		for (const slug of [
-			'morelord-journeys',
-			'morelord-marketplace',
-			'morelord-encounters',
-			'morelord-craftworks'
-		]) {
+		for (const slug of ['morelord-marketplace', 'morelord-encounters', 'morelord-craftworks']) {
 			const landing = getProductLanding(slug, fallback);
 			expect(landing.secondaryVideos).toEqual([campaign]);
 			expect(landing.youtubeId).not.toBe(campaign.youtubeId);
 		}
+		const journeys = getProductLanding('morelord-journeys', fallback);
+		expect(journeys.youtubeId).toBe('T4_9GPdveBw');
+		expect(journeys.secondaryVideos).toEqual([
+			{
+				youtubeId: 'wuTtNGgRsxc',
+				caption: 'Camping without traveling: a short use-case demo'
+			},
+			campaign
+		]);
+		expect(journeys.youtubeId).not.toBe('wuTtNGgRsxc');
 		expect(getProductLanding('morelord-downtime', fallback).secondaryVideos).toBeUndefined();
 		expect(
 			getProductLanding('morelord-character-export', fallback).secondaryVideos
