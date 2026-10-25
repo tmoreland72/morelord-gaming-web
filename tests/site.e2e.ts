@@ -372,3 +372,11 @@ test('Core, Journeys, Craftworks, and Marketplace guides show the main demo', as
 		marketplaceMain && marketplaceSecondary && marketplaceSecondary.y > marketplaceMain.y
 	).toBeTruthy();
 });
+
+test('legacy Foundry listing image URLs redirect to the media domain', async ({ request }) => {
+	const response = await request.get('/images/foundry/core-banner.png', { maxRedirects: 0 });
+	expect(response.status()).toBe(301);
+	expect(response.headers()['location']).toBe(
+		'https://media.morelordgaming.com/foundry/core-banner.png'
+	);
+});
