@@ -2,6 +2,7 @@
 	"products": [
 		{
 			"slug": "morelord-core",
+			"foundryPackageId": "morelord-core",
 			"repository": "tmoreland72/morelord-core",
 			"branch": "main",
 			"docsPath": ".",
@@ -27,6 +28,7 @@
 		},
 		{
 			"slug": "morelord-character-export",
+			"foundryPackageId": "morelord-character-export",
 			"repository": "tmoreland72/morelord-character-export",
 			"branch": "main",
 			"docsPath": "docs",
@@ -34,6 +36,7 @@
 		},
 		{
 			"slug": "morelord-craftworks",
+			"foundryPackageId": "morelord-craftworks",
 			"repository": "tmoreland72/morelord-craftworks",
 			"branch": "main",
 			"docsPath": "docs"
@@ -52,6 +55,7 @@
 		},
 		{
 			"slug": "morelord-encounters",
+			"foundryPackageId": "morelord-encounters",
 			"repository": "tmoreland72/morelord-encounters",
 			"branch": "main",
 			"docsPath": "docs",
@@ -78,6 +82,7 @@
 		},
 		{
 			"slug": "morelord-journeys",
+			"foundryPackageId": "morelord-journeys",
 			"repository": "tmoreland72/morelord-journeys",
 			"branch": "main",
 			"docsPath": "docs",

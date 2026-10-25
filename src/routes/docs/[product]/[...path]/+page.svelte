@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 
+	import { foundryPackagePageUrl } from '$lib/foundry-package';
 	import { getProductDocComponent } from '$lib/product-docs';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
+	const foundryPackageUrl = $derived(foundryPackagePageUrl(data.metadata.product));
 	const productName = $derived(
 		data.navigation.find((item) => item.href === `/docs/${data.metadata.product}`)?.title ??
 			data.metadata.product
@@ -37,6 +39,11 @@
 			{#if data.metadata.foundry}<span class="tag">Foundry v{data.metadata.foundry}</span>{/if}
 			{#if data.metadata.audience}
 				<span class="tag">{data.metadata.audience.replaceAll('-', ' ')}</span>
+			{/if}
+			{#if foundryPackageUrl}
+				<a class="text-link" href={foundryPackageUrl} target="_blank" rel="external noreferrer"
+					>View on Foundry VTT <span>↗</span></a
+				>
 			{/if}
 		</div>
 	</div>
@@ -74,5 +81,9 @@
 	}
 	.docs-prose :global(.guide-heading) {
 		margin-top: 3rem;
+	}
+	.docs-meta .text-link {
+		margin-top: 0;
+		align-self: center;
 	}
 </style>
