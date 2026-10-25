@@ -127,6 +127,35 @@ test('Docs opens the module wiki and keeps navigation available in guides', asyn
 	).toBeTruthy();
 });
 
+const foundryPackagePages = [
+	['morelord-core', 'https://foundryvtt.com/packages/morelord-core'],
+	['morelord-journeys', 'https://foundryvtt.com/packages/morelord-journeys'],
+	['morelord-encounters', 'https://foundryvtt.com/packages/morelord-encounters'],
+	['morelord-character-export', 'https://foundryvtt.com/packages/morelord-character-export'],
+	['morelord-craftworks', 'https://foundryvtt.com/packages/morelord-craftworks']
+] as const;
+
+test('module docs link to the official Foundry package page', async ({ page }) => {
+	for (const [slug, href] of foundryPackagePages) {
+		await page.goto(`/docs/${slug}`);
+		const link = page.getByRole('link', { name: 'View on Foundry VTT' });
+		await expect(link).toBeVisible();
+		await expect(link).toHaveAttribute('href', href);
+		await expect(link).toHaveAttribute('target', '_blank');
+		await expect(link).toHaveAttribute('rel', 'external noreferrer');
+	}
+
+	await page.goto('/docs/morelord-core/telemetry');
+	await expect(page.getByRole('link', { name: 'View on Foundry VTT' })).toHaveAttribute(
+		'href',
+		'https://foundryvtt.com/packages/morelord-core'
+	);
+	await page.goto('/docs/morelord-downtime');
+	await expect(page.getByRole('link', { name: 'View on Foundry VTT' })).toHaveCount(0);
+	await page.goto('/docs/morelord-marketplace');
+	await expect(page.getByRole('link', { name: 'View on Foundry VTT' })).toHaveCount(0);
+});
+
 test('Craftworks is consolidated and the Downtime disclosure opens its documentation', async ({
 	page
 }) => {
