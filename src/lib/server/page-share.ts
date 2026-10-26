@@ -6,7 +6,8 @@ export const SHARE_NAME_MAX = 80;
 export const SHARE_BODY_MAX = 4_096;
 export const SHARE_RATE_LIMIT = 5;
 export const SHARE_RATE_WINDOW_MS = 60 * 60 * 1000;
-export const SHARE_FROM_ADDRESS = 'hello@morelordgaming.com';
+export const SHARE_FROM_ADDRESS = 'chuck@morelordgaming.com';
+export const SHARE_FROM_NAME = 'Chuck from Morelord Gaming';
 
 const EMAIL_PATTERN =
 	/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
@@ -133,7 +134,7 @@ export function buildShareMessage(input: {
 	const safeUrl = escapeHtml(input.url);
 	return {
 		to: input.to,
-		from: { email: resolveFromAddress(input.from), name: 'Morelord Gaming' },
+		from: { email: resolveFromAddress(input.from), name: SHARE_FROM_NAME },
 		subject: `Morelord Gaming: ${productName}`.slice(0, 180),
 		text: `${intro}\n\n${title}\n\n${blurb}\n\n${input.url}\n`,
 		html: `<!doctype html><html><body><p>${safeIntro}</p><h1>${safeTitle}</h1><p>${safeBlurb}</p><p><a href="${safeUrl}">${safeUrl}</a></p></body></html>`

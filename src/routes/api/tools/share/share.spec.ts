@@ -176,7 +176,7 @@ it('sends the catalog title, blurb, and email UTM link, with the sender name esc
 				body: { ...validBody, senderName: 'Pat\r\nBcc: evil@example.com <script>' },
 				db,
 				email,
-				env: { EMAIL_FROM: 'hello@morelordgaming.com' }
+				env: { EMAIL_FROM: 'chuck@morelordgaming.com' }
 			})
 		);
 		expect(response.status).toBe(200);
@@ -188,7 +188,10 @@ it('sends the catalog title, blurb, and email UTM link, with the sender name esc
 			source: 'email_share'
 		});
 		expect(message.to).toBe('friend@example.com');
-		expect(message.from).toEqual({ email: 'hello@morelordgaming.com', name: 'Morelord Gaming' });
+		expect(message.from).toEqual({
+			email: 'chuck@morelordgaming.com',
+			name: 'Chuck from Morelord Gaming'
+		});
 		expect(message.subject).toBe('Morelord Gaming: Morelord Journeys');
 		expect(message.subject).not.toContain('Pat');
 		expect(message.subject).not.toContain('Bcc');
@@ -223,6 +226,10 @@ it('stops sending after five emails from the same address within an hour', async
 			error: 'Too many emails from this network. Please try again later.'
 		});
 		expect(sent).toHaveLength(5);
+		expect(sent[0].from).toEqual({
+			email: 'chuck@morelordgaming.com',
+			name: 'Chuck from Morelord Gaming'
+		});
 
 		const otherNetwork = await POST(shareEvent({ body: validBody, db, email, ip: '198.51.100.9' }));
 		expect(otherNetwork.status).toBe(200);
