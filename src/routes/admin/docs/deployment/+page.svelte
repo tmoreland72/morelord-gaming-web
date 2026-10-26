@@ -80,7 +80,28 @@ DISCORD_INVITE_URL=</code
 				<strong>Deploy Morelord Gaming Website</strong> manually. The workflow will stop before deployment
 				when validation or a database migration fails.
 			</p>
-			<h2>7. Synchronize the product catalog</h2>
+			<h2>7. Enable email sharing before the next deploy</h2>
+			<p>
+				Tool pages send <strong>Share this page</strong> email through the Cloudflare Email Sending
+				binding <code>EMAIL</code>, from <code>EMAIL_FROM</code> (<code
+					>hello@morelordgaming.com</code
+				>). The address is a Worker variable, not a secret. Enable Email Sending on the account and
+				onboard
+				<code>morelordgaming.com</code> before deploying this binding, or the deploy can fail.
+			</p>
+			<p>
+				Cloudflare shows SPF and DKIM records for the sender domain. <strong
+					>morelordgaming.com is still moving from Squarespace to Cloudflare.</strong
+				>
+				Until the zone is active here, add those records at Squarespace if sending must work before the
+				transfer. Do not change MX to Cloudflare while Squarespace still receives the domain's mail. After
+				the nameservers move, confirm SPF and DKIM are still published. Turnstile is optional: set
+				<code>TURNSTILE_SITE_KEY</code>
+				and <code>TURNSTILE_SECRET_KEY</code> together, or leave both empty so the form works without
+				a widget.
+			</p>
+
+			<h2>8. Synchronize the product catalog</h2>
 			<p>
 				<code>npm run products:pull</code> copies the live products, features, feature assignments, releases,
 				and release changes into the local database. Rows and IDs match exactly; existing references are

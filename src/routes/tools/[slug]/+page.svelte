@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 	import { resolve } from '$app/paths';
 	import ReleaseNote from '$lib/components/ReleaseNote.svelte';
+	import SharePage from '$lib/components/SharePage.svelte';
 	import { githubRepoUrl } from '$lib/github';
 	import {
 		getProductLanding,
@@ -86,6 +87,13 @@
 							: resolve('/pricing')}>{callToAction.label}</a
 					>
 				{/if}
+				<SharePage
+					slug={data.product.slug}
+					title={landing.headline}
+					blurb={landing.benefit ?? landing.subhead}
+					origin={data.shareOrigin}
+					turnstileSiteKey={data.turnstileSiteKey}
+				/>
 				<a
 					class="button secondary"
 					href={resolve('/docs/[product]/[...path]', { product: data.product.slug, path: '' })}

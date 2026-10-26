@@ -7,10 +7,7 @@
 	"name": "morelord-gaming-web",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2026-08-04",
-	"compatibility_flags": [
-		"nodejs_compat",
-		"nodejs_als"
-	],
+	"compatibility_flags": ["nodejs_compat", "nodejs_als"],
 
 	"workers_dev": false,
 
@@ -39,7 +36,17 @@
 			"database_id": "8d46052b-3c47-47bb-9324-307df5014376",
 			"migrations_dir": "migrations"
 		}
-	]
+	],
+
+	"send_email": [
+		{
+			"name": "EMAIL"
+		}
+	],
+
+	"vars": {
+		"EMAIL_FROM": "hello@morelordgaming.com"
+	}
 
 	/**
 	 * Smart Placement

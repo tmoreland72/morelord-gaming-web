@@ -49,6 +49,49 @@ npx wrangler d1 migrations apply morelord-gaming --remote
 - `/account` — future customer dashboard
 - `/api/health` — Worker and D1 health check
 
+## Sharing a tool page
+
+Every `/tools/[slug]` page has a **Share this page** button beside **Read the guide**. The menu can email the page, open X, Facebook, Reddit, or Bluesky in a new tab, copy the link, and on phones that support `navigator.share` open the device share sheet.
+
+Email is sent by the site from `hello@morelordgaming.com` through the Cloudflare Email Sending binding named `EMAIL`. The message contains the page title, the tool's existing short description, and a link to that page. Social, copy, and native links are built in the browser and are not sent by the server.
+
+Tagged links:
+
+- Email: `utm_source=email_share&utm_medium=email&utm_campaign=<tool slug>`
+- X, Facebook, Reddit, Bluesky, copy, and the device share sheet: `utm_source=<x|facebook|reddit|bluesky|copy_link|native_share>&utm_medium=social_share&utm_campaign=<tool slug>`
+
+The email endpoint is `POST /api/tools/share`. It checks the recipient address, caps field lengths, strips control characters, and HTML-escapes the sender name. The sender name is only placed in the message body. A hidden honeypot field and a limit of 5 emails per hour per IP (the existing D1 `rate_limit_events` table) reject abuse. Cloudflare Turnstile is optional: when `TURNSTILE_SECRET_KEY` is unset, local development works without a widget.
+
+### Email Sending setup
+
+The Worker is on the Workers Paid plan, which is required to send to an arbitrary recipient. Add this binding in `wrangler.jsonc` (already present in this repo):
+
+```jsonc
+"send_email": [{ "name": "EMAIL" }],
+"vars": { "EMAIL_FROM": "hello@morelordgaming.com" }
+```
+
+Do not set `destination_address` on the binding. That restriction would only allow mail to verified destination addresses. Leave `EMAIL_FROM` as an address on `morelordgaming.com`. It is not a secret. Set Turnstile only if you want the widget:
+
+```powershell
+npx wrangler secret put TURNSTILE_SITE_KEY
+npx wrangler secret put TURNSTILE_SECRET_KEY
+```
+
+Copy the same two names into `.env` for local use, or leave them blank. Never commit the secret values.
+
+Before the first production deploy of this binding, enable Email Sending for the account (Cloudflare dashboard → Email → Email Sending) and onboard `morelordgaming.com`. Cloudflare will show SPF and DKIM records for the sender domain. Sending fails until those records resolve publicly. `hello@morelordgaming.com` does not need its own mailbox.
+
+**The domain is still being transferred from Squarespace to Cloudflare.** These DNS steps depend on that:
+
+- Until the zone is active on Cloudflare, the dashboard cannot publish SPF and DKIM for you. Add the records Cloudflare displays at Squarespace, which is still the DNS host, if you need sending to work before the transfer finishes.
+- Do not point MX at Cloudflare Email Routing while Squarespace is still receiving mail for the domain. Email Sending does not require Cloudflare to receive mail. Keep the existing MX records if mailboxes still live at Squarespace.
+- After the nameservers move to Cloudflare, confirm SPF and DKIM survived the transfer and remove any duplicate Squarespace copies. Automatic Email Routing setup in the dashboard is only reliable once Cloudflare is the authoritative DNS.
+
+Enable Email Sending before merging a deploy that includes the `EMAIL` binding. If the account cannot create that binding, the production deploy fails.
+
+Local `npm run dev` can open the share menu and form without the binding. Submitting the form returns a clear error until `EMAIL` is available, which happens under `wrangler dev` after the binding is configured. Wrangler does not deliver real mail from a local session.
+
 ## Stripe subscription setup
 
 The project includes Stripe Checkout, Customer Portal, subscription webhook storage and Stripe Billing Entitlements synchronization without requiring a Stripe SDK package.
