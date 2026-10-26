@@ -84,9 +84,9 @@ DISCORD_INVITE_URL=</code
 			<p>
 				Tool pages send <strong>Share this page</strong> email through the Cloudflare Email Sending
 				binding <code>EMAIL</code>, from <code>EMAIL_FROM</code> (<code
-					>hello@morelordgaming.com</code
-				>). The address is a Worker variable, not a secret. Enable Email Sending on the account and
-				onboard
+					>chuck@morelordgaming.com</code
+				>). Recipients see the From name <strong>Chuck from Morelord Gaming</strong>. The address is
+				a Worker variable, not a secret. Enable Email Sending on the account and onboard
 				<code>morelordgaming.com</code> before deploying this binding, or the deploy can fail.
 			</p>
 			<p>

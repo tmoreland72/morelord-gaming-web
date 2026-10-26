@@ -53,7 +53,7 @@ npx wrangler d1 migrations apply morelord-gaming --remote
 
 Every `/tools/[slug]` page has a **Share this page** button beside **Read the guide**. The menu can email the page, open X, Facebook, Reddit, or Bluesky in a new tab, copy the link, and on phones that support `navigator.share` open the device share sheet.
 
-Email is sent by the site from `hello@morelordgaming.com` through the Cloudflare Email Sending binding named `EMAIL`. The message contains the page title, the tool's existing short description, and a link to that page. Social, copy, and native links are built in the browser and are not sent by the server.
+Email is sent by the site from `chuck@morelordgaming.com` with the From name `Chuck from Morelord Gaming` through the Cloudflare Email Sending binding named `EMAIL`. The message contains the page title, the tool's existing short description, and a link to that page. Social, copy, and native links are built in the browser and are not sent by the server.
 
 Tagged links:
 
@@ -68,7 +68,7 @@ The Worker is on the Workers Paid plan, which is required to send to an arbitrar
 
 ```jsonc
 "send_email": [{ "name": "EMAIL" }],
-"vars": { "EMAIL_FROM": "hello@morelordgaming.com" }
+"vars": { "EMAIL_FROM": "chuck@morelordgaming.com" }
 ```
 
 Do not set `destination_address` on the binding. That restriction would only allow mail to verified destination addresses. Leave `EMAIL_FROM` as an address on `morelordgaming.com`. It is not a secret. Set Turnstile only if you want the widget:
@@ -80,7 +80,7 @@ npx wrangler secret put TURNSTILE_SECRET_KEY
 
 Copy the same two names into `.env` for local use, or leave them blank. Never commit the secret values.
 
-Before the first production deploy of this binding, enable Email Sending for the account (Cloudflare dashboard → Email → Email Sending) and onboard `morelordgaming.com`. Cloudflare will show SPF and DKIM records for the sender domain. Sending fails until those records resolve publicly. `hello@morelordgaming.com` does not need its own mailbox.
+Before the first production deploy of this binding, enable Email Sending for the account (Cloudflare dashboard → Email → Email Sending) and onboard `morelordgaming.com`. Cloudflare will show SPF and DKIM records for the sender domain. Sending fails until those records resolve publicly. `chuck@morelordgaming.com` does not need its own mailbox.
 
 **The domain is still being transferred from Squarespace to Cloudflare.** These DNS steps depend on that:
 
