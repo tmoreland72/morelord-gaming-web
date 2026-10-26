@@ -101,7 +101,7 @@ h3 { margin:.2rem 0 .65rem; font-size:1.5rem; color:#fff2cb; }
 .page-hero h1 { font-size:clamp(2.8rem,7vw,5.4rem); color:#fff0c3; text-shadow:0 5px 22px #000; }
 .split-hero { display:grid; grid-template-columns:minmax(0,1.35fr) minmax(260px,.65fr); align-items:center; gap:2rem; }
 .hero-mascot { width:min(100%,390px); justify-self:end; filter:drop-shadow(0 18px 20px #0009); }
-.tools-hero { background:radial-gradient(circle at 82% 20%,#8d2a1f77,transparent 27rem),linear-gradient(135deg,#2b2019,#100d0b); }
+.tools-hero { z-index:2; background:radial-gradient(circle at 82% 20%,#8d2a1f77,transparent 27rem),linear-gradient(135deg,#2b2019,#100d0b); }
 .adventure-hero { background:linear-gradient(90deg,#2c130ae8,#2b160bbd),url('/branding/morelord-banner.png') center / cover; }
 .pricing-hero { text-align:center; }
 .pricing-hero .lead, .pricing-hero h1 { margin-inline:auto; }

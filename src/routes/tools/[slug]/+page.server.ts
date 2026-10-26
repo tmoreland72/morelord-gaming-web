@@ -1,7 +1,12 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getProductBySlug } from '$lib/server/catalog';
-import { getBillingSummary, hasPremiumAccess, membershipTierFromSubscription } from '$lib/server/billing';
+import {
+	getBillingSummary,
+	hasPremiumAccess,
+	membershipTierFromSubscription
+} from '$lib/server/billing';
+import { readOptionalEnv } from '$lib/server/page-share';
 
 const PRODUCT_SLUG_PREFIX = 'morelord-';
 
@@ -21,5 +26,12 @@ export const load: PageServerLoad = async ({ params, platform, locals, url }) =>
 	}
 	const billing = locals.user ? await getBillingSummary(db, locals.user.id) : null;
 	const membershipTier = membershipTierFromSubscription(billing?.subscription);
-	return { ...result, user: locals.user ?? null, membershipTier, hasPremiumEntitlement: hasPremiumAccess(billing) };
+	return {
+		...result,
+		user: locals.user ?? null,
+		membershipTier,
+		hasPremiumEntitlement: hasPremiumAccess(billing),
+		shareOrigin: url.origin,
+		turnstileSiteKey: readOptionalEnv(platform, 'TURNSTILE_SITE_KEY')
+	};
 };
