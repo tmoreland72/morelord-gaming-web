@@ -240,7 +240,7 @@ jobs:
             --arg cm "$STRIPE_PRICE_CHAMPION_MONTHLY" \
             --arg ca "$STRIPE_PRICE_CHAMPION_ANNUAL" \
             '{STRIPE_SECRET_KEY:$secret,STRIPE_WEBHOOK_SECRET:$webhook,STRIPE_PRICE_PREMIUM_MONTHLY:$pm,STRIPE_PRICE_PREMIUM_ANNUAL:$pa,STRIPE_PRICE_CHAMPION_MONTHLY:$cm,STRIPE_PRICE_CHAMPION_ANNUAL:$ca}' \
-            | npx wrangler secret bulk
+            | npx wrangler versions secret bulk
 
       - name: Upload optional Discord runtime secrets
         if: ${{ env.DISCORD_CLIENT_ID != '' || env.DISCORD_CLIENT_SECRET != '' || env.DISCORD_BOT_TOKEN != '' || env.DISCORD_RELEASE_WEBHOOK_URL != '' || env.DISCORD_INVITE_URL != '' }}
@@ -260,7 +260,7 @@ jobs:
             --arg releaseWebhook "$DISCORD_RELEASE_WEBHOOK_URL" \
             --arg inviteUrl "$DISCORD_INVITE_URL" \
             '{DISCORD_CLIENT_ID:$client,DISCORD_CLIENT_SECRET:$secret,DISCORD_BOT_TOKEN:$bot,DISCORD_RELEASE_WEBHOOK_URL:$releaseWebhook,DISCORD_INVITE_URL:$inviteUrl} | with_entries(select(.value != ""))' \
-            | npx wrangler secret bulk
+            | npx wrangler versions secret bulk
 
       - name: Deploy Worker and runtime configuration
         uses: cloudflare/wrangler-action@v4
