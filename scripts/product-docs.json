@@ -81,6 +81,18 @@
 			]
 		},
 		{
+			"slug": "morelord-game-master",
+			"repository": "tmoreland72/morelord-game-master",
+			"branch": "master",
+			"docsPath": "docs",
+			"assetsPath": null,
+			"documents": [
+				{
+					"source": "README.md"
+				}
+			]
+		},
+		{
 			"slug": "morelord-journeys",
 			"foundryPackageId": "morelord-journeys",
 			"repository": "tmoreland72/morelord-journeys",

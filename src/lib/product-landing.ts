@@ -363,6 +363,46 @@ const landings: Record<string, ProductLanding> = {
 				}
 			]
 		}
+	},
+	'morelord-game-master': {
+		headline: 'Your in-game Dungeon Master Screen.',
+		subhead:
+			'Every DM needs a screen. Now yours lives inside Foundry, with roll requests, rewards, macros, sound, and a rules cheat sheet your players never see.',
+		description: [
+			'Morelord Game Master is for the GM running a D&D 2024 table in Foundry. It opens one window that only the GM sees. Players never open it, but they receive the roll requests you send.',
+			'Request checks and saves from the party, hand out XP, coins, and Heroic Inspiration in one step, and keep your macros, playlists, and ambience close at hand. Triggers react to moments in play, and you turn each one on or off to suit your table.',
+			'Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer using the 2024 rules, and Morelord Core 0.5.2 or newer.'
+		],
+		requiresCore: true,
+		features: {
+			standard: [
+				{
+					name: 'Ask the table for a roll',
+					description:
+						'Send ability checks, skill checks, and saving throws to players as native Foundry rolls, including blind rolls.'
+				},
+				{
+					name: 'Reward the party in one step',
+					description:
+						'Give or split coins and XP, grant or clear Heroic Inspiration, and undo the last bulk action.'
+				},
+				{
+					name: 'Sound and macros at hand',
+					description:
+						'Run your macros from one place, start playlists and ambience, and stop all sound with one click.'
+				},
+				{
+					name: 'Triggers you control',
+					description:
+						'Let moments in play react automatically, and turn each trigger on or off to suit your table.'
+				},
+				{
+					name: 'Rules behind the screen',
+					description:
+						'Look up conditions, actions, DCs, exhaustion, travel pace, and other D&D 2024 rules without leaving the game.'
+				}
+			]
+		}
 	}
 };
 

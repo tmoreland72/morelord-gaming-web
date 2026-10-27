@@ -12,6 +12,7 @@ const slugs = [
 	'morelord-craftworks',
 	'morelord-downtime',
 	'morelord-encounters',
+	'morelord-game-master',
 	'morelord-journeys',
 	'morelord-marketplace'
 ];

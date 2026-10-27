@@ -32,6 +32,12 @@
 				'Build encounters from your available monsters. Choose a difficulty and encounter style, review the roster, and drag linked Actors into your scene.',
 			access: 'Free edition · Paid features available'
 		},
+		'morelord-game-master': {
+			purpose: 'Dungeon Master Screen',
+			description:
+				'Your in-game Dungeon Master Screen. Send roll requests, reward the party, run sound and macros, and check the rules from one window your players never see.',
+			access: 'Free'
+		},
 		'morelord-journeys': {
 			purpose: 'Travel & exploration',
 			description:
