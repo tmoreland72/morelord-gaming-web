@@ -76,6 +76,13 @@ jobs:
           repository: tmoreland72/morelord-downtime
           path: .product-docs/morelord-downtime
 
+      - name: Check out Morelord Game Master documentation
+        uses: actions/checkout@v7
+        with:
+          repository: tmoreland72/morelord-game-master
+          ref: master
+          path: .product-docs/morelord-game-master
+
       - name: Synchronize product documentation
         run: npm run docs:sync
 
@@ -171,6 +178,13 @@ jobs:
         with:
           repository: tmoreland72/morelord-downtime
           path: .product-docs/morelord-downtime
+
+      - name: Check out Morelord Game Master documentation
+        uses: actions/checkout@v7
+        with:
+          repository: tmoreland72/morelord-game-master
+          ref: master
+          path: .product-docs/morelord-game-master
 
       - name: Synchronize product documentation
         run: npm run docs:sync

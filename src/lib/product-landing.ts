@@ -369,9 +369,9 @@ const landings: Record<string, ProductLanding> = {
 		subhead:
 			'Every DM needs a screen. Now yours lives inside Foundry, with roll requests, rewards, macros, sound, and a rules cheat sheet your players never see.',
 		description: [
-			'Morelord Game Master is for the GM running a D&D 2024 table in Foundry. It opens one window that only the GM sees. Players never open it, but they receive the roll requests you send.',
+			'Morelord Game Master is for the GM running a D&D 5e table in Foundry. It opens one window that only the GM sees. Players never open it, but they receive the roll requests you send.',
 			'Request checks and saves from the party, hand out XP, coins, and Heroic Inspiration in one step, and keep your macros, playlists, and ambience close at hand. Triggers react to moments in play, and you turn each one on or off to suit your table.',
-			'Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer using the 2024 rules, and Morelord Core 0.5.2 or newer.'
+			'Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer, and Morelord Core 0.5.2 or newer.'
 		],
 		requiresCore: true,
 		features: {
@@ -399,7 +399,7 @@ const landings: Record<string, ProductLanding> = {
 				{
 					name: 'Rules behind the screen',
 					description:
-						'Look up conditions, actions, DCs, exhaustion, travel pace, and other D&D 2024 rules without leaving the game.'
+						'Look up conditions, actions, DCs, exhaustion, travel pace, and other D&D 5e rules without leaving the game.'
 				}
 			]
 		}
