@@ -12,6 +12,7 @@ const slugs = [
 	'morelord-craftworks',
 	'morelord-downtime',
 	'morelord-encounters',
+	'morelord-game-master',
 	'morelord-journeys',
 	'morelord-marketplace'
 ];
@@ -149,5 +150,24 @@ describe('productCallToAction', () => {
 		expect(
 			productCallToAction({ loggedIn: true, hasPremium: true, returnTo: '/tools/morelord-core' })
 		).toBeNull();
+	});
+});
+
+describe('Game Master landing', () => {
+	const landing = getProductLanding('morelord-game-master', { name: 'x', summary: 'x' });
+	it('states the real minimum versions and no pricing tier', () => {
+		expect(landing.requirementsNote).toContain('Foundry VTT v14+');
+		expect(landing.requirementsNote).toContain('D&D 5e 6.0+');
+		expect(landing.requirementsNote).toContain('Morelord Core 0.5.2+');
+		expect(publicFeatureTiers('morelord-game-master', [])).toEqual({
+			standard: [],
+			premium: [],
+			champion: []
+		});
+	});
+	it('describes triggers as on or off, not as a limitation', () => {
+		const triggers = landing.untieredFeatures?.find((f) => f.name === 'Triggers');
+		expect(triggers?.description).toContain('on or off');
+		expect(triggers?.description).not.toMatch(/can.?t create|cannot create/i);
 	});
 });

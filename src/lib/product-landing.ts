@@ -40,7 +40,16 @@ export type ProductLanding = {
 	/** Extra demos rendered below the feature list. */
 	secondaryVideos?: LandingVideo[];
 	requiresCore: boolean;
+	/** Extra requirement line under the Morelord Core card, e.g. minimum versions. */
+	requirementsNote?: string;
 	features: Partial<Record<FeatureTier, LandingFeature[]>>;
+	/**
+	 * Features shown before a membership tier is decided. Rendered without a tier label so
+	 * the page does not imply pricing.
+	 */
+	untieredFeatures?: LandingFeature[];
+	/** Marked placeholder boxes where the demo video and screenshots will go. */
+	mediaPlaceholders?: { video: boolean; screenshots: string[] };
 };
 
 export const moduleInstallerBlurb =
@@ -331,6 +340,60 @@ const landings: Record<string, ProductLanding> = {
 						'Select multiple entries in a sidebar directory, review the names, and delete them together.'
 				}
 			]
+		}
+	},
+	'morelord-game-master': {
+		headline: 'Your in-game Dungeon Master Screen.',
+		subhead:
+			'Every DM needs a screen. Now yours lives inside Foundry, with roll requests, party rewards, macros, sound, triggers and a rules cheat sheet your players never see.',
+		description: [
+			'Every DM needs a screen. Morelord Game Master puts yours inside Foundry: the tools you reach for mid-session, behind a screen only the GM sees. Players never open it, but they receive the roll requests you send.',
+			'Request native Foundry rolls from the party, hand out coins, XP and Heroic Inspiration in one step, run your macros, set the mood with playlists and ambience, and look up D&D 2024 rules without leaving the table. Every setting is world-wide and controlled by the GM.',
+			'Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer using the 2024 rules, and Morelord Core 0.5.2 or newer.'
+		],
+		requiresCore: true,
+		requirementsNote:
+			'Requires Foundry VTT v14+, D&D 5e 6.0+ (2024 rules) and Morelord Core 0.5.2+.',
+		features: {},
+		untieredFeatures: [
+			{
+				name: 'Roll Requests',
+				description:
+					'Send ability checks, skill checks and saving throws to players as native Foundry 2024 rolls, including blind rolls.'
+			},
+			{
+				name: 'Bulk Actions',
+				description:
+					'Give or split coins and XP across the party, grant or clear Heroic Inspiration, sync prototype tokens, and undo the last bulk action.'
+			},
+			{
+				name: 'Macros',
+				description:
+					'Keep your macros in one place, drag them into order, and set any of them to run when the world loads.'
+			},
+			{
+				name: 'Sound',
+				description:
+					'Add playlists and ambience, set track and ambience volumes, and stop all sound with one click.'
+			},
+			{
+				name: 'Triggers',
+				description:
+					'React to in-game events automatically: run Sneak Attack when a hit qualifies, roll a Wild Magic Surge when a wild magic sorcerer casts a sorcerer spell, recover half the ammunition spent when combat ends, and keep the D&D calendar clock running in real time. Turn each trigger on or off to suit your table.'
+			},
+			{
+				name: 'Cheat Sheet',
+				description:
+					'A D&D 2024 quick reference for conditions, actions, DCs, exhaustion, jumping, travel pace, mounted and underwater combat, and improvising damage.'
+			},
+			{
+				name: 'GM and Player Settings',
+				description: 'All settings are world-wide and controlled by the GM.'
+			}
+		],
+		mediaPlaceholders: {
+			video: true,
+			screenshots: ['Roll Requests', 'Bulk Actions', 'Cheat Sheet']
 		}
 	},
 	'morelord-downtime': {

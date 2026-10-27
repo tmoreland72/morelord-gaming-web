@@ -32,6 +32,13 @@
 				'Build encounters from your available monsters. Choose a difficulty and encounter style, review the roster, and drag linked Actors into your scene.',
 			access: 'Free edition · Paid features available'
 		},
+		'morelord-game-master': {
+			purpose: 'Dungeon Master Screen',
+			description:
+				'Your in-game Dungeon Master Screen. Send roll requests, reward the party, run macros, control sound and triggers, and check D&D 2024 rules.',
+			// PLACEHOLDER: membership access for Game Master is not decided yet.
+			access: 'Access details coming soon'
+		},
 		'morelord-journeys': {
 			purpose: 'Travel & exploration',
 			description:
@@ -84,9 +91,9 @@
 				<h2>Tools created from real campaign needs</h2>
 			</div>
 			<p>
-				Players need a Morelord Gaming account only for My Characters through Character Export. Install and
-				enable Morelord Core to connect your account and manage membership access across supported
-				modules.
+				Players need a Morelord Gaming account only for My Characters through Character Export.
+				Install and enable Morelord Core to connect your account and manage membership access across
+				supported modules.
 			</p>
 		</div>
 		<div class="grid-3">
@@ -115,8 +122,8 @@
 			<h2>Membership access in the same installation.</h2>
 			<p>
 				No separate premium package to install and no duplicate configuration. Connect the GM's
-				Morelord Gaming account and eligible features activate automatically. Downtime requires Premium or
-				Champion.
+				Morelord Gaming account and eligible features activate automatically. Downtime requires
+				Premium or Champion.
 			</p>
 		</div>
 		<a class="button" href="/pricing">See membership options</a>
