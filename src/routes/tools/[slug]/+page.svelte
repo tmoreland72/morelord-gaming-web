@@ -126,17 +126,6 @@
 	</section>
 {/if}
 
-{#if landing.mediaPlaceholders?.video && !landing.youtubeId}
-	<section class="section product-demo-section" aria-label={`${data.product.name} demo`}>
-		<div class="shell">
-			<div class="docs-video product-demo media-placeholder" data-placeholder="demo-video">
-				<span class="tag">Placeholder</span>
-				<p>Demo video coming soon</p>
-			</div>
-		</div>
-	</section>
-{/if}
-
 {#if compactHero && landing.description.length > 0}
 	<section class="section">
 		<div class="shell">
@@ -166,39 +155,6 @@
 						{/each}
 					</ul>
 				</article>
-			{/each}
-		</div>
-	</section>
-{/if}
-
-{#if landing.untieredFeatures && landing.untieredFeatures.length > 0}
-	<section class="section brand-panel-section">
-		<div class="shell feature-columns" style:--tier-count={1}>
-			<article class="card feature-tier-card">
-				<!-- PLACEHOLDER: membership tier for these features is not decided yet. -->
-				<span class="tag">Features</span>
-				<h2>Behind the screen</h2>
-				<ul class="feature-list detailed-list">
-					{#each landing.untieredFeatures as feature (feature.name)}
-						<li>
-							<strong>{feature.name}</strong>
-							{#if feature.description}<span>{feature.description}</span>{/if}
-						</li>
-					{/each}
-				</ul>
-			</article>
-		</div>
-	</section>
-{/if}
-
-{#if landing.mediaPlaceholders && landing.mediaPlaceholders.screenshots.length > 0}
-	<section class="section" aria-label="Screenshots">
-		<div class="shell media-placeholder-grid">
-			{#each landing.mediaPlaceholders.screenshots as caption (caption)}
-				<figure class="media-placeholder" data-placeholder="screenshot">
-					<span class="tag">Placeholder</span>
-					<figcaption>Screenshot: {caption}</figcaption>
-				</figure>
 			{/each}
 		</div>
 	</section>
@@ -302,7 +258,6 @@
 					Install Morelord Core from Foundry's module browser and enable it in the world. It
 					connects this module to your Morelord Gaming account.
 				</p>
-				{#if landing.requirementsNote}<p>{landing.requirementsNote}</p>{/if}
 				<a class="text-link" href={resolve('/tools/[slug]', { slug: 'morelord-core' })}
 					>Get Morelord Core <span>→</span></a
 				>
@@ -316,25 +271,3 @@
 		</aside>
 	</div>
 </section>
-
-<style>
-	.media-placeholder {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		margin: 0;
-		aspect-ratio: 16 / 9;
-		border: 2px dashed #d49b2c;
-		border-radius: 12px;
-		background: rgba(212, 155, 44, 0.08);
-		text-align: center;
-		font-weight: 700;
-	}
-	.media-placeholder-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-		gap: 1.25rem;
-	}
-</style>
