@@ -68,6 +68,7 @@ describe('product landing copy', () => {
 		expect(getProductLanding('morelord-encounters', fallback).youtubeId).toBe('xADXldd1oRE');
 		expect(getProductLanding('morelord-core', fallback).youtubeId).toBe('2advzIa3o9Q');
 		expect(getProductLanding('morelord-downtime', fallback).youtubeId).toBe('kubQ5qZ6B0I');
+		expect(getProductLanding('morelord-game-master', fallback).youtubeId).toBe('4zSk2jdiglM');
 		for (const slug of slugs) {
 			expect(getProductLanding(slug, fallback).youtubeId).not.toBe('0d4kaqyP4OI');
 		}
