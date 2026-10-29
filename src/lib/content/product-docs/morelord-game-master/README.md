@@ -3,7 +3,7 @@ title: Morelord Game Master Documentation
 description: Your in-game Dungeon Master Screen for roll requests, party rewards, macros, sound, triggers, and a rules cheat sheet.
 slug: morelord-game-master
 product: morelord-game-master
-version: 0.1.15
+version: 0.4.1
 foundry: 14
 order: 0
 ---
@@ -14,7 +14,7 @@ Every DM needs a screen. Morelord Game Master is your in-game Dungeon Master Scr
 
 ## Setup
 
-Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer, and Morelord Core 0.5.2 or newer. Enable Core and Game Master in your world.
+Requires Foundry VTT v14 or newer, the D&D 5e system 6.0 or newer, and Morelord Core 0.8.0 or newer. Enable Core and Game Master in your world.
 
 As a GM, click the **Game Master** handle at the bottom of the screen, or press **Alt+G**. You can change the shortcut in Foundry's keybinding settings. The screen opens as a tray above the canvas and below Foundry windows and dialogs, so you can keep working while it is open.
 
