@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { escapeProductDocBraces } from './src/lib/content/escape-product-doc-braces.ts';
 
 export default defineConfig({
 	server: { watch: { ignored: ['**/.local/**', '**/.wrangler/**'] } },
@@ -16,7 +17,12 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter(),
-			preprocess: [mdsvex({ extensions: ['.svx', '.md'] })],
+			preprocess: [
+				mdsvex({
+					extensions: ['.svx', '.md'],
+					remarkPlugins: [escapeProductDocBraces]
+				})
+			],
 			extensions: ['.svelte', '.svx', '.md'],
 			typescript: {
 				config: (config) => {
