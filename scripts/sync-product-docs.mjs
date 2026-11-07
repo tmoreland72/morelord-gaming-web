@@ -97,6 +97,10 @@ function rewriteLinks(markdown, productSlug, documentRoutes, sourceFile) {
 	});
 }
 
+function bundledDocumentPath(product, document) {
+	return join(projectRoot, 'scripts', 'bundled-product-docs', product.slug, document.source);
+}
+
 for (const product of registry.products) {
 	const docsSource = join(sourceRoot, product.slug, product.docsPath);
 	if (!existsSync(docsSource)) {
@@ -104,6 +108,19 @@ for (const product of registry.products) {
 			`Documentation source not found for ${product.slug}: ${docsSource}. ` +
 				'Check out the product repository there or pass --source-root.'
 		);
+	}
+
+	for (const document of product.documents ?? []) {
+		if (!document.bundled) continue;
+		const bundled = bundledDocumentPath(product, document);
+		if (!existsSync(bundled)) {
+			throw new Error(
+				`Bundled document not found for ${product.slug}: ${relative(projectRoot, bundled)}`
+			);
+		}
+		const target = resolve(docsSource, document.source);
+		mkdirSync(dirname(target), { recursive: true });
+		cpSync(bundled, target);
 	}
 
 	const configuredDocuments = new Map(

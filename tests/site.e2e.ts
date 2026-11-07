@@ -104,7 +104,7 @@ test('Docs opens the module wiki and keeps navigation available in guides', asyn
 		.click();
 	await expect(page).toHaveURL(/\/docs$/);
 	const navigation = page.getByRole('navigation', { name: 'Module documentation' });
-	await expect(navigation.locator('summary')).toHaveCount(7);
+	await expect(navigation.locator('summary')).toHaveCount(8);
 	await navigation.getByRole('link', { name: 'Morelord Marketplace', exact: true }).click();
 	await expect(
 		navigation.getByRole('link', { name: 'Morelord Marketplace', exact: true })
@@ -173,9 +173,7 @@ test('Craftworks is consolidated and the Downtime disclosure opens its documenta
 		.click({ position: { x: 7, y: 15 } });
 	await expect(page).toHaveURL(/\/docs\/morelord-downtime$/);
 	await expect(navigation.getByRole('link', { name: 'GM workflow', exact: true })).toBeVisible();
-	await expect(
-		page.locator('.docs-prose').getByRole('heading', { name: 'Setup', exact: true })
-	).toBeVisible();
+	await expect(page.locator('#morelord-downtime--setup')).toBeVisible();
 });
 
 test('authentication status is not public', async ({ request }) => {

@@ -1,19 +1,22 @@
 ---
-title: "Morelord Core: Usage and Error Reporting"
-description: "Reporting consent, privacy, event coverage, and troubleshooting."
-slug: "morelord-core/telemetry"
-product: "morelord-core"
-audience: "game-master"
+title: 'Morelord Core: Usage and Error Reporting'
+description: 'Reporting consent, privacy, event coverage, and troubleshooting.'
+slug: 'morelord-core/telemetry'
+product: 'morelord-core'
+audience: 'game-master'
+version: '0.9.2'
 foundry: 14
 ---
 
 # Usage, errors and download reporting
 
-The reporting website and migrations were deployed on September 20, 2026. Core 0.3.10 introduces the opt-in reporting client.
+The reporting website and migrations were deployed on September 20, 2026. Core 0.3.10 introduced the reporting client. The next Core update adds the one-time GM notice described below.
 
 ## GM controls
 
-Open Morelord Core's account/settings window, even without a connected account. Share feature usage and Share error reports are independent choices. Both appear unchecked until the GM explicitly chooses and saves. The existing shareUsageStatistics key is preserved; telemetryConsentVersion=1 gates the broader reporting. Prior version-only sharing does not grant consent for feature events or errors. Legacy version headers remain on entitlement requests until that setting is changed. No account token, subscription, or activation is needed by the new endpoint.
+New and existing worlds receive a one-time **Morelord Reporting Preferences** notice for the elected active GM. **Share feature usage** and **Share error reports** are both preselected by default and preserve any previous saved choices. Uncheck either control before **Save Reporting Preferences** to opt out. Saving records the notice once per world, including when both choices are off. Closing without saving leaves preferences unchanged and offers the notice at the next GM session, not repeatedly during the same session.
+
+Change either choice anytime in **Morelord Core → Core Settings**, without connecting an account. The existing `shareUsageStatistics` key is preserved; `telemetryConsentVersion=1` still gates broader reporting, so a legacy world sends no feature/error reports before saving its choice. Previously enabled reporting stays governed by its saved choices. `telemetryNoticeVersion=1` records the completed notice and is excluded from settings transfers. Legacy version headers remain on entitlement requests until that setting is changed. No account token, subscription, or activation is needed by the reporting endpoint.
 
 Reporting is disabled in Developer Mode and for Core's Ignored Users. Revoking consent clears pending reports and aborts the client's current request; already received reports remain subject to retention. Privacy choices, the random reporting ID and its reporting credential are excluded from configuration exports. Do not opt demo worlds in: real reports would count them as usage unless Developer Mode is enabled.
 
@@ -31,14 +34,14 @@ Core sends up to 25 events every minute to /api/foundry/telemetry at the configu
 
 ## First instrumented features
 
-| Module | Events |
-| --- | --- |
-| Journeys | Dashboard, journey creation/arrival and phase changes |
-| Downtime | Dashboard/training/sourcing/research windows; project create/collect/cancel, session create/start/finalize, time allocation |
-| Craftworks | Dashboard, recipes, crafting, harvesting, gathering, loot, hoards, delerium, potions and materials windows; crafting start/check/complete, harvest start/claim, loot and hoard roll/award calls |
-| Marketplace | Marketplace and shop manager windows; shop checkout, catalog buys and sells |
-| Encounters | Builder, custom/generated selection and roster windows; caught generation errors |
-| Character Export | Export attempts/completion/failure when Core is active; Core remains optional |
+| Module           | Events                                                                                                                                                                                          |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Journeys         | Dashboard, journey creation/arrival and phase changes                                                                                                                                           |
+| Downtime         | Dashboard/training/sourcing/research windows; project create/collect/cancel, session create/start/finalize, time allocation                                                                     |
+| Craftworks       | Dashboard, recipes, crafting, harvesting, gathering, loot, hoards, delerium, potions and materials windows; crafting start/check/complete, harvest start/claim, loot and hoard roll/award calls |
+| Marketplace      | Marketplace and shop manager windows; shop checkout, catalog buys and sells                                                                                                                     |
+| Encounters       | Builder, custom/generated selection and roster windows; caught generation errors                                                                                                                |
+| Character Export | Export attempts/completion/failure when Core is active; Core remains optional                                                                                                                   |
 
 Morelord Compendium is private-game content and is excluded from usage, error and download reporting. No Campaign Manager events. Fixed event codes carry no actor, item, recipe, journey or world identifiers. Module integrations use optional Core API calls to preserve compatibility with existing Core versions.
 
@@ -56,10 +59,7 @@ The repeatable browser runner is tools/verify-telemetry-foundry.mjs. Set MORELOR
 
 September 18, 2026: Foundry 14.368 / D&D live checks passed: GM 7, player 4 with 2 intentional GM-only skips. The GM run includes a real Downtime window open/rerender (one event), local HTTP delivery, sanitized error frames and error-only consent without breadcrumbs. Privacy controls were rendered and inspected at 460px and 360px. The local website accepted unconnected reports and CORS preflight, rejected unexpected fields, protected the admin route, and stored duplicate retries once. Full gameplay completion coverage and additional theme verification remain outstanding; this is not a compatibility certification. No public deployment or module release was performed.
 
-
 Credential follow-up: automated client/server credential tests and the running local website API passed (missing credential 401, valid and retry 200, mismatched world 403). The final credential-enabled Foundry delivery rerun remains outstanding: the development data directory is in use by the existing Dev1 server, so the earlier demo1 instance was not restarted. Earlier in-game results above predate the reporting-credential handshake.
-
-
 
 ## September 20 release verification
 

@@ -4,7 +4,7 @@ description: Detailed rules for movement, weather, encounters, discoveries, supp
 slug: morelord-journeys/gm-travel-rules
 product: morelord-journeys
 audience: game-master
-version: 0.3.6
+version: 0.3.9
 foundry: 14
 order: 15
 ---
@@ -23,13 +23,13 @@ When creating a route, enter its length as whole **Days** plus **Additional Thir
 
 Every route has five ratings.
 
-| Rating | What it controls |
-| --- | --- |
-| Length | The route's distance in travel days; each day contains three thirds |
-| Danger | How strongly encounter rolls shift toward Major Encounters or Night Attacks |
-| Discovery DC | The Observer's Perception DC for noticing optional leads |
-| Resources DC | Each traveler's Survival DC for finding food and a water source |
-| Navigation DC | The Navigator's Survival DC for making progress without becoming lost |
+| Rating        | What it controls                                                            |
+| ------------- | --------------------------------------------------------------------------- |
+| Length        | The route's distance in travel days; each day contains three thirds         |
+| Danger        | How strongly encounter rolls shift toward Major Encounters or Night Attacks |
+| Discovery DC  | The Observer's Perception DC for noticing optional leads                    |
+| Resources DC  | Each traveler's Survival DC for finding food and a water source             |
+| Navigation DC | The Navigator's Survival DC for making progress without becoming lost       |
 
 A safe road is normally longer, has low Danger, few discoveries, poor foraging, and easy or automatic navigation. A shortcut may be shorter and rich in resources but more dangerous and difficult to navigate.
 
@@ -56,11 +56,11 @@ Weather has two rolls. First, Journeys prompts you to determine whether extreme 
 An extreme day cannot produce an ordinary forecast such as Clear Skies. Journeys limits the second roll to extreme results:
 
 | Spring and summer | Fall and winter |
-| --- | --- |
-| Gale-force winds | Blizzard |
-| Thunderstorm | Freezing rain |
-| Flash flooding | Ice storm |
-| Heat wave | Cold snap |
+| ----------------- | --------------- |
+| Gale-force winds  | Blizzard        |
+| Thunderstorm      | Freezing rain   |
+| Flash flooding    | Ice storm       |
+| Heat wave         | Cold snap       |
 
 Extreme weather has three automatic effects:
 
@@ -112,18 +112,18 @@ Ignoring the clue costs nothing. Any duration greater than zero means the lead w
 
 Use the optional d100 prompt when you need inspiration:
 
-| d100 | Lead |
-| --- | --- |
-| 01–10 | Fresh tracks leave the main route |
-| 11–20 | Smoke, light, or movement is visible in the distance |
-| 21–30 | An unexplained sound carries across the terrain |
-| 31–40 | Blood, remains, or abandoned equipment marks a side trail |
-| 41–50 | An unusual cave, spring, grove, or geological feature appears |
-| 51–60 | Ruined or worked stone is visible nearby |
-| 61–70 | Wildlife behaves strangely or gathers around a location |
-| 71–80 | A camp, banner, message, shrine, or trade marker is found |
-| 81–90 | Signs warn of a hazard, predator, or approaching disaster |
-| 91–100 | A magical anomaly alters light, weather, plants, or tracks |
+| d100   | Lead                                                          |
+| ------ | ------------------------------------------------------------- |
+| 01–10  | Fresh tracks leave the main route                             |
+| 11–20  | Smoke, light, or movement is visible in the distance          |
+| 21–30  | An unexplained sound carries across the terrain               |
+| 31–40  | Blood, remains, or abandoned equipment marks a side trail     |
+| 41–50  | An unusual cave, spring, grove, or geological feature appears |
+| 51–60  | Ruined or worked stone is visible nearby                      |
+| 61–70  | Wildlife behaves strangely or gathers around a location       |
+| 71–80  | A camp, banner, message, shrine, or trade marker is found     |
+| 81–90  | Signs warn of a hazard, predator, or approaching disaster     |
+| 91–100 | A magical anomaly alters light, weather, plants, or tracks    |
 
 Examples of useful discovery leads:
 
@@ -144,11 +144,11 @@ Examples of useful discovery leads:
 
 The Navigator rolls Wisdom (Survival) against the route's Navigation DC. Extreme weather imposes disadvantage. A reliable map, good directions, or route knowledge may grant advantage.
 
-| Result | Route effect |
-| --- | --- |
-| Meets or exceeds the DC | Apply the day's movement |
-| Fails by 1–4 | The party becomes lost and makes no route progress |
-| Fails by 5 or more | Turned Around; add one full day to the distance remaining |
+| Result                  | Route effect                                              |
+| ----------------------- | --------------------------------------------------------- |
+| Meets or exceeds the DC | Apply the day's movement                                  |
+| Fails by 1–4            | The party becomes lost and makes no route progress        |
+| Fails by 5 or more      | Turned Around; add one full day to the distance remaining |
 
 Example: the party chooses Fast pace for four thirds, pursues a discovery for a cost of one third, and loses another third to weather. Its movement is two thirds. If Navigation succeeds, subtract two thirds from the route. If it becomes Lost, route distance does not change. If it is Turned Around, add one full day to the route.
 
@@ -156,7 +156,7 @@ Example: the party chooses Fast pace for four thirds, pursues a discovery for a 
 
 After Navigation, the party may travel for two additional hours. Pressing on adds one progress third.
 
-Every traveler makes a DC 12 Constitution saving throw. A failed traveler gains one Exhaustion. Journeys sends each owning player a private roll request and shows you when all results are complete. You can resolve a request for an absent player.
+Every traveler makes a DC 12 Constitution saving throw. A failed traveler gains one Exhaustion. Journeys posts one public group request card with a separate Constitution save for each traveler and shows when all results are complete. Any GM can roll for a traveler, including after their player disconnects.
 
 Pressing on is not available while Stopped. The save-request control appears only after the GM selects Press On. Every pending request can be resent or resolved manually by the GM.
 
@@ -165,6 +165,8 @@ Pressing on is not available while Stopped. The save-request control appears onl
 Every traveler rolls Wisdom (Survival) against the route's Resources DC.
 
 - A successful traveler finds a full meal and does not consume a ration.
+- A total of 20 or a natural 20 finds one extra ration. That ration covers a traveler who failed. Any extra ration still left is added to the successful forager's inventory.
+- The Foraging outcome and the Expedition Log report the same split, for example `Found 4 food: 3 to pool, 1 excess to foragers`. Food to the pool supplies travelers today. Excess is the surplus stored on the foragers. Each clause appears only when its amount is greater than zero.
 - A failed traveler consumes one ration from the expedition's pooled food.
 - The pool includes recognized food carried by every traveler and the Group actor.
 - Journeys shows which items and actors will supply the rations before you confirm consumption.
@@ -197,20 +199,22 @@ The Camp phase establishes:
 - Each traveler's camp action.
 - Whether the derived setup is poor, ordinary, or excellent.
 
+When Morelord Downtime is active, **Open Downtime** appears above **Continue**. It opens the Downtime dashboard so the GM can track a couple of hours of downtime while the party sets up camp. The button is omitted when Downtime is not active.
+
 The following Sleep & Shelter phase handles personal tents, bedrolls, blankets, interruptions, sleep saves, and Peaceful Rest choices.
 
 A campfire is required for Craft, Cook, and Prepare. It makes camp setup excellent (-10) while its visibility adds +5, for a combined -5 night modifier. A camp with neither fire nor any tent is poor (+10). All other camps are ordinary.
 
 ## Camp actions
 
-| Action | Resolution |
-| --- | --- |
-| Take a Watch | Full attention; make night Perception normally if this watch is selected |
-| Craft | Resolve crafting manually or through Craftworks; Perception is at disadvantage |
-| Cook | Resolve verbally; on success may remove one Exhaustion from up to two chosen characters; Perception is at disadvantage |
-| Prepare | Resolve the preparation benefit verbally; Perception is at disadvantage |
-| Slumber | Character sleeps; Perception automatically fails; completing the required sleep may grant a Peaceful Rest choice |
-| Task | Resolve the task verbally; Perception is normally at disadvantage unless the task assists observation |
+| Action       | Resolution                                                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Take a Watch | Full attention; make night Perception normally if this watch is selected                                               |
+| Craft        | Resolve crafting manually or through Craftworks; Perception is at disadvantage                                         |
+| Cook         | Resolve verbally; on success may remove one Exhaustion from up to two chosen characters; Perception is at disadvantage |
+| Prepare      | Resolve the preparation benefit verbally; Perception is at disadvantage                                                |
+| Slumber      | Character sleeps; Perception automatically fails; completing the required sleep may grant a Peaceful Rest choice       |
+| Task         | Resolve the task verbally; Perception is normally at disadvantage unless the task assists observation                  |
 
 Journeys logs manual benefits but does not automatically apply Prepare, Cook, Slumber, or Peaceful Rest benefits to actors.
 
@@ -234,13 +238,13 @@ Journeys applies Heroic Inspiration to the character sheet when selected. It rec
 
 Journeys uses 2024 Long Rest timing without a sleep check. A normal rest needs eight hours, including at least six hours asleep and at most two hours of light activity such as standing watch. Trance uses four hours of meditation; the GM can override the character's required hours.
 
-The GM confirms eligibility at the start (at least 1 HP and sixteen hours since the previous Long Rest ended). Camp assignments determine when each traveler sleeps, watches, or works. Enter the encounter's duration, number of rest-breaking interruptions, and time within its watch. Initiative, damage, a leveled spell, or an hour of physical exertion interrupt an unfinished rest. Each interruption adds one recovery hour; time spent interrupted does not count as rest. Add extra sleep or meditation after Watch 4 when needed. Unknown event timing defaults to the beginning of its watch.
+The GM confirms eligibility at the start (at least 1 HP and sixteen hours since the previous Long Rest ended). Camp assignments determine when each traveler sleeps, watches, or works. Enter the encounter's duration, number of rest-breaking interruptions, and time within its watch. Initiative, damage, a leveled spell, or an hour of physical exertion interrupt an unfinished rest. Each interruption adds one recovery hour; time spent interrupted does not count as rest. A **Duration (hours)** of 0 does not interrupt the rest: it adds no recovery hour and no lost time, and rest results say the long rest was not interrupted. Add extra sleep or meditation after Watch 4 when needed. Unknown event timing defaults to the beginning of its watch.
 
 A later event cannot cancel a completed rest. For example, an elf standing Watch 1 and meditating through Watches 2 and 3 finishes before a Watch 4 encounter. Rest Results explain sleep received, interruptions, missing rest time, and Exhaustion in bullet points. Saved results from earlier rules remain labeled historical results and are not recalculated.
 
 Shelter equipment is recorded for camp planning and does not change rest timing. The existing supply rule still prevents Exhaustion recovery when food or water is missing. The optional Xanathar-style deprivation save remains separate: a missed rest starts at DC 10 and increases by 5 on consecutive missed rests. Enable **Do not add Exhaustion for lack of sleep** to disable that save and its Exhaustion. Offline or disconnected players' pending saves can be resolved by the GM.
 
-Journeys applies its recorded Exhaustion change and Heroic Inspiration selections. Apply HP, spell-slot, and other native Long Rest recovery through the character sheet, avoiding a second Exhaustion reduction. Other Peaceful Rest choices remain manual; the world clock is not advanced.
+Journeys applies its recorded Exhaustion change and Heroic Inspiration selections. After all Sleep & Shelter rolls resolve, select **Send Long Rest Buttons** to post Core chat actions for eligible travelers. Each player (or the GM) can apply native Long Rest recovery once, without reducing Exhaustion again. Re-sending retains completed actions. Use these buttons before the next travel day; native recovery is not reversed by Go Back. Other Peaceful Rest choices remain manual; the world clock is not advanced.
 
 ## Reading the help buttons
 
