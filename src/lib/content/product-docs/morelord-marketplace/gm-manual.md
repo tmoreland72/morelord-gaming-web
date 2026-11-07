@@ -4,21 +4,21 @@ description: Install, configure, and operate Morelord Marketplace, including pre
 slug: morelord-marketplace/gm
 product: morelord-marketplace
 audience: game-master
-version: 0.10.1
+version: 0.12.2
 foundry: 14
 ---
 
 # Morelord Marketplace Game Master Manual
 
-This guide covers Morelord Marketplace 0.10.1, Foundry VTT v14, D&D, and Morelord Core 0.4.0 or later. The global tabs run **Sell → Transfer → Buy → Wishlist**. Sell eligible inventory items at rates set by the GM; wishlists save desired items without reserving stock.
+This guide covers Morelord Marketplace 0.12.2, Foundry VTT v14, D&D, and Morelord Core 0.9.2 or later. Open Marketplace and Shop Manager from **Morelord Tools**. The global tabs run **Sell → Transfer → Buy → Wishlist**. Sell eligible inventory items at rates set by the GM; wishlists save desired items without reserving stock.
 
 ## Inventory transfers
 
-The **Transfer** tab lets players move physical inventory quantities or whole stacks to another eligible character or Group, including inventories they cannot edit. An active, non-ignored GM client must be connected to apply transfers automatically through Core. Transfers require no approval or premium access, do not change currency, and post a transaction chat card. Containers include all their contents and nested containers, with containment preserved at the recipient. The player selects the sending inventory in **Shopping As**, adds one item or a whole stack to the cart, adjusts quantities, selects **Recipient**, and chooses **Transfer Items**. The sender must own the source inventory; recipient edit permission is not required. Transfer the whole container stack to include its contents. Overlapping individual and container selections move each item only once. Individual contents can be sent separately. If inventory rollback is incomplete, review both actors before retrying.
+The **Transfer** tab lets players move physical inventory quantities or whole stacks to another eligible character or Group, including inventories they cannot edit. An active, non-ignored GM client must be connected to apply transfers automatically through Core. Transfers require no approval or premium access, do not change currency, and post a transaction chat card. Containers include all their contents and nested containers, with containment preserved at the recipient. The player selects **Sender**, adds one item or a whole stack to the cart, adjusts quantities, selects **Recipient**, and chooses **Transfer Items**. A character source requires ownership; a Group source requires only membership through the player's assigned or owned character. Recipient edit permission is not required. Transfer the whole container stack to include its contents. Overlapping individual and container selections move each item only once. Individual contents can be sent separately. If inventory rollback is incomplete, review both actors before retrying.
 
 Morelord Marketplace gives a Foundry VTT world a global catalog for buying and selling D&D items. With Tools Premium or Tools Champion access, it also provides GM transaction approvals and Shop Manager for configurable scene vendors.
 
-This manual applies to Morelord Marketplace 0.10.1, Foundry VTT v14, and the D&D system.
+This manual applies to Morelord Marketplace 0.12.2, Foundry VTT v14, and the D&D system.
 
 ## Contents
 
@@ -26,6 +26,7 @@ This manual applies to Morelord Marketplace 0.10.1, Foundry VTT v14, and the D&D
 - [Feature access](#feature-access)
 - [Install and activate](#install-and-activate)
 - [Configure the global Marketplace](#configure-the-global-marketplace)
+- [Shared Locations](#shared-locations)
 - [Open and test the Marketplace](#open-and-test-the-marketplace)
 - [Manage GM approvals](#manage-gm-approvals)
 - [Set up premium access](#set-up-premium-access)
@@ -37,18 +38,18 @@ This manual applies to Morelord Marketplace 0.10.1, Foundry VTT v14, and the D&D
 
 ## Feature access
 
-| Feature | Standard | Tools Premium / Champion |
-| --- | :---: | :---: |
-| Browse the global catalog | Yes | Yes |
-| Buy and sell in the global Marketplace | Yes | Yes |
-| Transfer inventory items with a connected GM | Yes | Yes |
-| Save shopper wishlists | Yes | Yes |
-| Configure allowed item compendiums | Yes | Yes |
-| Configure the default buy and sell rates | Yes | Yes |
-| Post transaction cards to chat | Yes | Yes |
-| Require GM approval for global purchases and sales | No | Yes |
-| Create and manage scene shops | No | Yes |
-| Import, export, place, and restock shops | No | Yes |
+| Feature                                            | Standard | Tools Premium / Champion |
+| -------------------------------------------------- | :------: | :----------------------: |
+| Browse the global catalog                          |   Yes    |           Yes            |
+| Buy and sell in the global Marketplace             |   Yes    |           Yes            |
+| Transfer inventory items with a connected GM       |   Yes    |           Yes            |
+| Save shopper wishlists                             |   Yes    |           Yes            |
+| Configure allowed item compendiums                 |   Yes    |           Yes            |
+| Configure the default buy and sell rates           |   Yes    |           Yes            |
+| Post transaction cards to chat                     |   Yes    |           Yes            |
+| Require GM approval for global purchases and sales |    No    |           Yes            |
+| Create and manage scene shops                      |    No    |           Yes            |
+| Import, export, place, and restock shops           |    No    |           Yes            |
 
 The global Marketplace remains usable if premium access expires. Saved premium settings and shop data are retained, but premium controls remain locked until access returns.
 
@@ -58,8 +59,8 @@ The global Marketplace remains usable if premium access expires. Saved premium s
 
 - Foundry Virtual Tabletop v14
 - The D&D game system
-- Morelord Core 0.4.0 or later
-- Morelord Marketplace v0.10.1
+- Morelord Core 0.9.2 or later
+- Morelord Marketplace v0.12.2
 
 ### Install with the manifest
 
@@ -80,39 +81,100 @@ Open **Game Settings → Configure Settings → Module Settings → Morelord Mar
 
 ![Morelord Marketplace world settings in Foundry VTT](/docs-assets/morelord-marketplace/assets/marketplace-configuration.png)
 
-*The Marketplace world settings control global trading, approval requirements, transaction cards, and access to compendium configuration.*
+_The Marketplace world settings control global trading, approval requirements, transaction cards, and access to compendium configuration._
 
 ### World settings
 
-| Setting | Default | Effect |
-| --- | --- | --- |
-| **Default Buy Rate** | `1` | Multiplier of list price for global purchases, at least `1`. Enter `1.5` for 150%. Applies to catalog prices, checkout, and approvals; shops retain their own pricing. |
-| **Default Sell Rate** | `1` | Fraction of an item's list price paid for global sales. Enter `0.5` for 50% or `1` for 100%. Shops can override this value. |
-| **Enable Global Marketplace Selling** | On | Enables selling in the global Marketplace. It does not affect shop-specific selling. |
-| **Enable Global Marketplace Buying** | On | Enables direct global purchases. If off, players can still browse the catalog as a reference. It does not affect shop-specific buying. |
-| **Require GM Approval for Sales** | Off | Holds player-initiated global sales for a GM decision. Premium or Champion access is required. |
-| **Require GM Approval for Purchases** | Off | Holds player-initiated global purchases for a GM decision. Premium or Champion access is required. |
-| **Post Transaction Cards** | On | Posts pending and completed Marketplace transactions to chat. |
+| Setting                               | Default | Effect                                                                                                                                                                                                                                                    |
+| ------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Default Buy Rate**                  | `1`     | Multiplier of list price for global purchases, at least `1`. Enter `1.5` for 150%. Applies to catalog prices, checkout, and approvals; shops retain their own pricing.                                                                                    |
+| **Default Sell Rate**                 | `1`     | Fraction of an item's list price paid for global sales, from `0` to `1`. Enter `0.5` for 50% or `1` for 100%. Shops can override this value.                                                                                                              |
+| **Enable Global Marketplace Selling** | On      | Enables selling in the global Marketplace. It does not affect shop-specific selling.                                                                                                                                                                      |
+| **Enable Global Marketplace Buying**  | On      | Enables direct global purchases. If off, players can still browse the catalog as a reference. It does not affect shop-specific buying.                                                                                                                    |
+| **Enable Locations**                  | Off     | When on, buying and selling require the shopper's current place to have a Marketplace capability. [Shared Locations](#shared-locations) explains the current place, the rarity limit, Buy, Sell, and shop stock. Off leaves buying and selling unchanged. |
+| **Require GM Approval for Sales**     | Off     | Holds player-initiated global sales for a GM decision. Premium or Champion access is required.                                                                                                                                                            |
+| **Require GM Approval for Purchases** | Off     | Holds player-initiated global purchases for a GM decision. Premium or Champion access is required.                                                                                                                                                        |
+| **Post Transaction Cards**            | On      | Posts pending and completed Marketplace transactions to chat.                                                                                                                                                                                             |
 
 GM-initiated global transactions do not wait for approval. Shop cart purchases are processed through the shop checkout workflow rather than the global approval settings.
 
+The settings page is GM-only. Number inputs accept steps of `0.05`; buying requires at least `1`, while selling accepts `0` through `1`. **Save** persists the world settings; closing without Save discards unsaved edits. Changes apply to subsequent global transactions, not individual shops' stored rates.
+
+Changing **Configure Sources** or the buy and sell rates refreshes open Marketplace windows in the background, so the window where the change was made stays in front. **Enable Locations** is covered in [Shared Locations](#shared-locations).
+
+| Account control or value              | Explanation                                                                      |
+| ------------------------------------- | -------------------------------------------------------------------------------- |
+| **Morelord Account / Connected with** | Shows whether Core has an account connection and its current membership tier.    |
+| **GM Approval Workflow**              | Shows whether the connected account grants Premium/Champion access to approvals. |
+| **Access last checked**               | Time Core last validated account access.                                         |
+| **Connect Account / Manage Account**  | Opens Core's shared account connection and management window.                    |
+| **Refresh**                           | Revalidates connected account access; does not change trading settings.          |
+
 ### Choose catalog sources
 
-Marketplace uses the D&D system's **Configure Sources** selection. Enable or disable Item compendiums there; Marketplace does not maintain a separate source list.
+Marketplace uses the D&D system's **Configure Sources** selection. Enable or disable compendiums there; Marketplace does not maintain a separate source list. Catalog browsing, shop search, prefab matching, checkout, GM approval, and compendium item links all use that selection. A compendium that is turned off is not listed, purchased, previewed, or used as a fallback. Shop product filters only narrow this set.
+
+## Shared Locations
+
+Marketplace can require a Marketplace capability at the shopper's current place before anyone buys or sells. Places, scenes, and capabilities are shared records in Morelord Core. Create a place, add a capability with type **Marketplace**, choose its tier, and associate the scenes that use that place by following [Shared Locations](https://morelordgaming.com/docs/morelord-core#shared-locations) in the Morelord Core Game Master guide. In the Marketplace window, **Manage Locations** opens the same editor.
+
+### Enable Locations
+
+**Enable Locations** is a GM-only world setting in **Configure Marketplace**. It is off by default. While it is off, the current place has no effect on buying or selling.
+
+While it is on, Marketplace uses the place Morelord Core reports for that shopper:
+
+- An active Downtime session with a chosen location uses that location, even when the shopper is viewing a different scene.
+- A session set to No Location uses the location linked to the scene that shopper is viewing. Phandalin stays the current place when the open scene is associated with Phandalin.
+- **On the Road** is used only when that session has no location and the viewed scene has no linked location. On the Road has no Marketplace capability, so buying and selling are blocked. The notice is titled **No Marketplace here** and reads "On the Road has no Marketplace, so nothing can be bought or sold here."
+- With no active Downtime session, Marketplace uses the location linked to the scene that shopper is viewing. A scene with no linked location has no Marketplace. The notice then reads "The current location has no Marketplace, so nothing can be bought or sold here."
+
+A cart, shop checkout, or GM approval runs this check again for the shopper's place. **Transfer** ignores the current place. The location notice appears on Buy, Sell, and Wishlist, and stays off the Transfer tab.
+
+Only a **Marketplace** capability allows trade. When a place lists more than one, the highest tier is the limit. Tiers are Common, Uncommon, Rare, Very Rare, and Legendary. A tier allows that rarity and every lower rarity. An item with no rarity counts as Common. Artifact is above Legendary, so it stays outside every Marketplace tier. A place with no Marketplace capability blocks buying and selling. The notice is titled **No Marketplace here**, and the message names the place. For example: "Emberwood has no Marketplace, so nothing can be bought or sold here."
+
+If Core's location records cannot be read, the notice is titled **Locations unavailable** and reads "Morelord Locations is unavailable. Update and enable Morelord Core, or turn off Enable Locations."
+
+### Global Buy and Sell
+
+When the place has a Marketplace, the notice is titled **Location Marketplace**. It names the place and tier, for example "Emberwood's Marketplace trades Common items and lower."
+
+**Buy** lists items of that tier or lower. Higher rarities are left out of the catalog. The item count, the rarity filter counts, and the pages all use that shorter list.
+
+**Sell** still lists every owned item that can otherwise be sold, including items above the tier. **Add one to sell cart** and **Add all to sell cart** are disabled for those items. Hovering either button shows a tooltip titled **Over this location's rarity limit**, with a short line such as "Emberwood trades Common items and lower." **Sell Cart** stays unavailable while the cart contains an item above the limit, and its tooltip uses that same reason. **Purchase**, **Sell Cart**, quantity steppers, and **Wishlist** Buy use the same kind of tooltip whenever they are disabled: a bold title and one short line, for example **Cart empty**, **Not enough gold**, or **No Marketplace** ("This location has no Marketplace capability.").
+
+**Wishlist** keeps saved items. An item above the tier shows the status **Above location limit** and cannot be added to the Buy cart. A place with no Marketplace shows the status **No Marketplace**.
+
+### Scene shops
+
+A scene shop uses the shopper's current place, the same place as the global Marketplace. With no Marketplace capability there, the shop's Buy list is empty, its sell buttons are disabled, and the notice is titled **No Marketplace here**.
+
+When the place has a Marketplace, the shop's own stock and purchase rules decide which items it trades. The location tier leaves that stock in place. While the shopper's current place has a Common Marketplace, a shop can still sell a Rare item that is in its stock, and it can still buy an item its purchase rules accept. The notice is titled **Shop stock overrides this location**. It names the shop, the place, and the tier, for example "Curios follows its own stock and purchase rules. Emberwood's Common Marketplace does not remove items this shop trades." An item the shop's own rules refuse is still refused, for example "Curios does not trade this item."
+
+The shop's **Morelord Location** and **Maximum Normal Rarity** are a separate stock-generation limit. **Inherit from Location** uses the Marketplace capability of the location assigned to that shop. When that location lists more than one Marketplace capability, the highest tier is the limit, the same rule buying and selling use. An explicit shop tier overrides the assigned location. Items added by hand may be rarer than that limit; the **Manual** badge marks them. That assigned location is the one used when generating stock. **Enable Locations** uses the shopper's current place instead.
 
 ## Open and test the Marketplace
 
+The player guide's **Marketplace field and action reference** covers all shared shopper, payer, transfer, filter, table, wishlist, and cart controls. Additional GM controls:
+
+| Control                                          | Explanation                                                                                                                                                                                 |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Manage Shops**                                 | Opens the premium Shop Manager.                                                                                                                                                             |
+| **Documentation**                                | Opens the appropriate Marketplace guide.                                                                                                                                                    |
+| **Temporarily ignore buy and sell rates**        | Uses list prices for global purchases and sales until cleared. Does not alter stored default rates or shop prices.                                                                          |
+| **Approve / Deny** on a pending transaction card | Resolves the player's pending request after current permissions, item availability, and prices are checked. Approval applies inventory/currency changes once; denial leaves them unchanged. |
+
 ![The global Morelord Marketplace open for a selected character](/docs-assets/morelord-marketplace/assets/global-marketplace-overview.png)
 
-*The global Marketplace shows the active character, available coin, Sell, Transfer, Buy, and Wishlist tabs, and—when available—the GM-only Manage Shops control. The screenshot predates the Transfer tab.*
+_The global Marketplace shows the active character, available coin, Sell, Transfer, Buy, and Wishlist tabs, and—when available—the GM-only Manage Shops control. The screenshot predates the Transfer tab._
 
-1. Open a scene and select **Token Controls**.
+1. Open a scene and select **Morelord Tools**.
 2. Select the **Morelord Marketplace** store icon.
 3. Select a character token or assign a user character before testing a transaction.
 4. Open **Buy** and confirm that items from the enabled compendiums load.
 5. Open **Sell** and confirm that priced, sellable inventory appears.
 
-The Buy sidebar separates weapon class (Martial or Simple) from weapon range (Melee or Ranged), exposes weapon mastery filters when weapons are in scope, and preserves its scroll position after filter changes. The Sell tab can sort its visible inventory by name, type, quantity, list price, or sell price in both global and shop views.
+The Buy sidebar separates weapon class (Martial or Simple) from weapon range (Melee or Ranged), exposes weapon mastery filters when weapons are in scope, and preserves its scroll position after filter changes. Sell inventory is always alphabetical in global and shop views.
 
 For the global Marketplace, the selected token's actor is used when the user owns it. Otherwise, Marketplace uses the character assigned to that user. GMs may operate an eligible selected actor directly.
 
@@ -122,7 +184,7 @@ Approvals apply only to player-initiated transactions in the unrestricted global
 
 ![Pending Marketplace purchase cards with Approve and Deny controls](/docs-assets/morelord-marketplace/assets/gm-approval-card.png)
 
-*A pending approval card identifies the requester, item, total, and current status before the GM approves or denies the transaction.*
+_A pending approval card identifies the requester, item, total, and current status before the GM approves or denies the transaction._
 
 ### Enable approvals
 
@@ -160,21 +222,21 @@ Shop Manager requires Tools Premium or Tools Champion access.
 
 ![Shop Manager with the vendor library, store templates, and selected-shop editor](/docs-assets/morelord-marketplace/assets/shop-manager-overview.png)
 
-*Shop Manager combines existing vendors, quick-start templates, import controls, and detailed identity, pricing, product, inventory, and restocking settings.*
+_Shop Manager combines existing vendors, quick-start templates, import controls, and detailed identity, pricing, product, inventory, and restocking settings._
 
 ### Open Shop Manager
 
 As a GM, use either method:
 
-- Select **Manage Marketplace Shops** in Token Controls.
+- Select **Manage Marketplace Shops** in **Morelord Tools**.
 - Open Marketplace and select **Manage Shops**.
 
 ### Create from a store template
 
-1. In **Store Templates**, select a preset such as General Store, Weaponsmith, Armorer, Apothecary, Magic Shop, Temple / Healer, Arcane Supplier, Adventuring Gear, Tavern / Provisioner, Exotic Goods, or Custom.
-2. Marketplace creates the shop and performs its initial restock.
-3. Select the new shop under **Existing Stores**.
-4. Adjust its configuration and select **Save**.
+1. Click **New Shop** beside **Import Shop**.
+2. In the popup, choose a Store Template and adjust its settings.
+3. Click **Save New Shop** to create it and perform the initial restock.
+4. The popup closes and the saved shop appears under **Existing Stores**. Closing without saving discards the draft.
 
 Templates provide starting product categories, rarities, and price multipliers. They do not prevent later customization.
 
@@ -184,30 +246,30 @@ Prefab stores use curated definitions from the Shop Compendium.
 
 1. Enable relevant Player's Handbook, Dungeon Master's Guide, SRD 5.1, or SRD 5.2 Item compendiums.
 2. Open Shop Manager.
-3. Under **Prefab Stores**, select an available prefab.
+3. Click **New Shop**, choose a prefab under **Prefab Stores**, adjust its settings, and click **Save New Shop**.
 
 A prefab appears only when at least eight of its listed products match supported, enabled compendiums. Prefab shops use their matched product list as unlimited inventory.
 
 ### Identity and access
 
-| Control | Effect |
-| --- | --- |
-| **Name** | Sets the shop, generated actor, prototype token, and placed-token name. |
-| **Token Image** | Sets the generated actor and token artwork. Use the folder button to browse Foundry files. |
-| **Players can buy** | Enables the shop's Buy workflow independently of global buying. |
-| **Shop buys items** | Enables selling to this shop independently of global selling. |
+| Control             | Effect                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| **Name**            | Sets the shop, generated actor, prototype token, and placed-token name.                    |
+| **Token Image**     | Sets the generated actor and token artwork. Use the folder button to browse Foundry files. |
+| **Players can buy** | Enables the shop's Buy workflow independently of global buying.                            |
+| **Player can sell** | Enables selling to this shop independently of global selling.                              |
 
 ### Pricing and reputation
 
 The final purchase price is the item price multiplied by the shop's **Buy Multiplier**, then by the reputation modifier. The final sale price uses the shop's **Base Sell Rate**, then the reputation modifier.
 
 | Reputation | Purchase-price multiplier | Sale-payout multiplier |
-| --- | ---: | ---: |
-| Hostile | No trade | No trade |
-| Unfriendly | 1.25 | 0.70 |
-| Neutral | 1.00 | 1.00 |
-| Friendly | 0.90 | 1.20 |
-| Honored | 0.80 | 1.40 |
+| ---------- | ------------------------: | ---------------------: |
+| Hostile    |                  No trade |               No trade |
+| Unfriendly |                      1.25 |                   0.70 |
+| Neutral    |                      1.00 |                   1.00 |
+| Friendly   |                      0.90 |                   1.20 |
+| Honored    |                      0.80 |                   1.40 |
 
 Example: a shop with a `1.10` Buy Multiplier and Friendly reputation sells a 100 gp item for 99 gp: `100 × 1.10 × 0.90`.
 
@@ -228,15 +290,70 @@ Choose any combination of:
 
 Then select permitted rarities: Common, Uncommon, Rare, Very Rare, Legendary, or Artifact. Product and rarity settings affect the shop's catalog and random stock. Item Options control accepted player sales unless a specific purchase list is configured.
 
-### Inventory modes
+### Stock Plan
 
-| Mode | Behavior |
-| --- | --- |
-| **Unlimited** | Every matching listing has unlimited stock. Restocking clears stock counters. |
-| **Limited** | Every matching listing must have a positive stock count to be purchased. |
-| **Hybrid** | Common items are unlimited; higher-rarity items use limited stock. |
+| Mode                                      | Behavior                                                                                                    |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Manually added items only**             | Restock restores configured manual quantities without random additions.                                     |
+| **Unlimited catalog**                     | Eligible catalog products are unlimited; remaining manual stock is preserved.                               |
+| **Random stock**                          | Restock selects limited products by rarity, replaces generated stock, and preserves remaining manual stock. |
+| **Unlimited common + random rarer stock** | Common products are unlimited; restock randomizes uncommon and rarer stock and preserves manual stock.      |
+
+Existing shops with generation disabled show **Keep existing stock (previous setup)**; restocking leaves quantities unchanged. Legacy top-up shops retain generated listings not selected this time. Existing stored settings and stock targets are preserved. Shop Manager contains no helper paragraphs; this guide explains the fields and plans.
 
 ## Place and operate scene shops
+
+### Shop Manager field reference
+
+These fields are the same in the saved-shop editor and the New Shop popup. Explanations live here instead of beneath the controls.
+
+| Field                            | Explanation                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Name**                         | Shop name used by its actor and tokens.                                                                                                                                                                                                                                                                                                                                                                                              |
+| **Token Image**                  | Image path for the shop actor and token. The folder button opens Foundry's file browser.                                                                                                                                                                                                                                                                                                                                             |
+| **Players can buy**              | Allows purchases from this shop.                                                                                                                                                                                                                                                                                                                                                                                                     |
+| **Player can sell**              | Allows player inventory sales to this shop.                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Party Reputation**             | Adjusts purchase prices and sale payouts using the reputation table above. Hostile disables trading.                                                                                                                                                                                                                                                                                                                                 |
+| **Buy Multiplier**               | Multiplies the item's list price before the reputation adjustment. New shops initially use the global purchase multiplier.                                                                                                                                                                                                                                                                                                           |
+| **Base Sell Rate**               | Fraction of list price paid for player sales before reputation adjustment. New shops initially use the global sale rate.                                                                                                                                                                                                                                                                                                             |
+| **Morelord Location**            | Optional association with Core's shared Location registry. The Location's Marketplace capability supplies the rarity limit when inherited; assigning a Location does not place a token.                                                                                                                                                                                                                                              |
+| **Maximum Normal Rarity**        | Limits generated catalog items and random restocks to the chosen rarity or lower. An explicit shop tier overrides its Location. Inherit from Location uses that Location's Marketplace capability, and the highest Marketplace tier when the Location has more than one. Without either limit, Products rarity selections apply. Manual additions may exceed the capability limit; prefab stores retain their matched product lists. |
+| **Stock Plan**                   | Controls unlimited, manual, or random inventory and what Restock Now does. Every option is explained in the Stock Plan table above, including the legacy Keep existing stock option.                                                                                                                                                                                                                                                 |
+| **Common**                       | Number of distinct Common products selected for random stock. Hidden and unused when common products are unlimited.                                                                                                                                                                                                                                                                                                                  |
+| **Uncommon**                     | Number of distinct Uncommon products selected for random stock.                                                                                                                                                                                                                                                                                                                                                                      |
+| **Rare**                         | Number of distinct Rare products selected for random stock.                                                                                                                                                                                                                                                                                                                                                                          |
+| **Very Rare**                    | Number of distinct Very Rare products selected for random stock.                                                                                                                                                                                                                                                                                                                                                                     |
+| **Legendary**                    | Number of distinct Legendary products selected for random stock.                                                                                                                                                                                                                                                                                                                                                                     |
+| **Exclude magical items**        | Excludes products with the Magical property from shop inventory and restocking, including manual and prefab products. Does not restrict player sales to the shop.                                                                                                                                                                                                                                                                    |
+| **Exclusively magical items**    | Requires the Magical property for inventory and restocks, including manual and prefab products. Mutually exclusive with Exclude magical items; does not restrict player sales.                                                                                                                                                                                                                                                       |
+| **Item Options**                 | Selects permitted product categories: Weapons, Armor, Other Equipment, Potions, Spell Scrolls, Other Consumables, Artisan Tools, Other Tools, Loot, and Containers. Filters normal stock and accepted player sales unless a specific purchase list is configured.                                                                                                                                                                    |
+| **Rarities**                     | Common, Uncommon, Rare, Very Rare, Legendary, and Artifact filters narrow normal stock alongside the capability limit.                                                                                                                                                                                                                                                                                                               |
+| **Items the shop will buy**      | Explicit accepted-product list. A nonempty list restricts player sales to matching items; an empty list uses Item Options. Player can sell must also be enabled. Independent of inventory sold by the shop.                                                                                                                                                                                                                          |
+| **Current Inventory quantities** | Plus and minus change finite stock. For manual items, changes also set the quantity restored by the manual-only plan. Purchases reduce remaining stock without changing that target. Unlimited listings have no quantity controls.                                                                                                                                                                                                   |
+
+Random counts are nonnegative; zero selects no products at that rarity. Selection always chooses distinct products and stops when the eligible pool is exhausted. Product filters, magical policy, capability, and removed-item exclusions determine eligibility. Unit quantities are randomized separately using the table in Random inventory.
+
+| Action or displayed value                | Explanation                                                                                                                                                                |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Documentation**                        | Opens this guide.                                                                                                                                                          |
+| **New Shop**                             | Opens an unsaved draft with the full settings, Store Templates, and Prefab Stores. Closing without saving creates no store.                                                |
+| **Store Templates**                      | Initializes the draft with a chosen shop type's defaults. Changing the template replaces the unsaved draft.                                                                |
+| **Prefab Stores**                        | Initializes a draft from a curated matched product list. A prefab appears only with at least eight matches in enabled supported PHB, DMG, SRD 5.1, or SRD 5.2 compendiums. |
+| **Existing Stores**                      | Selects a saved shop for editing; the count shows saved shops in this world.                                                                                               |
+| **Save / Save New Shop**                 | Saves settings. Saving a draft adds it to Existing Stores and closes the popup; initial inventory is generated according to the plan.                                      |
+| **Place on Scene**                       | Creates the linked vendor token on the current scene. Available after the shop is saved.                                                                                   |
+| **Restock Now**                          | Saves current visible settings, then applies the selected plan. Removed products remain excluded. Manual stock is replenished only by the manual-only plan.                |
+| **Add Item**                             | Opens Core's searchable item-picker popup for the purchase list or inventory. Requires a saved shop; inventory additions must satisfy the magical policy.                  |
+| **Item name / artwork / source details** | Identifies a listing; the name opens its source item. Source, rarity, and type describe the matched catalog product.                                                       |
+| **Manual badge**                         | Marks GM-managed inventory. Capability limits may be exceeded; applicable magical policy is still enforced.                                                                |
+| **Unlimited badge**                      | This product has no finite stock limit.                                                                                                                                    |
+| **List count badges**                    | Number of configured purchase products or currently displayed inventory listings.                                                                                          |
+| **Remove item**                          | Removes a purchase-list restriction or excludes an inventory listing from future restocks.                                                                                 |
+| **Import Shop**                          | Imports a portable definition into this world. See the import steps below.                                                                                                 |
+| **Export Shop**                          | Downloads the selected portable definition without world actor/token references.                                                                                           |
+| **Delete Shop**                          | Deletes the definition, generated shop actor, and associated tokens after confirmation. Export first to retain a copy.                                                     |
+
+Examples: an Uncommon capability permits Common and Uncommon normal products, but excludes Rare and higher; a manually added Rare item is the capability exception. A Common product count of three selects up to three distinct eligible products, each receiving 1–6 units. Repeating Restock Now rerolls those products in the Random stock plan; it restores configured manual quantities in the manual-only plan.
 
 1. Select a shop in Shop Manager.
 2. Select **Save** after making configuration changes.
@@ -248,45 +365,45 @@ Marketplace creates a linked shop actor with Observer access for players. A play
 
 ![A selected scene-shop token with the Marketplace cart control in its Token HUD](/docs-assets/morelord-marketplace/assets/scene-shop-token.png)
 
-*The Marketplace cart button appears in the Token HUD for GMs and other users allowed to open that HUD. Players normally open the same vendor by double-clicking its token.*
+_The Marketplace cart button appears in the Token HUD for GMs and other users allowed to open that HUD. Players normally open the same vendor by double-clicking its token._
 
 Opening the generated shop actor also redirects to the Marketplace shop interface instead of showing an NPC sheet.
 
-Within a shop, **Shopping As** controls which character receives purchased items. **Paying From** controls which owned character or Group actor supplies the coins. Players must have Owner permission for actors they operate. Group actors are listed first as eligible funding sources.
+Within a shop, **Shopping As** controls which character or Group receives purchased items. **Paying From** controls which character or Group supplies the coins. Character inventories require Owner permission. A Group requires only membership through the player's assigned or owned character; no Group Owner grant is needed. A connected GM applies restricted Group mutations after validating membership. Group actors are listed first as eligible funding sources.
 
 ![A scene shop showing reputation, shopper, funding actor, funds, stock, and cart](/docs-assets/morelord-marketplace/assets/shop-shopping-context.png)
 
-*A vendor keeps the receiving character and payment source explicit while showing current reputation, funds, stock, and cart state.*
+_A vendor keeps the receiving character and payment source explicit while showing current reputation, funds, stock, and cart state._
 
 ## Manage stock and restocking
 
 ![Shop Manager product, inventory, random-stock, and restocking controls](/docs-assets/morelord-marketplace/assets/shop-manager-products-stock.png)
 
-*Inventory mode, rarity draw counts, and duplicate selection control limited-stock generation. Older screenshots may show the removed Restocking section.*
+_Older screenshots show the previous inventory controls. The current editor uses Stock Plan and distinct product counts, without repeat-selection or separate Restocking controls._
 
 ### Random inventory
 
-Enable **Generate limited stock randomly**, then choose how many item draws to make at each rarity. Without duplicates, this is the maximum number of distinct listings; fewer are selected if the eligible pool is smaller. Those counts choose product listings, not units. Each selected listing receives a random quantity:
+Choose a random Stock Plan, then set **Different products per rarity**. Counts select distinct products up to the eligible pool size, rather than units. Common counts are unused with unlimited common stock. Each selected listing receives a random quantity:
 
-| Rarity | Units per selected listing |
-| --- | ---: |
-| Common | 1–6 |
-| Uncommon | 1–4 |
-| Rare | 1–2 |
-| Very Rare | 1 |
-| Legendary | 1 |
+| Rarity    | Units per selected listing |
+| --------- | -------------------------: |
+| Common    |                        1–6 |
+| Uncommon  |                        1–4 |
+| Rare      |                        1–2 |
+| Very Rare |                          1 |
+| Legendary |                          1 |
 
-When **Allow duplicate random items** is enabled, the same listing may be selected more than once, increasing its resulting stock.
+Selections always choose distinct products. If fewer eligible products exist than the configured count, all available products are selected once. Legacy repeat-selection settings are ignored; existing inventory remains intact.
 
 ### Manual restocking
 
-Select **Restock Now** to regenerate limited stock. The shop-definition Restocking section has been removed. New shops replace generated stock; existing saved replacement/top-up metadata remains intact. Manually overridden inventory is preserved. Restocking advances the shop revision, so an older open shop must be refreshed before another purchase.
+Select **Restock Now** to save the visible settings and apply the Stock Plan. New random shops replace generated stock; existing replacement/top-up metadata remains intact. Manual stock is preserved except in the manual-only plan, which restores configured quantities. Restocking advances the revision, so older open shops must be refreshed before purchase.
 
 ### Carts, reservations, and stale shops
 
 ![A scene shop warning that its configuration or stock changed after opening](/docs-assets/morelord-marketplace/assets/shop-stale-warning.png)
 
-*A stale shop disables the old transaction state and directs the shopper to Refresh, which reloads current data and clears the cart.*
+_A stale shop disables the old transaction state and directs the shopper to Refresh, which reloads current data and clears the cart._
 
 Adding a limited item to a cart temporarily reserves it for that user's active shop session. Other shoppers see the reduced unreserved availability. Closing the shop or clearing the cart releases its reservations.
 
@@ -325,8 +442,8 @@ Deleting a shop removes its shop definition, generated shop actor, and associate
 
 ### No items appear in Buy
 
-- Open **Configure Marketplace** and enable at least one Item compendium.
-- Confirm the source compendium is available and not disabled.
+- Open **D&D → Configure Sources** and enable at least one Item compendium.
+- Confirm the source compendium is available and not turned off there.
 - Clear active filters in the Buy sidebar.
 - For a shop, confirm its product options and rarities match the intended items.
 - For limited or hybrid inventory, select **Restock Now**.
@@ -350,6 +467,7 @@ Deleting a shop removes its shop definition, generated shop actor, and associate
 - For shops, verify both **Shopping As** and **Paying From** have eligible actors.
 - Confirm the funding actor has a D&D currency record and enough coin.
 - Confirm global or shop-specific buying/selling is enabled.
+- If **Enable Locations** is on, confirm the shopper's current place has a Marketplace capability. Global Buy and Sell then follow that tier. A shop still trades the items in its own stock, and it is blocked where the current place has no Marketplace. See [Shared Locations](#shared-locations).
 - Check reputation; Hostile parties cannot trade.
 
 ### A shop says it changed
@@ -366,7 +484,7 @@ Report reproducible problems at [Morelord Marketplace Issues](https://github.com
 
 ## Current catalog and shop controls
 
-Global Buy and Sell both use carts. Adding items only prepares a transaction; Purchase or Sell Cart submits it. When global GM approval is enabled, the complete cart is one request and current prices, funds, availability, and quantities are revalidated before commitment. Buy results are paginated at 50 items per page while filters cover the entire catalog.
+Global Buy and Sell both use carts. Adding items only prepares a transaction; Purchase or Sell Cart submits it. When global GM approval is enabled, the complete cart is one request and current prices, funds, availability, and quantities are revalidated before commitment. Buy results are paginated at 50 items per page while filters cover the entire catalog. When Buy lists a purchasable container, items stored inside it are not separate listings. Buying the container still includes those contents. A top-level item outside that container stays listed. Item links still open container contents, and Sell and Transfer still show owned items inside containers.
 
 Shop Manager can associate a shop with a shared Core Location. Normal stock can inherit its capability tier or use the shop's maximum normal rarity override. Manually included inventory may exceed that limit; its Manual badge identifies manually managed stock. Normal restocking preserves remaining quantity; manual-only shops restore configured quantities.
 
@@ -390,12 +508,18 @@ Prefab choices show one entry per normalized shop name, keeping the variant with
 
 Items match their compendium origin (including renamed copies). Items without a recorded origin match by name and item type; copies from a different compendium origin require their own entry. Usual supported-type, positive-price, unsellable-flag, and reputation restrictions still apply.
 
-**Only sell manually added items** is off by default. Enable it to offer only manually added inventory in any inventory mode. **Restock Now** restores those listings to their configured quantities and never selects additional products. Adding a listing or adjusting its quantity sets that restock quantity; purchases reduce remaining stock without changing the target. Sold-out manual listings remain visible to the GM. Existing manual listings without a saved target use their remaining quantity, or one if sold out, on their first manual-only restock.
+Choose **Manually added items only** under Stock Plan to offer only manual inventory. **Restock Now** restores configured quantities without selecting more products. Adding or adjusting a listing sets its restock quantity; purchases leave that target unchanged. Sold-out manual listings remain visible to the GM. Existing listings without a target use their remaining quantity, or one if sold out, on their first manual-only restock.
 
-Turning off **Generate limited stock randomly** only stops random stock generation. It does not remove existing generated stock or restrict Unlimited/Hybrid catalogs to manually added items, and it does not replenish manual stock.
+Older shops with generation disabled show **Keep existing stock (previous setup)**. This does not remove existing generated stock, restrict catalog products to manual additions, or replenish manual stock. Choose another plan to change that behavior.
 
 **Common** includes both mundane items (no rarity) and common magic items. It is not a mundane-only filter. Enable **Exclude magical items** under Products to reject the D&D Magical (`mgc`) property regardless of rarity. This also filters manually added and prefab listings, restock candidates, and checkout. The option defaults to off and does not alter the purchase list or player-selling rules. It depends on items having their Magical property correctly set.
 
 The purchase list and Current Inventory use the same Core section headings, count badges, Add Item actions, and item rows. Both show item artwork, a document link, available source details, and removal controls; inventory also has stock quantity controls.
+
+Both **Add Item** actions open Core's separate item-picker popup. Search enabled compendiums and select a result to add it to inventory or the purchase list.
+
+**Exclusively magical items** allows only products with the Magical (`mgc`) property, including manual and prefab listings and restocks. It is mutually exclusive with **Exclude magical items**. Neither policy changes player selling rules. Rarity alone does not establish that a product is magical.
+
+Buy and Sell begin with **Shopper and Payer**, with portraits inside Core selectors. Global Transfer uses **Sender and Recipient** above inventory, without a recipient control in the cart. Wishlist uses the previously selected shopper without showing that section. Shops offer Buy and Sell only. All carts use matching Core components. Existing screenshots show the previous layout.
 
 Unpriced source items receive a rarity-based base price: Common 100 gp, Uncommon 400 gp, Rare 4,000 gp, Very Rare 40,000 gp, and Legendary 200,000 gp. Blank/mundane rarity uses Common; artifacts and unknown rarities need an explicit price. Positive source prices and GM custom prices take priority. Normal buy/sell rates apply, and compendium data is unchanged.

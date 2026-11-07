@@ -2,7 +2,7 @@
 title: Morelord Marketplace Documentation
 slug: morelord-marketplace
 product: morelord-marketplace
-version: 0.10.1
+version: 0.12.2
 ---
 
 # Morelord Marketplace Documentation
@@ -11,11 +11,11 @@ version: 0.10.1
 
 Morelord Marketplace is a shopping, selling, and inventory-transfer system for Foundry Virtual Tabletop and the D&D game system. It gives players a searchable global item catalog, direct character purchases and sales, currency-free inventory transfers, automatic purchase and sale currency handling, and detailed filters for item type, category, weapon class, weapon range, weapon properties, weapon masteries, rarity, source, attunement, price, and affordability.
 
-Game Masters control which Item compendiums supply the catalog, whether global buying and selling are enabled, the default sale value, transaction chat cards, and optional approval requirements. With Tools Premium or Tools Champion access, GMs can also build scene vendors with custom products, prices, reputation, limited or unlimited stock, randomized restocking, separate shopper and funding actors, portable shop definitions, and interactive shop tokens.
+Game Masters control which Item compendiums supply the catalog, whether global buying and selling are enabled, whether the current location must have a Marketplace, the default sale value, transaction chat cards, and optional approval requirements. With Tools Premium or Tools Champion access, GMs can also build scene vendors with custom products, prices, reputation, limited or unlimited stock, randomized restocking, separate shopper and funding actors, portable shop definitions, and interactive shop tokens.
 
 The global Marketplace provides a broad world catalog, while scene shops create individual vendors with their own inventory and trading rules. Purchased items are added directly to the chosen character, payment can come from an owned character or shared Group actor, and completed sales deposit currency automatically.
 
-The global tabs run **Sell → Transfer → Buy → Wishlist**. Players choose a sending character or Group in **Shopping As**, add eligible physical items and quantities to the cart, select another character or Group as **Recipient**, and choose **Transfer Items**. A connected GM processes transfers automatically without approval or currency changes. Containers bring all contents and nested containers with their organization preserved; individual contents can also be sent separately. Sell eligible inventory items at rates set by the GM.
+The global tabs run **Sell → Transfer → Buy → Wishlist**. Players choose a character or party Group as **Sender**, add eligible physical items and quantities to the cart, select another character or Group as **Recipient**, and choose **Transfer Items**. Group membership is sufficient without Owner permission. A connected GM processes transfers automatically without approval or currency changes. Containers bring all contents and nested containers with their organization preserved; individual contents can also be sent separately. Sell eligible inventory items at rates set by the GM.
 
 ## See Marketplace in action
 
@@ -49,18 +49,19 @@ The global tabs run **Sell → Transfer → Buy → Wishlist**. Players choose a
 
 ## Choose a manual
 
+The in-game Documentation button opens this home page on the Morelord Gaming website in a new browser tab through Core. The GM manual includes the complete Shop Manager and Game Settings field references; the player manual explains all shared Marketplace controls.
+
 Choose the guide that matches your role:
 
-- [Game Master Manual](/docs/morelord-marketplace/gm) — installation, world configuration, premium access, approvals, and Shop Manager.
+- [Game Master Manual](/docs/morelord-marketplace/gm) — installation, world configuration, [Shared Locations](/docs/morelord-marketplace/gm#shared-locations), premium access, approvals, and Shop Manager.
 - [Player Manual](/docs/morelord-marketplace/player) — selecting a character, browsing, buying, selling, transferring inventory, and using scene shops.
 
-These manuals describe Morelord Marketplace 0.10.1 for Foundry Virtual Tabletop v14 and the D&D game system.
+These manuals describe Morelord Marketplace 0.12.2 for Foundry Virtual Tabletop v14 and the D&D game system.
 
+These manuals cover Marketplace 0.12.2 with Morelord Core 0.9.2 or later. Open **Morelord Tools** on the left side of the scene, then select **Morelord Marketplace**. GMs select **Manage Marketplace Shops** in that same control; it still requires Tools Premium or Tools Champion access. Buy and Sell use carts; shops support shared Locations, capability limits, and weighted random stock. **Enable Locations** can require the current place's Marketplace capability before anything is bought or sold. Buy then lists items of that tier or lower. Sell still lists owned items above the tier and disables their sell buttons, with a tooltip that explains the limit. A shop's own stock and purchase rules override the tier. The Game Master Manual's [Shared Locations](/docs/morelord-marketplace/gm#shared-locations) section explains those rules. Create the places themselves with Morelord Core's [Shared Locations](https://morelordgaming.com/docs/morelord-core#shared-locations) guide. Filled-container purchases include source compendium contents with separate container links for each copy. When Buy lists that container, the items stored inside it are not separate purchases. Placed shop tokens still open that vendor.
 
-These manuals cover Marketplace 0.10.1 with Morelord Core 0.4.0 or later. Buy and Sell use carts; shops support shared Locations, capability limits, and weighted random stock.
+Version 0.9.9 adds manual-only shop stock, exclusive vendor purchase lists, Magical-property exclusion, and rarity-based prices for unpriced source items. Blank rarity defaults to Common at 100 gp; explicit prices and GM overrides take priority. Requires Morelord Core 0.9.0 or later.
 
-Version 0.9.9 adds manual-only shop stock, exclusive vendor purchase lists, Magical-property exclusion, and rarity-based prices for unpriced source items. Blank rarity defaults to Common at 100 gp; explicit prices and GM overrides take priority. Requires Morelord Core 0.4.0 or later.
-
-Version 0.10.0 adds inventory transfers to characters and Groups, quantity controls, matching transaction receipts, wider carts, and collapsible Buy filters. A connected GM is required for transfers. Requires Morelord Core 0.4.0 or later.
+Version 0.10.0 adds inventory transfers to characters and Groups, quantity controls, matching transaction receipts, wider carts, and collapsible Buy filters. A connected GM is required for transfers. Requires Morelord Core 0.9.0 or later.
 
 Version 0.10.1 corrects container transfers: all contents and nested containers move together with their organization preserved. Contents may also be transferred individually.

@@ -322,7 +322,7 @@ Migration `0014_craftworks.sql` replaces the standalone Drakkenheim Harvesting c
 
 The canonical Character Export guide is `docs/README.md` in `tmoreland72/morelord-character-export`. `scripts/product-docs.json` registers that source, and both jobs in `.github/workflows/deploy.yml` check it out before `npm run docs:sync`. The shared documentation route serves it at `/docs/morelord-character-export`; do not add a static page at that path, which would shadow the imported guide.
 
-For local documentation refreshes, run `npm run docs:sync -- --source-root E:/Foundry14Dev-Data/Data/modules`. Commit the website documentation registration before the first Character Export documentation deployment, and push the module's versioned guide before that deployment runs. Subsequent standard Character Export releases request the existing `product-docs-updated` deployment event after publishing the website release record.
+For local documentation refreshes, run `npm run docs:sync -- --source-root E:/Foundry14Dev-Data/Data/modules`. Both deployment jobs check out each module repository on its default branch before `npm run docs:sync`, so a website deployment publishes the guides currently in those repositories. Module releases do not send `product-docs-updated`.
 
 ### Character sheet regression checks
 
@@ -332,8 +332,10 @@ Run `npx vitest run --project client src/lib/characters/components/CharacterShee
 
 ## Downtime documentation
 
-Downtime's canonical user guide is docs/README.md in tmoreland72/morelord-downtime. The docs registry explicitly imports that guide, excluding the internal architecture audit. Both deployment jobs check out its repository before documentation sync, and /docs links to /docs/morelord-downtime. Standard Downtime releases request the product-docs-updated deployment event to keep the guide current.
+Downtime's canonical user guide is docs/README.md in tmoreland72/morelord-downtime on `main`. The docs registry explicitly imports that guide, excluding the internal architecture audit. Both deployment jobs check out that branch before documentation sync, and /docs links to /docs/morelord-downtime.
 
 ## Release documentation registration
 
-Core's reporting guide and Encounters' story notes are registered explicitly in `scripts/product-docs.json`, alongside their user guides. Keep linked Markdown documents in that registry so release-triggered documentation builds can resolve their website routes.
+Core's reporting guide and Encounters' story notes are registered explicitly in `scripts/product-docs.json`, alongside their user guides. Keep linked Markdown documents in that registry so documentation builds can resolve their website routes.
+
+Core's GM product guide is no longer in `tmoreland72/morelord-core` (`CORE-GM-PRODUCT-GUIDE.md` was removed on November 4, 2026; the module README points brand and product guides at Google Drive). The website keeps the last in-repository guide at `scripts/bundled-product-docs/morelord-core/CORE-GM-PRODUCT-GUIDE.md` and marks it `"bundled": true`. Sync copies that file into the Core checkout before import, then reads `TELEMETRY.md` from the `main` checkout. The registry sets the published Core manual version to the current module release. Game Master's default branch is `master`; every other module checkout uses `main`.

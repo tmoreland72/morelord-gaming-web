@@ -38,42 +38,49 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-marketplace
+          ref: main
           path: .product-docs/morelord-marketplace
 
       - name: Check out Morelord Core documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-core
+          ref: main
           path: .product-docs/morelord-core
 
       - name: Check out Morelord Character Export documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-character-export
+          ref: main
           path: .product-docs/morelord-character-export
 
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-craftworks
+          ref: main
           path: .product-docs/morelord-craftworks
 
       - name: Check out Morelord Encounters documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-encounters
+          ref: main
           path: .product-docs/morelord-encounters
 
       - name: Check out Morelord Journeys documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-journeys
+          ref: main
           path: .product-docs/morelord-journeys
 
       - name: Check out Morelord Downtime documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-downtime
+          ref: main
           path: .product-docs/morelord-downtime
 
       - name: Check out Morelord Game Master documentation
@@ -141,42 +148,49 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-marketplace
+          ref: main
           path: .product-docs/morelord-marketplace
 
       - name: Check out Morelord Core documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-core
+          ref: main
           path: .product-docs/morelord-core
 
       - name: Check out Morelord Character Export documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-character-export
+          ref: main
           path: .product-docs/morelord-character-export
 
       - name: Check out Morelord Craftworks documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-craftworks
+          ref: main
           path: .product-docs/morelord-craftworks
 
       - name: Check out Morelord Encounters documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-encounters
+          ref: main
           path: .product-docs/morelord-encounters
 
       - name: Check out Morelord Journeys documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-journeys
+          ref: main
           path: .product-docs/morelord-journeys
 
       - name: Check out Morelord Downtime documentation
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-downtime
+          ref: main
           path: .product-docs/morelord-downtime
 
       - name: Check out Morelord Game Master documentation

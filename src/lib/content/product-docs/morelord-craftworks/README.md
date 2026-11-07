@@ -2,10 +2,12 @@
 title: Morelord Craftworks Documentation
 slug: morelord-craftworks
 product: morelord-craftworks
-version: 0.4.13
+version: 0.5.4
 ---
 
 # Morelord Craftworks Documentation
+
+Requires **Morelord Core 0.9.2 or later** for the Morelord Tools scene control, shared material-source cards, action pills, image links, and coin conversion. Update Core before Craftworks. Core 0.9.1 does not include the currency API this version calls.
 
 ## Overview
 
@@ -51,9 +53,11 @@ Craftworks can also support exceptional add-on content packs that go beyond the 
 
 ## Choose a manual
 
-- [Game Master Manual](/docs/morelord-craftworks/gm) — installation, world configuration, content synchronization, Harvest, Gather, Loot, Hoard, generators, exceptional content packs, and troubleshooting.
+- [Game Master Manual](/docs/morelord-craftworks/gm) — installation, world configuration, content synchronization, Harvest, Gather, Loot, Hoard, generators, [shared locations](/docs/morelord-craftworks/gm#shared-locations), exceptional content packs, and troubleshooting.
 - [Player Manual](/docs/morelord-craftworks/player) — browsing materials and recipes, planning and completing crafting projects, Harvest, Gather, shared party storage, and optional Drakkenheim content.
 
-These manuals describe Morelord Craftworks 0.4.9 for Foundry Virtual Tabletop v14 and D&D. The in-Foundry **Documentation** button on the Craftworks dashboard opens the current product guide through Morelord Core.
+These manuals describe Morelord Craftworks 0.5.4 for Foundry Virtual Tabletop v14 and D&D. The in-Foundry **Documentation** button on the Craftworks dashboard opens the current product guide through Morelord Core.
 
 Page sections use Morelord Core bordered, shaded surfaces with shared padding, section headings, and spacing, matching Downtime. Older screenshots illustrate the workflows but may show the previous panel styling or omit the new add/remove controls. Refer to the manual text for current controls.
+
+Version 0.4.16 adds a Harvest walkthrough showing one creature at a time beside a personal claim ledger. Non-Drakkenheim creatures use individual checks, while Drakkenheim and GM-skipped checks open directly to claims. Next advances; Skip Remaining and Done notify the GM of character completion. Requires Morelord Core 0.4.0 or later.

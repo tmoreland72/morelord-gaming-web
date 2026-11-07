@@ -4,14 +4,16 @@ description: Respond to journey checks, manage travel supplies, and resolve camp
 slug: morelord-journeys/player-guide
 product: morelord-journeys
 audience: player
-version: 0.3.6
+version: 0.6.1
 foundry: 14
 order: 20
 ---
 
 # Morelord Journeys: Player Guide
 
-Morelord Journeys gives players direct responsibility for the checks their characters make during travel. When the GM requests a check, a dialog opens automatically on the client of the player who owns the assigned character.
+The **Morelord Journeys** button on **Morelord Tools**, and the expedition dashboard, are GM-only. Players follow public progress updates and respond to their characters’ chat roll requests; they cannot create, edit, advance, or clear journeys.
+
+Morelord Journeys gives players direct responsibility for the checks their characters make during travel. When the GM requests checks, a persistent public chat card lists the participating characters together. Each player can use the controls for their assigned character; the GM can roll for any character, including after a player disconnects.
 
 ## Before departure
 
@@ -26,9 +28,9 @@ You may place `Water (Pint)` inside a waterskin. Journeys counts the contained w
 
 ## Player roll requests
 
-Keep the Foundry world open during the expedition. A request dialog identifies the character, skill, purpose, and DC when applicable.
+Keep the Foundry world open during the expedition. One grouped request card identifies the characters, purpose, and each applicable DC. Day encounter, foraging, Press On, sleep deprivation, and watch checks use this grouped layout. Single-character navigation and discovery checks use the same controls.
 
-Select the roll button and complete the normal D&D configuration dialog. The result is posted through D&D and returned to the GM's Journeys interface automatically.
+Select **Roll** on your character’s row. That opens the D&D roll configuration dialog for the skill check or saving throw. The dialog includes advantage and disadvantage from the character’s effects and flags, and its Advantage, Normal, and Disadvantage buttons choose the roll. The system’s modifier keys apply while **Roll** is used. By default, Shift rolls normally, Alt rolls with advantage, and Control rolls with disadvantage. Journey situations start the dialog at advantage or disadvantage when the travel rules require it: foraging pace, extreme weather on Navigation, a watch spent on something other than Take a Watch, and a stopped pace on a sleep deprivation save. Advantage and disadvantage cancel. Day encounter dice use the same single **Roll** button and roll the Danger die directly. Your controls immediately become centered **Completed** text, and other characters can roll while your dice animate. If a request is rejected or the dialog is cancelled, your controls return for retry. Journeys reads the total from the D&D roll and applies it after the dice finish. A reload recovers saved dice without rerolling. Resending a pending request reuses its card. Request cards are public; encounter outcomes remain GM-only.
 
 ## Discovery checks
 
@@ -48,7 +50,7 @@ Each participating character receives one daytime encounter die selected by Dang
 
 ## Camp watches
 
-Journeys rolls once per watch, or once per hour if the GM enables hourly night checks. After cancellation, each affected watch receives a Perception request with the surviving encounter times. One Perception result covers that watch.
+The GM uses Roll Night Encounter directly in Journeys; no player request is created for the night encounter dice. Journeys rolls once per watch, or once per hour if the GM enables hourly night checks. After cancellation, each affected watch receives a Perception request with the surviving encounter times. One Perception result covers that watch.
 
 Roll Perception to determine whether your character notices a surprise encounter or finds a boon. The total returns to the GM and appears beside that watch.
 
@@ -60,7 +62,9 @@ Your selected camp action may affect how alert the character is:
 
 Craft, Cook, and Prepare require a campfire. A character who is not assigned to Take a Watch receives the same rest treatment as Slumber.
 
-Follow the GM's instruction about advantage or disadvantage in the D&D roll configuration dialog.
+Select **Roll** on the watch card. The D&D Perception dialog opens for you. Take a Watch starts as a normal roll. Craft, Cook, Prepare, and most other tasks start that dialog at disadvantage. Effects, flags, and the dialog buttons still apply, and advantage cancels disadvantage.
+
+When Morelord Downtime is active, the GM can select **Open Downtime** on the Camp stage. That opens the Downtime dashboard so the GM can track a couple of hours of downtime while the party sets up camp. Players do not see this button.
 
 ## Crafting during camp
 
@@ -70,7 +74,7 @@ If Craft is selected, the GM will tell the assigned player to open Morelord Craf
 
 Journeys uses 2024 Long Rest timing without a sleep check. A normal rest needs eight hours, including at least six hours asleep and at most two hours of light activity such as standing watch. Trance uses four hours of meditation; the GM can override the character's required hours.
 
-The GM confirms eligibility at the start (at least 1 HP and sixteen hours since the previous Long Rest ended). Camp assignments determine when each traveler sleeps, watches, or works. Enter the encounter's duration, number of rest-breaking interruptions, and time within its watch. Initiative, damage, a leveled spell, or an hour of physical exertion interrupt an unfinished rest. Each interruption adds one recovery hour; time spent interrupted does not count as rest. Add extra sleep or meditation after Watch 4 when needed. Unknown event timing defaults to the beginning of its watch.
+The GM confirms eligibility at the start (at least 1 HP and sixteen hours since the previous Long Rest ended). Camp assignments determine when each traveler sleeps, watches, or works. Enter the encounter's duration, number of rest-breaking interruptions, and time within its watch. Initiative, damage, a leveled spell, or an hour of physical exertion interrupt an unfinished rest. Each interruption adds one recovery hour; time spent interrupted does not count as rest. A **Duration (hours)** of 0 does not interrupt the rest: it adds no recovery hour and no lost time, and rest results say the long rest was not interrupted. Add extra sleep or meditation after Watch 4 when needed. Unknown event timing defaults to the beginning of its watch.
 
 A later event cannot cancel a completed rest. For example, an elf standing Watch 1 and meditating through Watches 2 and 3 finishes before a Watch 4 encounter. Rest Results explain sleep received, interruptions, missing rest time, and Exhaustion in bullet points. Saved results from earlier rules remain labeled historical results and are not recalculated.
 
@@ -89,4 +93,6 @@ Journeys applies its recorded Exhaustion change and Heroic Inspiration selection
 
 When the effective DC is zero, Journeys resolves the check without opening a player roll dialog. Rest uses 2024 timing without a sleep check. Ordinary foraging rewards and food or water consequences continue to apply.
 
-The GM may provide personal activity hours and Location capabilities for the travel day. If Downtime is enabled, eligible Projects can use that travel context; ask the GM which activities are available. Character portraits help distinguish assignments when you control more than one traveler.
+The GM may provide personal activity hours and Location capabilities for the travel day. If Downtime is enabled, eligible Projects can use that travel context; ask the GM which activities are available. During Camp, **Open Downtime** lets the GM open Downtime and track a couple of hours while the party sets up camp. Character portraits help distinguish assignments when you control more than one traveler.
+
+Completed travel days can advance Downtime activities that count elapsed days. Ask the GM which activities are available.

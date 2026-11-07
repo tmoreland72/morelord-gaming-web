@@ -10,11 +10,13 @@
 			"documents": [
 				{
 					"source": "CORE-GM-PRODUCT-GUIDE.md",
+					"bundled": true,
 					"title": "Morelord Core: GM Product Guide",
 					"description": "Connect a Foundry VTT world to Morelord Gaming and manage shared product access.",
 					"slug": "morelord-core",
 					"audience": "game-master",
-					"foundry": 13
+					"version": "0.9.2",
+					"foundry": 14
 				},
 				{
 					"source": "TELEMETRY.md",
@@ -22,6 +24,7 @@
 					"description": "Reporting consent, privacy, event coverage, and troubleshooting.",
 					"slug": "morelord-core/telemetry",
 					"audience": "game-master",
+					"version": "0.9.2",
 					"foundry": 14
 				}
 			]
