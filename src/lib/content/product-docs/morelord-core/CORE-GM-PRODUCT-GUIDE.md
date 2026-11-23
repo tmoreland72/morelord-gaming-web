@@ -78,6 +78,38 @@ While **Reaction Used** is checked, a creature in a started combat that uses suc
 
 The tools are listed alphabetically by title, ignoring capitalization and a leading Morelord prefix. The button labels stay as registered, so **Morelord Craftworks** still reads **Morelord Craftworks**. With **Morelord Craftworks**, **Morelord Downtime**, **Morelord Encounters**, **Morelord Journeys**, **Manage Marketplace Shops**, and **Morelord Marketplace**, that is the palette order. A GM also sees a first entry labeled **Morelord Modules**, with an info icon. It stays selected. Choosing **Morelord Modules** opens a window of the same name. Players do not see **Morelord Modules**, and the window does not open for them. Players still see the other tools, including **Morelord Craftworks**, **Morelord Downtime**, and **Morelord Marketplace**. Choosing **Morelord Tools** still only opens the column, and choosing one of those tools leaves **Morelord Tools** selected. The window says "Each module shows whether it is active, installed but inactive, or not installed in this world." It lists **Morelord Core**, **Morelord Journeys**, **Morelord Encounters**, **Morelord Character Export**, **Morelord Craftworks**, **Morelord Marketplace**, **Morelord Downtime**, and **Morelord Game Master**. Each row shows that module's icon, name, one-line description, and one status: **Active**, **Installed but inactive**, or **Not installed**. **Documentation** opens the Morelord Gaming documentation index in a new browser tab. A module that is **Not installed** also has **Learn more**, which opens its Morelord Gaming tools page in a new browser tab. **Morelord Game Master** has no tools page, so **Learn more** opens its GitHub repository instead. **Support** contains **Get support**, which opens the Morelord Gaming Discord server, **Morelord Gaming**, which opens morelordgaming.com, and **YouTube**, which opens the Morelord Gaming channel. Choosing the crown does not open this window or a tool window. Core does not put **Connect or Manage Account** or the Game Master tray in this palette. The other entries come from the other Morelord modules. There is no Game Settings field for this control, and it does not require a Morelord account.
 
+## Personal Performance
+
+Performance Setup is available to players and GMs without an account or premium access. Open Game Settings → Configure Settings → Morelord Core → Personal Performance → Open Performance Setup. Refresh an existing Foundry session after installing the update to register the menu.
+
+Choose a performance preset offers Low, Balanced, or High. Nothing is selected by default; reopening selects the last applied preset. The seven Foundry settings match Potato Or Not's original presets; Balanced corresponds to its Medium preset. These are starting points, not a hardware benchmark or a guarantee of frame rate.
+
+Performance Mode (core.performanceMode): Low = Low; Balanced = Medium; High = Maximum.
+
+Maximum Framerate (core.maxFPS): Low = 10 FPS; Balanced = 30 FPS; High = 60 FPS.
+
+Pixel Ratio Resolution Scaling (core.pixelRatioResolutionScaling): Low = Off; Balanced = On; High = On.
+
+Photosensitivity Mode (core.photosensitiveMode): Low = On; Balanced = Off; High = Off.
+
+Zoomed Texture Antialiasing (core.mipmap): Low = Off; Balanced = On; High = On. This is Foundry's displayed name for mipmapping: smaller texture copies reduce shimmering when zoomed out.
+
+Token Vision Animation (core.visionAnimation): Low = Off; Balanced = On; High = On.
+
+Light Source Animation (core.lightAnimation): Low = Off; Balanced = On; High = On.
+
+When Dice So Nice is active, Dice visibility is also set: Low = Hide all (none); Balanced = Show only mine (mine); High = Show all players' dice (all). Core uses Dice So Nice's native setVisibility API and preserves its other preferences. Hide all disables all Dice So Nice 3D rolls on your client; Show only mine displays only your own; Show all players' dice still respects the roll's normal visibility permissions. Inactive or absent Dice So Nice is untouched. An active version without this Dice visibility API must be updated before applying a preset.
+
+Apply Performance Settings requires a selection. The seven Foundry settings affect the current browser; Dice So Nice stores Dice visibility in the current user's settings flag for this world, so that user's other sessions can share it. Other users and world options are untouched. Low enables Photosensitivity Mode; Balanced and High disable it. Reload when convenient to finish graphics changes; Dice So Nice may ask for a reload when switching to or from Hide all, and no reload is forced. Later logins preserve manual adjustments.
+
+Keep My Settings and the window close control dismiss the offer without changing graphics. Open Performance Setup remains available after dismissal and when automatic offers are disabled.
+
+Offer Performance Setup is a GM-only world checkbox, enabled by default. It offers setup once per browser storage profile on that Foundry server, including the GM's browser. Clearing browser storage can show the offer again. The remembered preset and dismissal are personal browser preferences.
+
+Documentation in the Performance Setup header opens https://morelordgaming.com/docs/morelord-core#personal-performance in a new browser tab, directly at this section.
+
+For example, start with Low on an older laptop, reload, then fine-tune Foundry's graphics settings if needed.
+
 ## Requirements
 
 - Foundry Virtual Tabletop 13 or later, within the installed manifest's supported range. The reviewed manifest records 14.368 as verified; this guide does not establish additional version testing.
