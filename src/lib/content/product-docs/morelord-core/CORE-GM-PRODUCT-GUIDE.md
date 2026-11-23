@@ -78,6 +78,28 @@ While **Reaction Used** is checked, a creature in a started combat that uses suc
 
 The tools are listed alphabetically by title, ignoring capitalization and a leading Morelord prefix. The button labels stay as registered, so **Morelord Craftworks** still reads **Morelord Craftworks**. With **Morelord Craftworks**, **Morelord Downtime**, **Morelord Encounters**, **Morelord Journeys**, **Manage Marketplace Shops**, and **Morelord Marketplace**, that is the palette order. A GM also sees a first entry labeled **Morelord Modules**, with an info icon. It stays selected. Choosing **Morelord Modules** opens a window of the same name. Players do not see **Morelord Modules**, and the window does not open for them. Players still see the other tools, including **Morelord Craftworks**, **Morelord Downtime**, and **Morelord Marketplace**. Choosing **Morelord Tools** still only opens the column, and choosing one of those tools leaves **Morelord Tools** selected. The window says "Each module shows whether it is active, installed but inactive, or not installed in this world." It lists **Morelord Core**, **Morelord Journeys**, **Morelord Encounters**, **Morelord Character Export**, **Morelord Craftworks**, **Morelord Marketplace**, **Morelord Downtime**, and **Morelord Game Master**. Each row shows that module's icon, name, one-line description, and one status: **Active**, **Installed but inactive**, or **Not installed**. **Documentation** opens the Morelord Gaming documentation index in a new browser tab. A module that is **Not installed** also has **Learn more**, which opens its Morelord Gaming tools page in a new browser tab. **Morelord Game Master** has no tools page, so **Learn more** opens its GitHub repository instead. **Support** contains **Get support**, which opens the Morelord Gaming Discord server, **Morelord Gaming**, which opens morelordgaming.com, and **YouTube**, which opens the Morelord Gaming channel. Choosing the crown does not open this window or a tool window. Core does not put **Connect or Manage Account** or the Game Master tray in this palette. The other entries come from the other Morelord modules. There is no Game Settings field for this control, and it does not require a Morelord account.
 
+## Personal Performance
+
+Performance Setup is available to players and GMs without an account or premium access. Open Game Settings → Configure Settings → Morelord Core → Personal Performance → Open Performance Setup. Refresh an existing Foundry session after installing the update to register the menu.
+
+Choose a performance preset offers Low, Balanced, or High. Nothing is selected by default; reopening selects the last applied preset. The presets are starting points, not a hardware benchmark or a guarantee of frame rate.
+
+Low sets Performance Mode (core.performanceMode) to Low, Maximum Framerate (core.maxFPS) to 20 FPS, and Pixel Ratio Resolution Scaling (core.pixelRatioResolutionScaling) to Off.
+
+Balanced sets Performance Mode to Medium, Maximum Framerate to 30 FPS, and Pixel Ratio Resolution Scaling to Off.
+
+High sets Performance Mode to High, Maximum Framerate to 60 FPS, and Pixel Ratio Resolution Scaling to On.
+
+Apply Performance Settings requires a selection and applies those three Foundry settings only to the current browser. Reload when convenient to finish applying graphics changes; no reload is forced. Later logins preserve manual adjustments. Photosensitive Mode, mipmapping, vision animation, light animation, world configuration, and other players' preferences are unchanged.
+
+Keep My Settings and the window close control dismiss the offer without changing graphics. Open Performance Setup remains available after dismissal and when automatic offers are disabled.
+
+Offer Performance Setup is a GM-only world checkbox, enabled by default. It offers setup once per browser storage profile on that Foundry server, including the GM's browser. Clearing browser storage can show the offer again. The remembered preset and dismissal are personal browser preferences.
+
+Documentation in the Performance Setup header opens https://morelordgaming.com/docs/morelord-core#personal-performance in a new browser tab, directly at this section.
+
+For example, start with Low on an older laptop, reload, then fine-tune Foundry's graphics settings if needed.
+
 ## Requirements
 
 - Foundry Virtual Tabletop 13 or later, within the installed manifest's supported range. The reviewed manifest records 14.368 as verified; this guide does not establish additional version testing.
