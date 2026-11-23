@@ -82,15 +82,25 @@ The tools are listed alphabetically by title, ignoring capitalization and a lead
 
 Performance Setup is available to players and GMs without an account or premium access. Open Game Settings → Configure Settings → Morelord Core → Personal Performance → Open Performance Setup. Refresh an existing Foundry session after installing the update to register the menu.
 
-Choose a performance preset offers Low, Balanced, or High. Nothing is selected by default; reopening selects the last applied preset. The presets are starting points, not a hardware benchmark or a guarantee of frame rate.
+Choose a performance preset offers Low, Balanced, or High. Nothing is selected by default; reopening selects the last applied preset. The seven Foundry settings match Potato Or Not's original presets; Balanced corresponds to its Medium preset. These are starting points, not a hardware benchmark or a guarantee of frame rate.
 
-Low sets Performance Mode (core.performanceMode) to Low, Maximum Framerate (core.maxFPS) to 20 FPS, and Pixel Ratio Resolution Scaling (core.pixelRatioResolutionScaling) to Off.
+Performance Mode (core.performanceMode): Low = Low; Balanced = Medium; High = Maximum.
 
-Balanced sets Performance Mode to Medium, Maximum Framerate to 30 FPS, and Pixel Ratio Resolution Scaling to Off.
+Maximum Framerate (core.maxFPS): Low = 10 FPS; Balanced = 30 FPS; High = 60 FPS.
 
-High sets Performance Mode to High, Maximum Framerate to 60 FPS, and Pixel Ratio Resolution Scaling to On.
+Pixel Ratio Resolution Scaling (core.pixelRatioResolutionScaling): Low = Off; Balanced = On; High = On.
 
-Apply Performance Settings requires a selection and applies those three Foundry settings only to the current browser. Reload when convenient to finish applying graphics changes; no reload is forced. Later logins preserve manual adjustments. Photosensitive Mode, mipmapping, vision animation, light animation, world configuration, and other players' preferences are unchanged.
+Photosensitivity Mode (core.photosensitiveMode): Low = On; Balanced = Off; High = Off.
+
+Zoomed Texture Antialiasing (core.mipmap): Low = Off; Balanced = On; High = On. This is Foundry's displayed name for mipmapping: smaller texture copies reduce shimmering when zoomed out.
+
+Token Vision Animation (core.visionAnimation): Low = Off; Balanced = On; High = On.
+
+Light Source Animation (core.lightAnimation): Low = Off; Balanced = On; High = On.
+
+When Dice So Nice is active, Dice visibility is also set: Low = Hide all (none); Balanced = Show only mine (mine); High = Show all players' dice (all). Core uses Dice So Nice's native setVisibility API and preserves its other preferences. Hide all disables all Dice So Nice 3D rolls on your client; Show only mine displays only your own; Show all players' dice still respects the roll's normal visibility permissions. Inactive or absent Dice So Nice is untouched. An active version without this Dice visibility API must be updated before applying a preset.
+
+Apply Performance Settings requires a selection. The seven Foundry settings affect the current browser; Dice So Nice stores Dice visibility in the current user's settings flag for this world, so that user's other sessions can share it. Other users and world options are untouched. Low enables Photosensitivity Mode; Balanced and High disable it. Reload when convenient to finish graphics changes; Dice So Nice may ask for a reload when switching to or from Hide all, and no reload is forced. Later logins preserve manual adjustments.
 
 Keep My Settings and the window close control dismiss the offer without changing graphics. Open Performance Setup remains available after dismissal and when automatic offers are disabled.
 
