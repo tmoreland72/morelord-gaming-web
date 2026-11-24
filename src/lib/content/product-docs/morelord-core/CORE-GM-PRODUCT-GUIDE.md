@@ -4,7 +4,7 @@ description: 'Connect a Foundry VTT world to Morelord Gaming and manage shared p
 slug: 'morelord-core'
 product: 'morelord-core'
 audience: 'game-master'
-version: '0.9.2'
+version: '0.9.4'
 foundry: 14
 ---
 

@@ -296,6 +296,15 @@ for (const product of productLandings) {
 		} else {
 			await expect(campaignCaption).toHaveCount(0);
 		}
+		if (product.path === '/tools/morelord-encounters') {
+			const massCombatTutorial = page.locator('iframe[src*="7qW947oLnfY"]');
+			await expect(massCombatTutorial).toBeVisible();
+			await expect(
+				page.getByText(
+					'Mass Combat tutorial: save a roster, deploy waves, group attacks, and pause a wave (alpha, 20:22)'
+				)
+			).toBeVisible();
+		}
 		const premium = page.getByRole('heading', { name: 'Premium features' });
 		if (product.premium) await expect(premium).toBeVisible();
 		else await expect(premium).toHaveCount(0);
@@ -369,6 +378,24 @@ test('Core, Journeys, Craftworks, and Marketplace guides show the main demo', as
 	expect(
 		marketplaceMain && marketplaceSecondary && marketplaceSecondary.y > marketplaceMain.y
 	).toBeTruthy();
+
+	await page.goto('/docs/morelord-encounters');
+	const encountersDocs = page.locator('#morelord-encounters');
+	const encountersDemo = encountersDocs.locator('iframe[title="Morelord Encounters demo"]');
+	const massCombatOnIndex = encountersDocs.locator(
+		'iframe[title="Run Mass Combat with Waves and Group Attacks | Morelord Encounters for Foundry VTT"]'
+	);
+	await expect(encountersDemo).toHaveAttribute('src', /xADXldd1oRE/);
+	await expect(massCombatOnIndex).toHaveAttribute('src', /7qW947oLnfY/);
+	const encountersMain = await encountersDemo.boundingBox();
+	const massCombatBox = await massCombatOnIndex.boundingBox();
+	expect(encountersMain && massCombatBox && massCombatBox.y > encountersMain.y).toBeTruthy();
+
+	await page.goto('/docs/morelord-encounters/gm-manual#mass-combat');
+	const massCombatInManual = page.locator(
+		'#morelord-encounters--gm-manual iframe[title="Run Mass Combat with Waves and Group Attacks | Morelord Encounters for Foundry VTT"]'
+	);
+	await expect(massCombatInManual).toBeVisible();
 });
 
 test('legacy Foundry listing image URLs redirect to the media domain', async ({ request }) => {
