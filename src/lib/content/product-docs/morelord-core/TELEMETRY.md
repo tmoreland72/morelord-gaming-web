@@ -4,7 +4,7 @@ description: 'Reporting consent, privacy, event coverage, and troubleshooting.'
 slug: 'morelord-core/telemetry'
 product: 'morelord-core'
 audience: 'game-master'
-version: '0.9.2'
+version: '0.9.4'
 foundry: 14
 ---
 

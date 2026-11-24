@@ -56,6 +56,12 @@ const campingWithoutTravel: LandingVideo = {
 	caption: 'Camping without traveling: a short use-case demo'
 };
 
+const massCombatTutorial: LandingVideo = {
+	youtubeId: '7qW947oLnfY',
+	caption:
+		'Mass Combat tutorial: save a roster, deploy waves, group attacks, and pause a wave (alpha, 20:22)'
+};
+
 export type CatalogFeature = {
 	key: string;
 	name: string;
@@ -253,7 +259,7 @@ const landings: Record<string, ProductLanding> = {
 			'Open a creature from the roster or drag it onto the scene, and save the encounter for later in this world. With Tools Premium, Guide Me can offer a situation from a few questions, including a scene that is not a fight.'
 		],
 		youtubeId: 'xADXldd1oRE',
-		secondaryVideos: [roadToPhandalin],
+		secondaryVideos: [massCombatTutorial, roadToPhandalin],
 		requiresCore: true,
 		features: {
 			standard: [

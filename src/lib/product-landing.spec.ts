@@ -80,11 +80,19 @@ describe('product landing copy', () => {
 			youtubeId: 'kubQ5qZ6B0I',
 			caption: 'See it in a full campaign: Road to Phandalin'
 		};
-		for (const slug of ['morelord-marketplace', 'morelord-encounters', 'morelord-craftworks']) {
+		const massCombatTutorial = {
+			youtubeId: '7qW947oLnfY',
+			caption:
+				'Mass Combat tutorial: save a roster, deploy waves, group attacks, and pause a wave (alpha, 20:22)'
+		};
+		for (const slug of ['morelord-marketplace', 'morelord-craftworks']) {
 			const landing = getProductLanding(slug, fallback);
 			expect(landing.secondaryVideos).toEqual([campaign]);
 			expect(landing.youtubeId).not.toBe(campaign.youtubeId);
 		}
+		const encounters = getProductLanding('morelord-encounters', fallback);
+		expect(encounters.secondaryVideos).toEqual([massCombatTutorial, campaign]);
+		expect(encounters.youtubeId).not.toBe(campaign.youtubeId);
 		const journeys = getProductLanding('morelord-journeys', fallback);
 		expect(journeys.youtubeId).toBe('T4_9GPdveBw');
 		expect(journeys.secondaryVideos).toEqual([
