@@ -78,6 +78,45 @@ While **Reaction Used** is checked, a creature in a started combat that uses suc
 
 The tools are listed alphabetically by title, ignoring capitalization and a leading Morelord prefix. The button labels stay as registered, so **Morelord Craftworks** still reads **Morelord Craftworks**. With **Morelord Craftworks**, **Morelord Downtime**, **Morelord Encounters**, **Morelord Journeys**, **Manage Marketplace Shops**, and **Morelord Marketplace**, that is the palette order. A GM also sees a first entry labeled **Morelord Modules**, with an info icon. It stays selected. Choosing **Morelord Modules** opens a window of the same name. Players do not see **Morelord Modules**, and the window does not open for them. Players still see the other tools, including **Morelord Craftworks**, **Morelord Downtime**, and **Morelord Marketplace**. Choosing **Morelord Tools** still only opens the column, and choosing one of those tools leaves **Morelord Tools** selected. The window says "Each module shows whether it is active, installed but inactive, or not installed in this world." It lists **Morelord Core**, **Morelord Journeys**, **Morelord Encounters**, **Morelord Character Export**, **Morelord Craftworks**, **Morelord Marketplace**, **Morelord Downtime**, and **Morelord Game Master**. Each row shows that module's icon, name, one-line description, and one status: **Active**, **Installed but inactive**, or **Not installed**. **Documentation** opens the Morelord Gaming documentation index in a new browser tab. A module that is **Not installed** also has **Learn more**, which opens its Morelord Gaming tools page in a new browser tab. **Morelord Game Master** has no tools page, so **Learn more** opens its GitHub repository instead. **Support** contains **Get support**, which opens the Morelord Gaming Discord server, **Morelord Gaming**, which opens morelordgaming.com, and **YouTube**, which opens the Morelord Gaming channel. Choosing the crown does not open this window or a tool window. Core does not put **Connect or Manage Account** or the Game Master tray in this palette. The other entries come from the other Morelord modules. There is no Game Settings field for this control, and it does not require a Morelord account.
 
+## Personal Performance
+
+Available in Morelord Core **0.9.4**. Players and GMs can choose graphics settings for their own device without a Morelord account or premium membership.
+
+Open **Game Settings → Configure Settings → Morelord Core → Personal Performance → Open Performance Setup**. Refresh an already-open Foundry session after installing the update if the menu is missing. The menu remains available after dismissing the initial offer or disabling automatic offers.
+
+### Offer Performance Setup
+
+**Offer Performance Setup** is a GM-only world checkbox, enabled by default, under **Game Settings → Configure Settings → Morelord Core**. Its description is: “Show players the performance setup feature one time to automatically make game settings changes appropriate for their devices.”
+
+When enabled, players and GMs receive the **Performance Setup** window once per browser storage profile on that Foundry server. Opening the window does not change settings: each person chooses a preset and applies it. Unchecking the box suppresses automatic offers for the world; **Open Performance Setup** still works. Clearing browser storage can cause the offer to appear again.
+
+### Performance Setup
+
+**Choose a performance preset** offers **Low**, **Balanced**, and **High**. No preset is selected initially; reopening the window selects your last applied preset. Choose a starting point for your device:
+
+| Setting | Low | Balanced | High |
+| --- | --- | --- | --- |
+| Performance Mode | Low | Medium | Maximum |
+| Maximum Framerate | 10 FPS | 30 FPS | 60 FPS |
+| Pixel Ratio Resolution Scaling | Off | On | On |
+| Photosensitivity Mode | On | Off | Off |
+| Zoomed Texture Antialiasing | Off | On | On |
+| Token Vision Animation | Off | On | On |
+| Light Source Animation | Off | On | On |
+| Dice So Nice: Dice visibility, when active | Hide all | Show only mine | Show all players' dice |
+
+**Low** suits older laptops or devices that struggle with busy scenes. **Balanced** is a starting point for everyday computers. **High** uses maximum graphics and a higher frame-rate limit for gaming computers. These presets do not benchmark your hardware or guarantee a frame rate. **Zoomed Texture Antialiasing** reduces texture shimmering when zoomed out. Low turns **Photosensitivity Mode** on; Balanced and High turn it off.
+
+- **Apply Performance Settings** is disabled until a preset is selected. It applies the table's seven Foundry graphics settings to the current browser and, when Dice So Nice is active, changes that user's dice visibility. Reload Foundry when convenient to finish applying graphics changes; Core does not force a reload. You can fine-tune Foundry settings afterward. Later logins preserve those manual changes instead of reapplying the preset.
+- **Keep My Settings**, or closing the window, dismisses the offer without changing graphics settings. Reopen it with **Open Performance Setup** whenever needed.
+- **Documentation** opens this **Personal Performance** section on the Morelord Gaming website in a new browser tab.
+
+When **Dice So Nice** is active, Low hides all its 3D dice on that user's client, Balanced shows only their own dice, and High shows all players' dice permitted by each roll's normal visibility rules. Dice appearance, sounds, and world options are preserved. Dice So Nice can request a reload when switching to or from **Hide all**. It is optional: if absent or inactive, Core leaves it untouched. If an active version lacks the dice visibility API, update Dice So Nice before applying a preset.
+
+Foundry graphics settings, the last chosen preset, and the dismissed offer are remembered for the browser. Dice So Nice stores visibility on the current user's world account, so that user's other sessions can share the dice choice.
+
+For example, select **Low** on an older laptop, choose **Apply Performance Settings**, and reload. If the scene runs comfortably, adjust individual graphics settings later or return to **Open Performance Setup** to try **Balanced**.
+
 ## Requirements
 
 - Foundry Virtual Tabletop 13 or later, within the installed manifest's supported range. The reviewed manifest records 14.368 as verified; this guide does not establish additional version testing.
