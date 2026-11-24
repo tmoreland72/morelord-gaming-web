@@ -19,6 +19,21 @@ for (const publicPage of publicPages) {
 	});
 }
 
+const docsRoutes = [
+	'/docs',
+	'/docs/morelord-core',
+	'/docs/morelord-encounters',
+	'/docs/morelord-downtime',
+	'/docs/morelord-core/telemetry'
+];
+
+for (const path of docsRoutes) {
+	test(`${path} returns 200`, async ({ page }) => {
+		const response = await page.goto(path);
+		expect(response?.ok()).toBeTruthy();
+	});
+}
+
 test('health endpoint confirms the local D1 binding', async ({ request }) => {
 	const response = await request.get('/api/health');
 	expect(response.status()).toBe(200);
