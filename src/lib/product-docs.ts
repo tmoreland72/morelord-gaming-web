@@ -31,6 +31,13 @@ const modules = import.meta.glob<ProductDocModule>('/src/lib/content/product-doc
 	eager: true
 });
 
+const docModules = Object.entries(modules).map(([sourcePath, module]) => {
+	if (!module?.metadata?.slug || !module?.metadata?.product) {
+		throw new Error(`Product documentation is missing compile metadata: ${sourcePath}`);
+	}
+	return [sourcePath, module] as const;
+});
+
 function routeFromSlug(slug: string): string {
 	return `/docs/${slug.replace(/^\/+|\/+$/g, '')}`;
 }
@@ -42,13 +49,13 @@ function routeOrder(module: ProductDocModule): number {
 
 export function getProductDoc(product: string, path = '') {
 	const slug = path ? `${product}/${path}` : product;
-	const entry = Object.entries(modules).find(([, module]) => module.metadata.slug === slug);
+	const entry = docModules.find(([, module]) => module.metadata.slug === slug);
 	if (!entry) return null;
 
 	const [sourcePath, module] = entry;
-	const navigation = Object.values(modules)
-		.filter((candidate) => candidate.metadata.product === product)
-		.map((candidate) => ({
+	const navigation = docModules
+		.filter(([, candidate]) => candidate.metadata.product === product)
+		.map(([, candidate]) => ({
 			title: candidate.metadata.title,
 			href: routeFromSlug(candidate.metadata.slug),
 			audience: candidate.metadata.audience,
@@ -56,7 +63,7 @@ export function getProductDoc(product: string, path = '') {
 		}))
 		.sort((left, right) => left.order - right.order || left.title.localeCompare(right.title));
 
-	const documents = Object.entries(modules)
+	const documents = docModules
 		.filter(([, candidate]) => candidate.metadata.product === product)
 		.sort(
 			([, left], [, right]) =>
@@ -72,9 +79,9 @@ export function getProductDoc(product: string, path = '') {
 }
 
 export function getProductDocGroups() {
-	return Object.values(modules)
-		.filter((module) => module.metadata.slug === module.metadata.product)
-		.map((module) => ({
+	return docModules
+		.filter(([, module]) => module.metadata.slug === module.metadata.product)
+		.map(([, module]) => ({
 			product: module.metadata.product,
 			title: module.metadata.product
 				.split('-')

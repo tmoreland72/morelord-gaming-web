@@ -44,8 +44,16 @@ function frontmatterValue(markdown, key) {
 	return match?.[1]?.replace(/^['"]|['"]$/g, '') ?? null;
 }
 
+function stripFrontmatter(markdown) {
+	if (!markdown.startsWith('---\n') && !markdown.startsWith('---\r\n')) return markdown;
+	return markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n*/, '');
+}
+
 function configuredMarkdown(markdown, product, document) {
-	if (!document || markdown.startsWith('---\n') || markdown.startsWith('---\r\n')) {
+	if (!document?.title) {
+		if (markdown.startsWith('---\n') || markdown.startsWith('---\r\n')) {
+			return markdown;
+		}
 		return markdown;
 	}
 
@@ -63,7 +71,7 @@ function configuredMarkdown(markdown, product, document) {
 		.filter(([, value]) => value !== undefined)
 		.map(([key, value]) => `${key}: ${JSON.stringify(value)}`)
 		.join('\n');
-	return `---\n${frontmatter}\n---\n\n${markdown}`;
+	return `---\n${frontmatter}\n---\n\n${stripFrontmatter(markdown)}`;
 }
 
 function routeForDocument(productSlug, markdown, filename) {
@@ -101,7 +109,12 @@ function bundledDocumentPath(product, document) {
 	return join(projectRoot, 'scripts', 'bundled-product-docs', product.slug, document.source);
 }
 
-for (const product of registry.products) {
+export { configuredMarkdown, stripFrontmatter };
+
+const isCli =
+	Boolean(process.argv[1]) && fileURLToPath(import.meta.url) === resolve(process.argv[1]);
+
+if (isCli) for (const product of registry.products) {
 	const docsSource = join(sourceRoot, product.slug, product.docsPath);
 	if (!existsSync(docsSource)) {
 		throw new Error(
