@@ -87,7 +87,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-game-master
-          ref: master
+          ref: main
           path: .product-docs/morelord-game-master
 
       - name: Synchronize product documentation
@@ -197,7 +197,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: tmoreland72/morelord-game-master
-          ref: master
+          ref: main
           path: .product-docs/morelord-game-master
 
       - name: Synchronize product documentation

@@ -15,7 +15,7 @@
 					"description": "Connect a Foundry VTT world to Morelord Gaming and manage shared product access.",
 					"slug": "morelord-core",
 					"audience": "game-master",
-					"version": "0.9.4",
+					"version": "0.9.5",
 					"foundry": 14
 				},
 				{
@@ -24,7 +24,7 @@
 					"description": "Reporting consent, privacy, event coverage, and troubleshooting.",
 					"slug": "morelord-core/telemetry",
 					"audience": "game-master",
-					"version": "0.9.4",
+					"version": "0.9.5",
 					"foundry": 14
 				}
 			]
@@ -86,7 +86,7 @@
 		{
 			"slug": "morelord-game-master",
 			"repository": "tmoreland72/morelord-game-master",
-			"branch": "master",
+			"branch": "main",
 			"docsPath": "docs",
 			"assetsPath": null,
 			"documents": [
