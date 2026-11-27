@@ -16,7 +16,8 @@ vi.mock('$env/dynamic/private', () => ({
 import {
 	discordRoleSyncConfigured,
 	saveDiscordConnection,
-	syncDiscordRoles
+	syncDiscordRoles,
+	syncNotInServerDiscordBatch
 } from '$lib/server/discord';
 import { createTestD1 } from '$lib/server/test-d1';
 
@@ -81,6 +82,24 @@ describe('syncDiscordRoles', () => {
 		const result = await syncDiscordRoles(db, 'u1');
 		expect(result.status).toBe('synced');
 		expect(rolesAdded.sort()).toEqual(['1535401700729557042', '1535402163818209420'].sort());
+	});
+
+	it('re-syncs not_in_server connections in a batch', async () => {
+		const db = d1();
+		sqlite.exec(`
+			INSERT INTO discord_connections (user_id, discord_user_id, username, role_sync_status, created_at, updated_at)
+			VALUES ('u1', 'discord-batch', 'member', 'not_in_server', 1000, 1000);
+		`);
+		fetchMock.mockImplementation(async (url: string, init?: RequestInit) => {
+			if (url.includes('/members/discord-batch') && (!init || init.method === undefined)) {
+				return new Response(JSON.stringify({ roles: [] }), { status: 200 });
+			}
+			if (init?.method === 'PUT') return new Response(null, { status: 204 });
+			return new Response(null, { status: 204 });
+		});
+		const result = await syncNotInServerDiscordBatch(db);
+		expect(result.attempted).toBe(1);
+		expect(result.synced).toBe(1);
 	});
 
 	it('reports not_in_server without throwing', async () => {

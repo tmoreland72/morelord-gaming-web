@@ -4,7 +4,7 @@
 <h2>1. Create the Discord application</h2>
 <p>In the Discord Developer Portal, create or use the Morelord Gaming application. Record the Application ID and create a client secret. On the OAuth2 page add <code>https://morelordgaming.com/api/discord/callback</code> as an exact redirect URI.</p>
 <h2>2. Create the bot</h2>
-<p>Add a bot to the application and copy its bot token. Store the Application ID, client secret and bot token in the GitHub production environment as <code>DISCORD_CLIENT_ID</code>, <code>DISCORD_CLIENT_SECRET</code>, and <code>DISCORD_BOT_TOKEN</code>. Add <code>CRON_SECRET</code> for the scheduled catch-up worker.</p>
+<p>Add a bot to the application and copy its bot token. Store the Application ID, client secret and bot token in the GitHub production environment as <code>DISCORD_CLIENT_ID</code>, <code>DISCORD_CLIENT_SECRET</code>, and <code>DISCORD_BOT_TOKEN</code>. <code>CRON_SECRET</code> is optional and only protects manual HTTP triggers of the catch-up endpoint.</p>
 <h2>3. Install and position the bot</h2>
 <p>Use Admin → Discord → Install bot in Discord. The bot needs Manage Roles. In Server Settings → Roles, move the bot role above <strong>Morelord Tools</strong>, <strong>Morelord Adventures</strong>, <strong>Tools Premium</strong>, and <strong>Tools Champion</strong>, but leave it below administrator and staff roles.</p>
 <h2>4. Configure the server</h2>

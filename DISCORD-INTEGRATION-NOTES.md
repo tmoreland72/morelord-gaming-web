@@ -15,7 +15,7 @@ Configure these GitHub production environment secrets:
 - `DISCORD_CLIENT_ID`
 - `DISCORD_CLIENT_SECRET`
 - `DISCORD_BOT_TOKEN`
-- `CRON_SECRET` (scheduled catch-up sync for members who join Discord after registering)
+- `CRON_SECRET` (optional — only for manually hitting `/api/cron/discord-role-sync`; the 15-minute Cloudflare cron does not need it)
 - Optional legacy fallbacks: `DISCORD_GUILD_ID`, `DISCORD_ROLE_TOOLS`, `DISCORD_ROLE_ADVENTURES`, `DISCORD_ROLE_PREMIUM`, `DISCORD_ROLE_CHAMPION`, `DISCORD_INVITE_URL`
 
 The production OAuth callback is derived from `ORIGIN` and is:

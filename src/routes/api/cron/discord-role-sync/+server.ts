@@ -10,7 +10,14 @@ function authorized(request: Request): boolean {
 	return header === `Bearer ${secret}`;
 }
 
+/** Optional manual HTTP trigger (Bearer CRON_SECRET). The Worker scheduled() handler calls sync directly. */
 export const GET: RequestHandler = async ({ request, platform }) => {
+	if (!env.CRON_SECRET?.trim()) {
+		return json(
+			{ error: 'Cron HTTP trigger is not configured (CRON_SECRET is unset).' },
+			{ status: 503 }
+		);
+	}
 	if (!authorized(request)) return json({ error: 'Unauthorized' }, { status: 401 });
 	if (!platform?.env?.DB) return json({ error: 'Database unavailable' }, { status: 503 });
 	const result = await syncNotInServerDiscordBatch(platform.env.DB);
