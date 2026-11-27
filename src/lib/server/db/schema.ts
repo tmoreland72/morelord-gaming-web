@@ -227,6 +227,7 @@ export const discordSettings = sqliteTable('discord_settings', {
 	id: text('id').primaryKey(),
 	guildId: text('guild_id'),
 	roleToolsId: text('role_tools_id'),
+	roleAdventuresId: text('role_adventures_id'),
 	rolePremiumId: text('role_premium_id'),
 	roleChampionId: text('role_champion_id'),
 	inviteUrl: text('invite_url'),

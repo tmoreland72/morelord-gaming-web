@@ -120,6 +120,7 @@ export const load: PageServerLoad = async ({ locals, platform }) => {
 				Boolean(
 					discordSettings.guildId &&
 					discordSettings.roleToolsId &&
+					discordSettings.roleAdventuresId &&
 					discordSettings.rolePremiumId &&
 					discordSettings.roleChampionId
 				),

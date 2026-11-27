@@ -1,0 +1,1 @@
+ALTER TABLE discord_settings ADD COLUMN role_adventures_id TEXT;

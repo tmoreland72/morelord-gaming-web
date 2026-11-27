@@ -130,6 +130,7 @@ jobs:
       DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
       DISCORD_RELEASE_WEBHOOK_URL: ${{ secrets.DISCORD_RELEASE_WEBHOOK_URL }}
       DISCORD_INVITE_URL: ${{ secrets.DISCORD_INVITE_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
       ADMIN_EMAILS: ${{ vars.ADMIN_EMAILS }}
       ORIGIN: ${{ vars.ORIGIN }}
@@ -330,6 +331,16 @@ jobs:
             jq -s '.[0] * .[1]' "$RUNTIME_SECRETS_FILE" "$discord_file" > "${RUNTIME_SECRETS_FILE}.next"
             mv "${RUNTIME_SECRETS_FILE}.next" "$RUNTIME_SECRETS_FILE"
             rm -f "$discord_file"
+          fi
+
+          if [ -n "${CRON_SECRET:-}" ]; then
+            cron_file="$(mktemp)"
+            jq -n \
+              --arg CRON_SECRET "$CRON_SECRET" \
+              '{ CRON_SECRET: $CRON_SECRET }' > "$cron_file"
+            jq -s '.[0] * .[1]' "$RUNTIME_SECRETS_FILE" "$cron_file" > "${RUNTIME_SECRETS_FILE}.next"
+            mv "${RUNTIME_SECRETS_FILE}.next" "$RUNTIME_SECRETS_FILE"
+            rm -f "$cron_file"
           fi
 
           echo "Runtime secrets included in this deploy:"

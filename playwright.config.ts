@@ -18,7 +18,8 @@ export default defineConfig({
 		}
 	],
 	webServer: {
-		command: 'npm run db:migrate:local && npm run build && npx wrangler dev --local --port 4173',
+		command:
+			'npm run db:migrate:local && BETTER_AUTH_SECRET=playwright-test-secret-32-characters-min npm run build && BETTER_AUTH_SECRET=playwright-test-secret-32-characters-min npx wrangler dev --local --port 4173',
 		url: 'http://127.0.0.1:4173/api/health',
 		reuseExistingServer: !process.env.CI,
 		timeout: 120_000

@@ -5,6 +5,7 @@ import { betterAuth } from 'better-auth/minimal';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { sveltekitCookies } from 'better-auth/svelte-kit';
 import { getDb } from '$lib/server/db';
+import { onDiscordSignInSession } from '$lib/server/discord-auth-link';
 
 export type AuthProviderName = 'google' | 'discord';
 
@@ -70,6 +71,19 @@ export const createAuth = (d1: D1Database, baseURL?: string) => {
 			accountLinking: {
 				enabled: true,
 				trustedProviders: ['google']
+			}
+		},
+		databaseHooks: {
+			session: {
+				create: {
+					after: async (session) => {
+						try {
+							await onDiscordSignInSession(d1, session.userId);
+						} catch (cause) {
+							console.error('Discord auto-link after sign-in failed.', cause);
+						}
+					}
+				}
 			}
 		},
 		plugins: [sveltekitCookies(getRequestEvent)]

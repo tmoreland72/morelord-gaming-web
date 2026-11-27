@@ -2,12 +2,32 @@ import { env } from '$env/dynamic/private';
 import { eq } from 'drizzle-orm';
 import { getDb } from '$lib/server/db';
 import { discordConnections, discordSettings, stripeCustomers } from '$lib/server/db/schema';
+import { getBillingSummary, membershipLabel, resolveMembershipTier } from '$lib/server/billing';
+import { logDiscordSync } from '$lib/server/discord-log';
 import {
-	getBillingSummary,
-	membershipLabel,
-	resolveMembershipTier,
-	type MembershipTier
-} from '$lib/server/billing';
+	configuredManagedRoles,
+	desiredManagedRoles,
+	minimumDiscordRoleSyncReady,
+	subscriberDiscordRolesReady
+} from '$lib/server/discord-sync-logic';
+
+export type { DiscordManagedRoleKey } from '$lib/server/discord-sync-logic';
+export { desiredManagedRoles, configuredManagedRoles, minimumDiscordRoleSyncReady } from '$lib/server/discord-sync-logic';
+
+export type DiscordSyncBatchResult = {
+	attempted: number;
+	synced: number;
+	stillNotInServer: number;
+	errors: number;
+	rateLimited: boolean;
+	details: string[];
+};
+
+export type DiscordSyncOutcome = {
+	status: string;
+	message: string;
+	lastSyncedAt: Date;
+};
 
 const DISCORD_API = 'https://discord.com/api/v10';
 const SETTINGS_ID = 'primary';
@@ -38,6 +58,7 @@ export type DiscordGuildRole = {
 export type DiscordRuntimeSettings = {
 	guildId: string | null;
 	roleToolsId: string | null;
+	roleAdventuresId: string | null;
 	rolePremiumId: string | null;
 	roleChampionId: string | null;
 	inviteUrl: string | null;
@@ -54,7 +75,7 @@ export type DiscordConfigurationCheck = {
 	botHighestRolePosition: number | null;
 	roles: DiscordGuildRole[];
 	managedRoles: Array<{
-		key: 'tools' | 'premium' | 'champion';
+		key: 'tools' | 'adventures' | 'premium' | 'champion';
 		roleId: string | null;
 		name: string | null;
 		position: number | null;
@@ -177,6 +198,7 @@ export async function getDiscordSettings(d1: D1Database): Promise<DiscordRuntime
 	return {
 		guildId: row?.guildId ?? env.DISCORD_GUILD_ID ?? null,
 		roleToolsId: row?.roleToolsId ?? env.DISCORD_ROLE_TOOLS ?? env.DISCORD_ROLE_COMMUNITY ?? null,
+		roleAdventuresId: row?.roleAdventuresId ?? env.DISCORD_ROLE_ADVENTURES ?? null,
 		rolePremiumId: row?.rolePremiumId ?? env.DISCORD_ROLE_PREMIUM ?? null,
 		roleChampionId: row?.roleChampionId ?? env.DISCORD_ROLE_CHAMPION ?? null,
 		inviteUrl: row?.inviteUrl ?? env.DISCORD_INVITE_URL ?? null,
@@ -199,25 +221,12 @@ export async function saveDiscordSettings(d1: D1Database, values: DiscordRuntime
 export async function discordRoleSyncConfigured(d1: D1Database): Promise<boolean> {
 	if (!env.DISCORD_BOT_TOKEN) return false;
 	const settings = await getDiscordSettings(d1);
-	return Boolean(
-		settings.guildId && settings.roleToolsId && settings.rolePremiumId && settings.roleChampionId
-	);
+	return minimumDiscordRoleSyncReady(settings);
 }
 
-function desiredManagedRoles(tier: MembershipTier, settings: DiscordRuntimeSettings): Set<string> {
-	const roles = new Set<string>();
-	if (settings.roleToolsId) roles.add(settings.roleToolsId);
-	if (tier === 'premium' || tier === 'champion') {
-		if (settings.rolePremiumId) roles.add(settings.rolePremiumId);
-	}
-	if (tier === 'champion' && settings.roleChampionId) roles.add(settings.roleChampionId);
-	return roles;
-}
-
-function configuredManagedRoles(settings: DiscordRuntimeSettings): string[] {
-	return [settings.roleToolsId, settings.rolePremiumId, settings.roleChampionId].filter(
-		(value): value is string => Boolean(value)
-	);
+export async function discordSubscriberRolesConfigured(d1: D1Database): Promise<boolean> {
+	const settings = await getDiscordSettings(d1);
+	return subscriberDiscordRolesReady(settings);
 }
 
 async function discordFetch(path: string, init: RequestInit = {}): Promise<Response> {
@@ -240,7 +249,7 @@ async function setRole(
 		`/guilds/${guildId}/members/${discordUserId}/roles/${roleId}`,
 		{
 			method: add ? 'PUT' : 'DELETE',
-			headers: { 'X-Audit-Log-Reason': 'Morelord Tools membership synchronization' }
+			headers: { 'X-Audit-Log-Reason': 'Morelord Gaming site membership synchronization' }
 		}
 	);
 	if (!response.ok && response.status !== 204) {
@@ -254,16 +263,22 @@ async function setRole(
 	}
 }
 
-export async function syncDiscordRoles(d1: D1Database, userId: string) {
+export async function syncDiscordRoles(d1: D1Database, userId: string): Promise<DiscordSyncOutcome> {
 	const connection = await getDiscordConnection(d1, userId);
 	if (!connection) throw new Error('Connect Discord before synchronizing roles.');
 	const settings = await getDiscordSettings(d1);
 	if (!(await discordRoleSyncConfigured(d1))) {
+		const missing: string[] = [];
+		if (!settings.guildId) missing.push('guild');
+		if (!settings.roleToolsId) missing.push('Morelord Tools role');
+		if (!settings.roleAdventuresId) missing.push('Morelord Adventures role');
+		if (!env.DISCORD_BOT_TOKEN) missing.push('bot token');
+		logDiscordSync('not-configured', { userId, missing });
 		return updateSyncStatus(
 			d1,
 			userId,
 			'not_configured',
-			'Discord is connected, but automatic Tools role synchronization is not fully configured yet.'
+			`Discord is connected, but role sync is not ready (missing: ${missing.join(', ')}).`
 		);
 	}
 
@@ -274,15 +289,17 @@ export async function syncDiscordRoles(d1: D1Database, userId: string) {
 		const inviteMessage = settings.inviteUrl
 			? `Join the Morelord Gaming Discord, then synchronize again: ${settings.inviteUrl}`
 			: 'Join the Morelord Gaming Discord, then synchronize again.';
+		logDiscordSync('not-in-server', { userId, discordUserId: connection.discordUserId });
 		return updateSyncStatus(d1, userId, 'not_in_server', inviteMessage);
 	}
 	if (!memberResponse.ok) {
-		return updateSyncStatus(
-			d1,
+		const message = `Discord member lookup failed (${memberResponse.status}).`;
+		logDiscordSync('member-lookup-failed', {
 			userId,
-			'error',
-			`Discord member lookup failed (${memberResponse.status}).`
-		);
+			discordUserId: connection.discordUserId,
+			status: memberResponse.status
+		});
+		return updateSyncStatus(d1, userId, 'error', message);
 	}
 
 	const member = (await memberResponse.json()) as { roles?: string[] };
@@ -293,15 +310,102 @@ export async function syncDiscordRoles(d1: D1Database, userId: string) {
 		billing.entitlements.map((entitlement) => entitlement.lookupKey)
 	);
 	const desired = desiredManagedRoles(tier, settings);
+	const roleErrors: string[] = [];
 
 	for (const roleId of configuredManagedRoles(settings)) {
-		if (desired.has(roleId) && !current.has(roleId))
-			await setRole(settings.guildId!, connection.discordUserId, roleId, true);
-		if (!desired.has(roleId) && current.has(roleId))
-			await setRole(settings.guildId!, connection.discordUserId, roleId, false);
+		try {
+			if (desired.has(roleId) && !current.has(roleId)) {
+				await setRole(settings.guildId!, connection.discordUserId, roleId, true);
+			}
+			if (!desired.has(roleId) && current.has(roleId)) {
+				await setRole(settings.guildId!, connection.discordUserId, roleId, false);
+			}
+		} catch (cause) {
+			const detail = cause instanceof Error ? cause.message : 'Role update failed.';
+			roleErrors.push(`${roleId}: ${detail}`);
+			logDiscordSync('role-update-failed', { userId, roleId, error: detail });
+		}
 	}
 
-	return updateSyncStatus(d1, userId, 'synced', `${membershipLabel(tier)} roles are synchronized.`);
+	if (roleErrors.length) {
+		return updateSyncStatus(
+			d1,
+			userId,
+			'error',
+			`Some Discord roles could not be updated: ${roleErrors.join(' ')}`
+		);
+	}
+
+	let message = `${membershipLabel(tier)} roles are synchronized.`;
+	if (
+		(tier === 'premium' || tier === 'champion') &&
+		!subscriberDiscordRolesReady(settings)
+	) {
+		message += ' Subscriber roles are not fully configured in Admin → Discord.';
+		logDiscordSync('subscriber-roles-not-configured', { userId, tier });
+	}
+
+	logDiscordSync('synced', { userId, tier, discordUserId: connection.discordUserId });
+	return updateSyncStatus(d1, userId, 'synced', message);
+}
+
+export async function syncNotInServerDiscordBatch(d1: D1Database): Promise<DiscordSyncBatchResult> {
+	const { DISCORD_CATCHUP_BATCH_SIZE, DISCORD_CATCHUP_MAX_RETRIES } = await import(
+		'./discord-sync-logic'
+	);
+	const rows = await d1
+		.prepare(
+			`SELECT user_id AS userId, discord_user_id AS discordUserId
+       FROM discord_connections
+       WHERE role_sync_status = 'not_in_server'
+       ORDER BY COALESCE(last_synced_at, updated_at) ASC
+       LIMIT ?1`
+		)
+		.bind(DISCORD_CATCHUP_BATCH_SIZE)
+		.all<{ userId: string; discordUserId: string }>();
+
+	const result: DiscordSyncBatchResult = {
+		attempted: rows.results.length,
+		synced: 0,
+		stillNotInServer: 0,
+		errors: 0,
+		rateLimited: false,
+		details: []
+	};
+
+	for (const row of rows.results) {
+		let attempt = 0;
+		let done = false;
+		while (attempt < DISCORD_CATCHUP_MAX_RETRIES && !done) {
+			attempt += 1;
+			try {
+				const status = await syncDiscordRoles(d1, row.userId);
+				done = true;
+				if (status.status === 'synced') result.synced += 1;
+				else if (status.status === 'not_in_server') result.stillNotInServer += 1;
+				else if (status.status === 'error') {
+					result.errors += 1;
+					result.details.push(`${row.userId}: ${status.message}`);
+				}
+			} catch (cause) {
+				const message = cause instanceof Error ? cause.message : String(cause);
+				if (message.includes('(429)')) {
+					result.rateLimited = true;
+					result.details.push('Discord rate limit reached; remaining batch deferred.');
+					logDiscordSync('cron-rate-limited', { attempt, userId: row.userId });
+					return result;
+				}
+				if (attempt >= DISCORD_CATCHUP_MAX_RETRIES) {
+					result.errors += 1;
+					result.details.push(`${row.userId}: ${message}`);
+					done = true;
+				}
+			}
+		}
+	}
+
+	logDiscordSync('cron-batch-complete', result);
+	return result;
 }
 
 export async function syncDiscordRolesForStripeCustomer(d1: D1Database, stripeCustomerId: string) {
@@ -403,8 +507,9 @@ export async function checkDiscordConfiguration(
 		);
 		result.botHasManageRoles = Boolean(permissions & MANAGE_ROLES || permissions & ADMINISTRATOR);
 
-		const selected: Array<['tools' | 'premium' | 'champion', string | null]> = [
+		const selected: Array<['tools' | 'adventures' | 'premium' | 'champion', string | null]> = [
 			['tools', settings.roleToolsId],
+			['adventures', settings.roleAdventuresId],
 			['premium', settings.rolePremiumId],
 			['champion', settings.roleChampionId]
 		];
@@ -442,7 +547,12 @@ export async function checkDiscordConfiguration(
 	return result;
 }
 
-async function updateSyncStatus(d1: D1Database, userId: string, status: string, message: string) {
+async function updateSyncStatus(
+	d1: D1Database,
+	userId: string,
+	status: string,
+	message: string
+): Promise<DiscordSyncOutcome> {
 	const db = getDb(d1);
 	const now = new Date();
 	await db
