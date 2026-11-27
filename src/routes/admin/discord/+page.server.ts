@@ -2,8 +2,10 @@ import { env } from '$env/dynamic/private';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { isAdminEmail } from '$lib/server/admin';
+import { backfillDiscordConnectionsFromAuthAccounts } from '$lib/server/discord-auth-link';
 import {
 	checkDiscordConfiguration,
+	discordRoleSyncConfigured,
 	getDiscordBotInstallUrl,
 	getDiscordSettings,
 	saveDiscordSettings,
@@ -50,10 +52,27 @@ export const load: PageServerLoad = async ({ locals, platform, url }) => {
 		ORDER BY COALESCE(dc.last_synced_at, dc.created_at) DESC
 	`).all<ConnectionRow>();
 
+	const statusSummary = await platform.env.DB.prepare(`
+		SELECT role_sync_status AS status, COUNT(*) AS total
+		FROM discord_connections
+		GROUP BY role_sync_status
+	`).all<{ status: string; total: number }>();
+
+	const missingAuthLinks = await platform.env.DB.prepare(`
+		SELECT COUNT(*) AS total FROM account a
+		LEFT JOIN discord_connections dc ON dc.user_id = a.user_id
+		WHERE a.provider_id = 'discord' AND dc.user_id IS NULL
+	`).first<{ total: number }>();
+
 	return {
 		settings,
 		check,
 		connections: connections.results as ConnectionRow[],
+		roleSyncConfigured: await discordRoleSyncConfigured(db),
+		syncStatusCounts: Object.fromEntries(
+			statusSummary.results.map((row) => [row.status, row.total])
+		),
+		missingAuthLinks: Number(missingAuthLinks?.total ?? 0),
 		configuration: {
 			signInRedirectUri: `${url.origin}/api/auth/callback/discord`,
 			clientId: Boolean(env.DISCORD_CLIENT_ID?.trim()),
@@ -79,6 +98,7 @@ export const actions: Actions = {
 		await saveDiscordSettings(platform.env.DB, {
 			guildId: optional(form, 'guildId'),
 			roleToolsId: optional(form, 'roleToolsId'),
+			roleAdventuresId: optional(form, 'roleAdventuresId'),
 			rolePremiumId: optional(form, 'rolePremiumId'),
 			roleChampionId: optional(form, 'roleChampionId'),
 			inviteUrl: optional(form, 'inviteUrl'),
@@ -109,18 +129,40 @@ export const actions: Actions = {
 	syncAll: async ({ locals, platform }) => {
 		await requireAdmin(locals, '/admin/discord');
 		if (!platform?.env?.DB) return fail(503, { discordAdminError: 'D1 database binding is unavailable.' });
+		await backfillDiscordConnectionsFromAuthAccounts(platform.env.DB, 200);
 		const rows = await platform.env.DB.prepare('SELECT user_id AS userId FROM discord_connections').all<{ userId: string }>();
 		let synced = 0;
 		let failed = 0;
+		const failureNotes: string[] = [];
 		for (const row of rows.results) {
 			try {
-				await syncDiscordRoles(platform.env.DB, row.userId);
-				synced += 1;
+				const result = await syncDiscordRoles(platform.env.DB, row.userId);
+				if (result.status === 'synced') synced += 1;
+				else {
+					failed += 1;
+					failureNotes.push(`${row.userId}: ${result.status} — ${result.message}`);
+				}
 			} catch (cause) {
 				failed += 1;
+				const message = cause instanceof Error ? cause.message : 'Discord synchronization failed.';
+				failureNotes.push(`${row.userId}: error — ${message}`);
 				console.error(`Discord bulk sync failed for ${row.userId}`, cause);
 			}
 		}
-		return { discordAdminSuccess: `Discord synchronization complete: ${synced} succeeded${failed ? `, ${failed} failed` : ''}.` };
+		const preview =
+			failureNotes.length > 0
+				? ` First issues: ${failureNotes.slice(0, 3).join(' | ')}`
+				: '';
+		return {
+			discordAdminSuccess: `Discord synchronization complete: ${synced} synced${failed ? `, ${failed} need attention` : ''}.${preview}`
+		};
+	},
+	backfillAuthDiscord: async ({ locals, platform }) => {
+		await requireAdmin(locals, '/admin/discord');
+		if (!platform?.env?.DB) return fail(503, { discordAdminError: 'D1 database binding is unavailable.' });
+		const result = await backfillDiscordConnectionsFromAuthAccounts(platform.env.DB, 100);
+		return {
+			discordAdminSuccess: `Backfill processed ${result.processed} Discord sign-in accounts: ${result.linked} newly linked, ${result.synced} synchronized, ${result.failed} failed.`
+		};
 	}
 };

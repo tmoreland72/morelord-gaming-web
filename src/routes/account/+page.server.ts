@@ -1,6 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getBillingSummary } from '$lib/server/billing';
+import { ensureDiscordConnectionFromAuthAccount } from '$lib/server/discord-auth-link';
+import { logDiscordSync } from '$lib/server/discord-log';
 import {
 	disconnectDiscord,
 	discordOAuthConfigured,
@@ -9,6 +11,7 @@ import {
 	getDiscordSettings,
 	syncDiscordRoles
 } from '$lib/server/discord';
+import { consumeRateLimit } from '$lib/server/rate-limit';
 import {
 	ACTIVATION_MINUTES,
 	approveActivation,
@@ -24,7 +27,35 @@ export const load: PageServerLoad = async ({ locals, platform, url, setHeaders }
 	const db = platform?.env?.DB;
 	const billing = locals.user && db ? await getBillingSummary(db, locals.user.id) : null;
 	const installations = locals.user && db ? await listUserInstallations(db, locals.user.id) : [];
-	const discord = locals.user && db ? await getDiscordConnection(db, locals.user.id) : null;
+	let discord = locals.user && db ? await getDiscordConnection(db, locals.user.id) : null;
+
+	if (locals.user && db) {
+		if (!discord) {
+			try {
+				await ensureDiscordConnectionFromAuthAccount(db, locals.user.id);
+				discord = await getDiscordConnection(db, locals.user.id);
+			} catch (cause) {
+				logDiscordSync('account-load-link-failed', {
+					userId: locals.user.id,
+					error: cause instanceof Error ? cause.message : String(cause)
+				});
+			}
+		}
+		if (
+			discord?.roleSyncStatus === 'not_in_server' &&
+			(await consumeRateLimit(db, `discord-catchup:${locals.user.id}`, 1, 15 * 60 * 1000))
+		) {
+			try {
+				await syncDiscordRoles(db, locals.user.id);
+				discord = await getDiscordConnection(db, locals.user.id);
+			} catch (cause) {
+				logDiscordSync('account-load-catchup-failed', {
+					userId: locals.user.id,
+					error: cause instanceof Error ? cause.message : String(cause)
+				});
+			}
+		}
+	}
 	const discordSettings = db ? await getDiscordSettings(db) : null;
 	return {
 		user: locals.user ?? null,

@@ -20,7 +20,7 @@
 	<div class="shell">
 		<div class="eyebrow">Administration</div>
 		<h1>Discord integration</h1>
-		<p class="lead">Connect Morelord Gaming accounts to Discord and synchronize only the Morelord Tools membership roles.</p>
+		<p class="lead">Connect Morelord Gaming accounts to Discord and synchronize Morelord Tools, Morelord Adventures, and subscriber membership roles.</p>
 	</div>
 </section>
 
@@ -48,7 +48,7 @@
 		<article class="card admin-form-card">
 			<div class="section-heading compact-heading">
 				<div><div class="eyebrow">Server configuration</div><h2>Managed roles</h2></div>
-				<p>The website will add or remove only these three roles. Campaign and staff roles are never modified.</p>
+				<p>The website will add or remove only these site-managed roles. Campaign and staff roles are never modified.</p>
 			</div>
 			<form method="POST" action="?/save" use:enhance class="discord-config-form">
 				<label><span>Discord Guild ID</span><input name="guildId" value={data.settings.guildId ?? ''} placeholder="123456789012345678" /></label>
@@ -58,6 +58,12 @@
 					{#if data.check?.roles?.length}
 						<select name="roleToolsId" value={data.settings.roleToolsId ?? ''}><option value="">Select role</option>{#each data.check.roles as role}{#if !role.managed && role.name !== '@everyone'}<option value={role.id}>{role.name}</option>{/if}{/each}</select>
 					{:else}<input name="roleToolsId" value={data.settings.roleToolsId ?? ''} placeholder="Role ID" />{/if}
+				</label>
+				<label>
+					<span>Morelord Adventures role</span>
+					{#if data.check?.roles?.length}
+						<select name="roleAdventuresId" value={data.settings.roleAdventuresId ?? ''}><option value="">Select role</option>{#each data.check.roles as role}{#if !role.managed && role.name !== '@everyone'}<option value={role.id}>{role.name}</option>{/if}{/each}</select>
+					{:else}<input name="roleAdventuresId" value={data.settings.roleAdventuresId ?? ''} placeholder="Role ID" />{/if}
 				</label>
 				<label>
 					<span>Tools Premium role</span>
@@ -88,7 +94,7 @@
 			</article>
 			<article class="card">
 				<span class="tag">Discord bot</span><h3>Role synchronization</h3>
-				<p>The bot needs <strong>Manage Roles</strong>, and its highest role must be above Morelord Tools, Tools Premium and Tools Champion.</p>
+				<p>The bot needs <strong>Manage Roles</strong>, and its highest role must be above Morelord Tools, Morelord Adventures, Tools Premium, and Tools Champion.</p>
 				{#if data.botInstallUrl}<a class="button secondary" href={data.botInstallUrl} target="_blank" rel="noreferrer">Install bot in Discord</a>{/if}
 				<form method="POST" action="?/test" use:enhance><button class="button secondary" type="submit">Verify configuration</button></form>
 			</article>
@@ -99,7 +105,7 @@
 				<div class="section-heading compact-heading"><div><div class="eyebrow">Diagnostics</div><h2>Role hierarchy</h2></div><p>Bot: {data.check.botUsername ?? 'Unavailable'} · Highest bot role position: {data.check.botHighestRolePosition ?? '—'}</p></div>
 				<div class="discord-role-grid">
 					{#each data.check.managedRoles as role}
-						<div class:ready={role.manageable} class="discord-role-status"><strong>{role.key === 'tools' ? 'Morelord Tools' : role.key === 'premium' ? 'Tools Premium' : 'Tools Champion'}</strong><span>{role.name ?? role.roleId ?? 'Not configured'}</span><em>{role.manageable ? 'Manageable' : 'Needs attention'}</em></div>
+						<div class:ready={role.manageable} class="discord-role-status"><strong>{role.key === 'tools' ? 'Morelord Tools' : role.key === 'adventures' ? 'Morelord Adventures' : role.key === 'premium' ? 'Tools Premium' : 'Tools Champion'}</strong><span>{role.name ?? role.roleId ?? 'Not configured'}</span><em>{role.manageable ? 'Manageable' : 'Needs attention'}</em></div>
 					{/each}
 				</div>
 				{#if data.check.errors.length}<ul class="diagnostic-errors">{#each data.check.errors as item}<li>{item}</li>{/each}</ul>{/if}
@@ -108,12 +114,21 @@
 
 		<article class="card">
 			<div class="section-heading compact-heading">
-				<div><div class="eyebrow">Linked members</div><h2>{data.connections.length} Discord connections</h2></div>
-				<form method="POST" action="?/syncAll" use:enhance><button class="button secondary" type="submit" disabled={!data.connections.length}>Synchronize all</button></form>
+				<div>
+					<div class="eyebrow">Linked members</div>
+					<h2>{data.connections.length} Discord connections</h2>
+					{#if !data.roleSyncConfigured}<p class="form-error">Role sync is not ready. Save guild, Morelord Tools, and Morelord Adventures role IDs, then verify the bot.</p>{/if}
+					{#if data.missingAuthLinks > 0}<p>{data.missingAuthLinks} Discord sign-in account(s) are not linked yet. Use backfill or Synchronize all.</p>{/if}
+					{#if Object.keys(data.syncStatusCounts).length}<p>Sync status: {#each Object.entries(data.syncStatusCounts) as [status, total]}{status} ({total}){/each}</p>{/if}
+				</div>
+				<div class="actions compact-actions">
+					<form method="POST" action="?/backfillAuthDiscord" use:enhance><button class="button secondary" type="submit">Backfill Discord sign-ins</button></form>
+					<form method="POST" action="?/syncAll" use:enhance><button class="button secondary" type="submit">Synchronize all</button></form>
+				</div>
 			</div>
 			{#if data.connections.length}
 				<div class="table-wrap"><table><thead><tr><th>Morelord account</th><th>Discord</th><th>Membership</th><th>Sync</th><th></th></tr></thead><tbody>
-					{#each data.connections as connection}<tr><td><strong>{connection.name ?? connection.email ?? connection.userId}</strong>{#if connection.email}<small>{connection.email}</small>{/if}</td><td>{connection.globalName ?? connection.username}<small>@{connection.username}</small></td><td>{tier(connection.plan)}</td><td><span class="tag">{connection.roleSyncStatus}</span>{#if connection.lastSyncedAt}<small>{new Date(connection.lastSyncedAt).toLocaleString()}</small>{/if}</td><td><form method="POST" action="?/syncOne" use:enhance><input type="hidden" name="userId" value={connection.userId} /><button class="button secondary compact-button" type="submit">Sync</button></form></td></tr>{/each}
+					{#each data.connections as connection}<tr><td><strong>{connection.name ?? connection.email ?? connection.userId}</strong>{#if connection.email}<small>{connection.email}</small>{/if}</td><td>{connection.globalName ?? connection.username}<small>@{connection.username}</small></td><td>{tier(connection.plan)}</td><td><span class="tag">{connection.roleSyncStatus}</span>{#if connection.roleSyncMessage}<small>{connection.roleSyncMessage}</small>{/if}{#if connection.lastSyncedAt}<small>{new Date(connection.lastSyncedAt).toLocaleString()}</small>{/if}</td><td><form method="POST" action="?/syncOne" use:enhance><input type="hidden" name="userId" value={connection.userId} /><button class="button secondary compact-button" type="submit">Sync</button></form></td></tr>{/each}
 				</tbody></table></div>
 			{:else}<p>No Morelord Gaming accounts have linked Discord yet.</p>{/if}
 		</article>
@@ -121,7 +136,7 @@
 		<article class="card callout-card">
 			<span class="tag">Role policy</span>
 			<h3>Cumulative Tools roles</h3>
-			<p><strong>Standard:</strong> Morelord Tools · <strong>Premium:</strong> Morelord Tools + Tools Premium · <strong>Champion:</strong> all three roles.</p>
+			<p><strong>Standard:</strong> Morelord Tools + Morelord Adventures · <strong>Premium:</strong> adds Tools Premium · <strong>Champion:</strong> adds Tools Champion.</p>
 			<p>Subscription changes synchronize automatically from Stripe. Users can also synchronize manually from their account page.</p>
 		</article>
 	</div>

@@ -54,8 +54,8 @@
 			</div>
 
 			<small>
-				Use a Discord account with a verified email. To synchronize subscriber roles, connect
-				Discord from your account after signing in.
+				Use a Discord account with a verified email. Signing in with Discord automatically links your
+				Discord identity for Morelord Tools and Morelord Adventures role sync.
 			</small>
 		</div>
 	</div>

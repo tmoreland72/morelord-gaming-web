@@ -46,6 +46,10 @@
 
 	"vars": {
 		"EMAIL_FROM": "chuck@morelordgaming.com"
+	},
+
+	"triggers": {
+		"crons": ["*/15 * * * *"]
 	}
 
 	/**
